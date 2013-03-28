@@ -1,58 +1,58 @@
 /*
 
-Copyright 2007-2012 by
+  Copyright 2007-2013 by
 
-Laboratoire de l'Informatique du Parallelisme,
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
+  Laboratoire de l'Informatique du Parallelisme,
+  UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
 
-and by
+  and by
 
-Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
-Sophia Antipolis, France.
+  Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+  Sophia Antipolis, France.
 
-Contributors Ch. Lauter, S. Chevillard
+  Contributors Ch. Lauter, S. Chevillard
 
-christoph.lauter@ens-lyon.org
-sylvain.chevillard@ens-lyon.org
+  christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use,
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info".
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use,
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info".
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability.
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability.
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or
-data to be ensured and,  more generally, to use and operate it in the
-same conditions as regards security.
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  therefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -196,41 +196,41 @@ void *wrapSafeRealloc(void *ptr, size_t old_size, size_t new_size);
 void wrapSafeFree(void *ptr, size_t size);
 
 void *(*actualCalloc)(size_t, size_t) = calloc;
-void *(*actualMalloc)(size_t) = malloc;
-void (*actualFree)(void *) = free;
-void *(*actualRealloc)(void *, size_t) = realloc;
-void (*actualFreeWithSize)(void *, size_t) = wrapSafeFree;
-void *(*actualReallocWithSize)(void *, size_t, size_t) = wrapSafeRealloc;
+                                      void *(*actualMalloc)(size_t) = malloc;
+                                                                    void (*actualFree)(void *) = free;
+                                                                    void *(*actualRealloc)(void *, size_t) = realloc;
+                                                                    void (*actualFreeWithSize)(void *, size_t) = wrapSafeFree;
+                                                                    void *(*actualReallocWithSize)(void *, size_t, size_t) = wrapSafeRealloc;
 
-void *(*oldGMPMalloc)(size_t) = NULL;
-void *(*oldGMPRealloc)(void *, size_t, size_t) = NULL;
-void (*oldGMPFree)(void *, size_t) = NULL;
+                                                                    void *(*oldGMPMalloc)(size_t) = NULL;
+                                                                                                  void *(*oldGMPRealloc)(void *, size_t, size_t) = NULL;
+                                                                                                  void (*oldGMPFree)(void *, size_t) = NULL;
 
-/* END OF GLOBAL VARIABLES FOR THE MEMORY ALLOCATION FUNCTIONS */
+                                                                                                  /* END OF GLOBAL VARIABLES FOR THE MEMORY ALLOCATION FUNCTIONS */
 
-extern int yyparse();
-extern void yylex_destroy(void *);
-extern int yylex_init(void **);
-extern int yylex(void *);
-extern void yyset_in(FILE *, void *);
-extern int parserCheckEof();
+                                                                                                  extern int yyparse();
+                                                                                                  extern void yylex_destroy(void *);
+                                                                                                  extern int yylex_init(void **);
+                                                                                                  extern int yylex(void *);
+                                                                                                  extern void yyset_in(FILE *, void *);
+                                                                                                  extern int parserCheckEof();
 
 #define BACKTRACELENGTH 100
 
-void freeTool();
+                                                                                                  void freeTool();
 
-void makeToolDie() {
-  freeTool();
+                                                                                                  void makeToolDie() {
+                                                                                                    freeTool();
 
-  if (!eliminatePromptBackup) sollyaPrintf("\n");
+                                                                                                    if (!eliminatePromptBackup) sollyaPrintf("\n");
 
-  if (inputFileOpened) {
-    fclose(inputFile);
-    inputFileOpened = 0;
-  }
+                                                                                                    if (inputFileOpened) {
+                                                                                                      fclose(inputFile);
+                                                                                                      inputFileOpened = 0;
+                                                                                                    }
 
-  exit(2);
-}
+                                                                                                    exit(2);
+                                                                                                  }
 
 void considerDyingOnError() {
   if (!dieOnErrorMode) return;
@@ -1466,7 +1466,7 @@ int general(int argc, char *argv[]) {
       sollyaPrintf("--warnonstderr : print warning messages on error output instead on the standard output\n");
       sollyaPrintf("\nFor help on %s commands type \"help;\" on the %s prompt\n",PACKAGE_NAME,PACKAGE_NAME);
       sollyaPrintf("More documentation on %s is available on the %s website http://sollya.gforge.inria.fr/.\nFor bug reports send an email to %s.\n",PACKAGE_NAME,PACKAGE_NAME,PACKAGE_BUGREPORT);
-      sollyaPrintf("\n%s is Copyright 2006-2011 by\n\n    Laboratoire de l'Informatique du Parallelisme,\n    UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France,\n\n    LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France,\n\n    Laboratoire d'Informatique de Paris 6, equipe PEQUAN,\n    UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,\n\nand by\n\n    INRIA Sophia-Antipolis Mediterranee, APICS Team,\n    Sophia-Antipolis, France.\n\nAll rights reserved.\n\nContributors are S. Chevillard, N. Jourdan, M. Joldes and Ch. Lauter.\n\nThis software is governed by the CeCILL-C license under French law and\nabiding by the rules of distribution of free software.  You can  use,\nmodify and/ or redistribute the software under the terms of the CeCILL-C\nlicense as circulated by CEA, CNRS and INRIA at the following URL\n\"http://www.cecill.info\".\n\nThis program is distributed WITHOUT ANY WARRANTY; without even the\nimplied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\nThis build of %s is based on GMP %s, MPFR %s and MPFI %s.\n",PACKAGE_STRING,PACKAGE_STRING,gmp_version,mpfr_get_version(),sollya_mpfi_get_version());
+      sollyaPrintf("\n%s is Copyright 2006-2013 by\n\n    Laboratoire de l'Informatique du Parallelisme,\n    UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668, Lyon, France,\n\n    LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2), Nancy, France,\n\n    Laboratoire d'Informatique de Paris 6, equipe PEQUAN,\n    UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,\n\n    INRIA Sophia-Antipolis Mediterranee, APICS Team,\n    Sophia-Antipolis, France,\n\nand by\n\n    CAPA project, Department of Mathematics, Angstrom Laboratory, Uppsala University, Sweden.\n\nAll rights reserved.\n\nContributors are S. Chevillard, N. Jourdan, M. Joldes and Ch. Lauter.\n\nThis software is governed by the CeCILL-C license under French law and\nabiding by the rules of distribution of free software.  You can  use,\nmodify and/ or redistribute the software under the terms of the CeCILL-C\nlicense as circulated by CEA, CNRS and INRIA at the following URL\n\"http://www.cecill.info\".\n\nThis program is distributed WITHOUT ANY WARRANTY; without even the\nimplied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\nThis build of %s is based on GMP %s, MPFR %s and MPFI %s.\n",PACKAGE_STRING,PACKAGE_STRING,gmp_version,mpfr_get_version(),sollya_mpfi_get_version());
 #if defined(HAVE_FPLLL_VERSION_STRING)
       sollyaPrintf("%s uses FPLLL as: \"%s\"\n",PACKAGE_STRING,HAVE_FPLLL_VERSION_STRING);
 #endif
@@ -1476,61 +1476,61 @@ int general(int argc, char *argv[]) {
       if (strcmp(argv[i],"--nocolor") == 0) noColor = 1; else
 	if (strcmp(argv[i],"--noprompt") == 0) eliminatePromptBackup = 1; else
 	  if (strcmp(argv[i],"--oldrlwrapcompatible") == 0) oldrlwrapcompatible = 1; else
-              if (strcmp(argv[i],"--flush") == 0) flushOutput = 1; else 
-		if (strcmp(argv[i],"--oldautoprint") == 0) oldAutoPrint = 1; else
-                  if (strcmp(argv[i],"--warnonstderr") == 0) {
-                    if (printMode != PRINT_MODE_WARNING_TO_FILE) {
-                      printMode = PRINT_MODE_WARNING_TO_STDERR; 
+            if (strcmp(argv[i],"--flush") == 0) flushOutput = 1; else 
+              if (strcmp(argv[i],"--oldautoprint") == 0) oldAutoPrint = 1; else
+                if (strcmp(argv[i],"--warnonstderr") == 0) {
+                  if (printMode != PRINT_MODE_WARNING_TO_FILE) {
+                    printMode = PRINT_MODE_WARNING_TO_STDERR; 
+                  } else {
+                    sollyaPrintf("Error: only one of the --warnonstderr or --warninfile options can be given.\n");
+                    return 1;
+                  }
+                } else
+                  if ((strcmp(argv[i],"--warninfile") == 0) || 
+                      (strcmp(argv[i],"--warninfileappend") == 0)){
+                    if (printMode != PRINT_MODE_WARNING_TO_STDERR) {
+                      if (i+1<argc) {
+                        i++;
+                        if (strcmp(argv[i-1],"--warninfileappend") == 0) {
+                          fd = fopen(argv[i],"a");
+                        } else {
+                          fd = fopen(argv[i],"w");
+                        }
+                        if (fd != NULL) {
+                          warnFile = fd;
+                          fd = NULL;
+                          printMode = PRINT_MODE_WARNING_TO_FILE;
+                        } else {
+                          sollyaPrintf("Error: the file \"%s\" could not be opened for warning display: %s\n",argv[i],strerror(errno));
+                          return 1;
+                        }
+                      } else {
+                        sollyaPrintf("Error: no file argument is given for the --warninfile option.\n");
+                        return 1;
+                      }
                     } else {
                       sollyaPrintf("Error: only one of the --warnonstderr or --warninfile options can be given.\n");
                       return 1;
                     }
-                  } else
-                    if ((strcmp(argv[i],"--warninfile") == 0) || 
-                        (strcmp(argv[i],"--warninfileappend") == 0)){
-                      if (printMode != PRINT_MODE_WARNING_TO_STDERR) {
-                        if (i+1<argc) {
-                          i++;
-                          if (strcmp(argv[i-1],"--warninfileappend") == 0) {
-                            fd = fopen(argv[i],"a");
-                          } else {
-                            fd = fopen(argv[i],"w");
-                          }
-                          if (fd != NULL) {
-                            warnFile = fd;
-                            fd = NULL;
-                            printMode = PRINT_MODE_WARNING_TO_FILE;
-                          } else {
-                            sollyaPrintf("Error: the file \"%s\" could not be opened for warning display: %s\n",argv[i],strerror(errno));
-                            return 1;
-                          }
+                  } else { 
+                    if (strcmp(argv[i],"--donotmodifystacksize") == 0) doNotModifyStackSize = 1; else {
+                      if (!inputFileOpened) {
+                        fd = fopen(argv[i],"r");
+                        if (fd != NULL) {
+                          inputFile = fd;
+                          inputFileOpened = 1;
+                          eliminatePromptBackup = 1;
+                          noColor = 1;
                         } else {
-                          sollyaPrintf("Error: no file argument is given for the --warninfile option.\n");
+                          sollyaPrintf("Error: the file \"%s\" could not be opened: %s\n",argv[i],strerror(errno));
                           return 1;
                         }
                       } else {
-                        sollyaPrintf("Error: only one of the --warnonstderr or --warninfile options can be given.\n");
+                        sollyaPrintf("Error: another input file besides \"%s\" has been indicated and opened.\n",argv[i]);
                         return 1;
                       }
-                    } else { 
-                      if (strcmp(argv[i],"--donotmodifystacksize") == 0) doNotModifyStackSize = 1; else {
-                        if (!inputFileOpened) {
-                          fd = fopen(argv[i],"r");
-                          if (fd != NULL) {
-                            inputFile = fd;
-                            inputFileOpened = 1;
-                            eliminatePromptBackup = 1;
-                            noColor = 1;
-                          } else {
-                            sollyaPrintf("Error: the file \"%s\" could not be opened: %s\n",argv[i],strerror(errno));
-                            return 1;
-                          }
-                        } else {
-                          sollyaPrintf("Error: another input file besides \"%s\" has been indicated and opened.\n",argv[i]);
-                          return 1;
-                        }
-                      } 
-                    }
+                    } 
+                  }
   }
 
   yylex_init(&scanner);
@@ -1626,8 +1626,8 @@ int general(int argc, char *argv[]) {
 	  freeCounter();
 	}
         if (flushOutput) {
-            fflush(stdout); 
-            fflush(stderr);
+          fflush(stdout); 
+          fflush(stderr);
         }
 	libraryMode = 0;
 	pushTimeCounter();
@@ -1638,8 +1638,8 @@ int general(int argc, char *argv[]) {
 	  freeCounter();
 	}
         if (flushOutput) {
-            fflush(stdout); 
-            fflush(stderr);
+          fflush(stdout); 
+          fflush(stderr);
         }
 	blockSignals();
 	recoverEnvironmentReady = 0;
@@ -1690,7 +1690,7 @@ int general(int argc, char *argv[]) {
 
       freeThing(parsedThing);
     } else {
-	lastWasError = 1;
+      lastWasError = 1;
     } 
     if (parseAbort || executeAbort) break;
     promptToBePrinted = 1;

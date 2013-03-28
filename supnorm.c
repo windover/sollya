@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2010-2011 by 
+  Copyright 2010-2012 by 
 
   Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
   UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
@@ -1099,7 +1099,7 @@ int determinePossibleZeroAndBisectPoint(mpfr_t zero, mpfr_t bisect,
 	    /* Here, we really found that there at least two different zeros 
 	       We now go down on second with all zeros in the list greater 
 	       than the least zero.
-	     */
+            */
 	    for (curr=possibleZeros;curr!=NULL;curr=curr->next) {
 	      if ((mpfr_cmp(*((mpfr_t *) (curr->value)),*least) > 0) &&
 		  (mpfr_cmp(*((mpfr_t *) (curr->value)),*second) < 0)) {
@@ -1216,8 +1216,8 @@ int determineOrderOfZero(int *k, node *func, mpfr_t x0, int n, mp_prec_t prec) {
                       || 
                       ( (accessThruMemRef(coefficients[myK])->nodeType == CONSTANT) && 
                         (mpfr_zero_p(*(accessThruMemRef(coefficients[myK])->value)))
-                      )
-                 ) && 
+                        )
+                      ) && 
                  (sollya_mpfi_is_zero(*(errorsAsArray[myK])))
                  ) {
 	    myK++;
@@ -1359,7 +1359,7 @@ int supnormAbsolute(sollya_mpfi_t result, node *poly, node *func, sollya_mpfi_t 
        checkDegreeTaylorModel would successfully return, but the returned
        polynomial would contain non-dyadic coefficients. I think that this
        cannot happen.
-     */
+    */
     mpfr_clear(ell);
     mpfr_clear(gamma);
     mpfr_clear(errMax);
@@ -1661,7 +1661,7 @@ int supnormRelativeNoSingularity(sollya_mpfi_t result, node *poly, node *func, s
        checkDegreeTaylorModel would successfully return, but the returned
        polynomial would contain non-dyadic coefficients. I think that this
        cannot happen.
-     */
+    */
     mpfr_clear(F);
     mpfr_clear(ell);
     mpfr_clear(gamma);

@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2006-2011 by
+  Copyright 2006-2012 by
 
   Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
@@ -1526,8 +1526,8 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   Otherwise, we run the algorithm until the required quality is obtained.
 
   -----------------------|----------------------------|-------------------------->
-  satisfying                     target
-  :-)                                                       :-(
+                      satisfying                     target
+          :-)                                                       :-(
 
 */
 node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t prec, mpfr_t quality, mpfr_t satisfying_error, mpfr_t target_error) {
@@ -1681,8 +1681,8 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     mpfr_sub(var1, v, u, GMP_RNDN);
     mpfr_div_si(var1, var1, (long)(freeDegrees), GMP_RNDN); // var1 = (v-u)/freeDegrees
     for (i=1 ; i <= freeDegrees+1 ; i++) {
-      mpfr_mul_si(x[i-1], var1, i-1, GMP_RNDN);
-      mpfr_add(x[i-1], x[i-1], u, GMP_RNDN);
+    mpfr_mul_si(x[i-1], var1, i-1, GMP_RNDN);
+    mpfr_add(x[i-1], x[i-1], u, GMP_RNDN);
     }
   */
   /*************************************************************/
@@ -1700,9 +1700,9 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
     mpfr_div_2ui(var3, var3, 1, GMP_RNDN); // var3 = (u+v)/2
 
     for (i=1 ; i <= freeDegrees+1 ; i++) {
-      mpfr_mul_si(x[i-1], var1, 2*i-1, GMP_RNDN);
-      mpfr_cos(x[i-1], x[i-1], GMP_RNDN);
-      mpfr_fma(x[i-1], x[i-1], var2, var3, GMP_RNDN); // x_i=[cos((2i-1)*Pi/(2freeDegrees+2))]*(u-v)/2 + (u+v)/2
+    mpfr_mul_si(x[i-1], var1, 2*i-1, GMP_RNDN);
+    mpfr_cos(x[i-1], x[i-1], GMP_RNDN);
+    mpfr_fma(x[i-1], x[i-1], var2, var3, GMP_RNDN); // x_i=[cos((2i-1)*Pi/(2freeDegrees+2))]*(u-v)/2 + (u+v)/2
     }
   */
   /*************************************************************/

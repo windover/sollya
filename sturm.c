@@ -1,59 +1,59 @@
 /*
 
-Copyright 2008-2012 by 
+  Copyright 2008-2012 by 
 
-Laboratoire de l'Informatique du Parallelisme, 
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
+  Laboratoire de l'Informatique du Parallelisme, 
+  UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
 
-and by
+  and by
 
-Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
-Sophia Antipolis, France.
+  Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+  Sophia Antipolis, France.
 
-Contributors M. Joldes, Ch. Lauter, S. Chevillard
+  Contributors M. Joldes, Ch. Lauter, S. Chevillard
 
-mioara.joldes@ens-lyon.fr
-christoph.lauter@ens-lyon.org
-sylvain.chevillard@ens-lyon.org
+  mioara.joldes@ens-lyon.fr
+  christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use, 
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info". 
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability. 
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability. 
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-herefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  herefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or 
+  data to be ensured and,  more generally, to use and operate it in the 
+  same conditions as regards security. 
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -310,7 +310,7 @@ int sturm_mpq(int *n, mpq_t *p, int p_degree, sollya_mpfi_t x){
     
   polynomialEval_mpq( &evalRes, aq, s0, s0_degree);
   if (mpq_cmp_ui(evalRes,0,1)!=0){
-     mpq_set(evalResA[na],evalRes);
+    mpq_set(evalResA[na],evalRes);
     na++;
   }
   else nrRoots++; /*if the left extremity is a root we count it here
@@ -579,9 +579,9 @@ int sturm_mpfi(int *n, mpq_t *pMpq, int p_degree, sollya_mpfi_t x, mp_prec_t pre
   }
   else {
     if (sollya_mpfi_is_zero(evalRes)) 
-    nrRoots++; /*if the left extremity is a root we count it here
-                    since the number of sign changes gives the nr of distinct 
-                    roots between a and b, a<b*/  
+      nrRoots++; /*if the left extremity is a root we count it here
+                   since the number of sign changes gives the nr of distinct 
+                   roots between a and b, a<b*/  
     else resultat = 0;
   }
 
@@ -711,12 +711,12 @@ int getNrRoots(mpfr_t res, node *f, sollya_mpfi_t range, mp_prec_t precision) {
   
   if (!isPolynomial(f)) {
     printMessage(1,SOLLYA_MSG_GIVEN_FUNCTION_IS_NO_POLYNOMIAL,"Warning: the given function must be a polynomial in this context.\n");
-      return 0;
+    return 0;
   }
 
   if (!sollya_mpfi_bounded_p(range)) {
     printMessage(1,SOLLYA_MSG_DOMAIN_IS_NO_CLOSED_INTERVAL_ON_THE_REALS,"Warning: the given interval must have finite bounds.\n");
-      return 0;
+    return 0;
   }
 
   prec=precision;

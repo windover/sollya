@@ -132,9 +132,9 @@ chebModel* createEmptycModelCompute(int n,sollya_mpfi_t x, int flag_points, int 
 }
 
 /*This function creates an empty chebyshev model
-and makes the link from chebpoints and chebMatrix into the new cmodel
-(this function assumes that we have already computed 
-chebpoints and chebMatrix (if the respective pointers are not NULL)
+  and makes the link from chebpoints and chebMatrix into the new cmodel
+  (this function assumes that we have already computed 
+  chebpoints and chebMatrix (if the respective pointers are not NULL)
 */
 chebModel* createEmptycModelPrecomp(int n,sollya_mpfi_t x, sollya_mpfi_t **chebPoints, sollya_mpfi_t **chebM,  mp_prec_t p){
   chebModel* t;
@@ -154,17 +154,17 @@ chebModel* createEmptycModelPrecomp(int n,sollya_mpfi_t x, sollya_mpfi_t **chebP
     sollya_mpfi_init2(t->poly_array[i], prec);
   }
   
-   t->cheb_matrix= (sollya_mpfi_t **)safeMalloc(sizeof(sollya_mpfi_t *)); 
-   t->cheb_array= (sollya_mpfi_t **)safeMalloc(sizeof(sollya_mpfi_t *)); 
+  t->cheb_matrix= (sollya_mpfi_t **)safeMalloc(sizeof(sollya_mpfi_t *)); 
+  t->cheb_array= (sollya_mpfi_t **)safeMalloc(sizeof(sollya_mpfi_t *)); 
 
-if (chebPoints!=NULL) if ((*chebPoints)!=NULL) *(t->cheb_array)=*chebPoints;
-if (chebM!=NULL) if ((*chebM)!=NULL) *(t->cheb_matrix)=*chebM;
+  if (chebPoints!=NULL) if ((*chebPoints)!=NULL) *(t->cheb_array)=*chebPoints;
+  if (chebM!=NULL) if ((*chebM)!=NULL) *(t->cheb_matrix)=*chebM;
 
-return t;
+  return t;
 }
 
 /*This function dealocates a cheb model, without touching the memory
- referenced by cheb_array and cheb_matrix parts
+  referenced by cheb_array and cheb_matrix parts
 */
 void clearcModelLight(chebModel *t){
   int i;
@@ -218,7 +218,7 @@ void constcModel(chebModel*t, sollya_mpfi_t ct){
   n=t->n;
   
   for(i=1;i<n;i++){
-     sollya_mpfi_set_ui(t->poly_array[i],0);
+    sollya_mpfi_set_ui(t->poly_array[i],0);
   }
   
   sollya_mpfi_set(t->poly_array[0],ct);
@@ -228,24 +228,24 @@ void constcModel(chebModel*t, sollya_mpfi_t ct){
 
 
 /* Check that models are compatible one with another: 
-i.e. they can be added, mulitplied, copied, etc. */
+   i.e. they can be added, mulitplied, copied, etc. */
 int cModelsAreCompatible(chebModel *t1, chebModel *t2) {
-    return ((t1 != NULL) && (t2 != NULL) && 
-            (sollya_mpfi_equal_p(t1->x, t2->x) || (sollya_mpfi_nan_p(t1->x) && sollya_mpfi_nan_p(t2->x))) &&
-            (t1->n == t2->n));
+  return ((t1 != NULL) && (t2 != NULL) && 
+          (sollya_mpfi_equal_p(t1->x, t2->x) || (sollya_mpfi_nan_p(t1->x) && sollya_mpfi_nan_p(t2->x))) &&
+          (t1->n == t2->n));
 }
 
 /*This function sets a cm t with the values given by anoter cm tt
-they should have the same basis and interval, 
-if an incompatibility is detected, no modification is made.
+  they should have the same basis and interval, 
+  if an incompatibility is detected, no modification is made.
 */
 void copycModel(chebModel *t, chebModel *tt){
   int i;
   
   if (!cModelsAreCompatible(t, tt)) {
-   printMessage(-1, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS, "Error in chebyshevform: trying to copy incompatible models.\n");
-   printMessage(-1, SOLLYA_MSG_CONTINUATION, "No modification is made.\n");
-   return;
+    printMessage(-1, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS, "Error in chebyshevform: trying to copy incompatible models.\n");
+    printMessage(-1, SOLLYA_MSG_CONTINUATION, "No modification is made.\n");
+    return;
   }
   
   for(i=0;i<tt->n;i++) {
@@ -255,8 +255,8 @@ void copycModel(chebModel *t, chebModel *tt){
   sollya_mpfi_set(t->rem_bound,tt->rem_bound);
   sollya_mpfi_set(t->poly_bound,tt->poly_bound);
   
-if (tt->cheb_matrix!=NULL) if ((*tt->cheb_matrix)!=NULL) *(t->cheb_matrix)=*tt->cheb_matrix;
-if (tt->cheb_array!=NULL) if ((*tt->cheb_array)!=NULL) *(t->cheb_array)=*tt->cheb_array;
+  if (tt->cheb_matrix!=NULL) if ((*tt->cheb_matrix)!=NULL) *(t->cheb_matrix)=*tt->cheb_matrix;
+  if (tt->cheb_array!=NULL) if ((*tt->cheb_array)!=NULL) *(t->cheb_array)=*tt->cheb_array;
 }
 
 /***************************************************************/
@@ -273,12 +273,12 @@ void addition_CM(chebModel *t,chebModel *child1_tm, chebModel *child2_tm, mp_pre
   if ( (!cModelsAreCompatible(child1_tm, child2_tm)) || (!cModelsAreCompatible(t, child1_tm)) ) {
     printMessage(-1, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS, "Error in chebyshevform: trying to copy incompatible models.\n");
     printMessage(-1, SOLLYA_MSG_CONTINUATION, "No modification is made.\n");
-   return;
+    return;
   }
   n=t->n;
   tt=createEmptycModelPrecomp(n,t->x, child1_tm->cheb_array,child1_tm->cheb_matrix, prec);
   for(i=0;i<n;i++)  
-  sollya_mpfi_add(tt->poly_array[i], child1_tm->poly_array[i],child2_tm->poly_array[i]);
+    sollya_mpfi_add(tt->poly_array[i], child1_tm->poly_array[i],child2_tm->poly_array[i]);
   
  
   sollya_mpfi_add(tt->rem_bound, child1_tm->rem_bound, child2_tm->rem_bound);
@@ -304,11 +304,11 @@ void ctMultiplication_CM(chebModel*d, chebModel*s, sollya_mpfi_t c, mp_prec_t pr
 }
 
 /*This function multiplies two given cms;
--- parameter *boundLevel* controls the algorithm used for bounding polynomials
--- parameter *forComposition* specifies whether:
-   forComposition=1 --> we are using the multiplication inside a composition,
-   we suppose bounds for the polynomials are already updated inside models
-   OTHERWISE --> we rebound them
+  -- parameter *boundLevel* controls the algorithm used for bounding polynomials
+  -- parameter *forComposition* specifies whether:
+  forComposition=1 --> we are using the multiplication inside a composition,
+  we suppose bounds for the polynomials are already updated inside models
+  OTHERWISE --> we rebound them
 */
 
 
@@ -328,7 +328,7 @@ void  multiplication_CM(chebModel *t,chebModel *c1, chebModel *c2, int boundLeve
   /*aux cm for doing the multiplications*/
   tt=createEmptycModelPrecomp(n, t->x, t->cheb_array, t->cheb_matrix, prec);
   for(i=0;i<n;i++){
-   sollya_mpfi_set_ui(tt->poly_array[i],0);
+    sollya_mpfi_set_ui(tt->poly_array[i],0);
   }
   
   sollya_mpfi_init2(temp1, prec);
@@ -338,52 +338,52 @@ void  multiplication_CM(chebModel *t,chebModel *c1, chebModel *c2, int boundLeve
   /*absolute error only*/
   /*We are multiplying chebmodels, considering the absolute error
     We are given:  (C1, r1)
-                   (C2, r2)*/
+    (C2, r2)*/
     
-   /*compute in temp1 r1*r2*/ 
-   sollya_mpfi_mul(temp1, c1->rem_bound, c2->rem_bound);
+  /*compute in temp1 r1*r2*/ 
+  sollya_mpfi_mul(temp1, c1->rem_bound, c2->rem_bound);
   
-   if (forComposition==0){
-   /*update the bounds for polynomials*/
+  if (forComposition==0){
+    /*update the bounds for polynomials*/
     chebPolynomialBound(c1->poly_bound, n, c1->poly_array, boundLevel);
     chebPolynomialBound(c2->poly_bound, n, c2->poly_array, boundLevel);
-   }
-   /*if we use multiplication inside a composition,
-   we suppose the the bounds are already computed*/
+  }
+  /*if we use multiplication inside a composition,
+    we suppose the the bounds are already computed*/
    
-   /*compute in temp2 delta1*B(C2)*/
+  /*compute in temp2 delta1*B(C2)*/
    
-   sollya_mpfi_mul(temp2, c1->rem_bound, c2->poly_bound);
-   sollya_mpfi_add(tt->rem_bound, temp2, temp1);
+  sollya_mpfi_mul(temp2, c1->rem_bound, c2->poly_bound);
+  sollya_mpfi_add(tt->rem_bound, temp2, temp1);
    
-   /*compute in temp2 delta2*B(C1)*/
-   sollya_mpfi_mul(temp2, c2->rem_bound, c1->poly_bound);
-   sollya_mpfi_add(tt->rem_bound, tt->rem_bound,temp2);
+  /*compute in temp2 delta2*B(C1)*/
+  sollya_mpfi_mul(temp2, c2->rem_bound, c1->poly_bound);
+  sollya_mpfi_add(tt->rem_bound, tt->rem_bound,temp2);
    
-   /*compute the product of the two polynomials*/
-   /*the product has degree 2n-2=> we have to store 2n-1 coeffs*/
-   /*in r we store only the upper part of the polynomial*/
-   /*r = [0, 0 ...., 0, r0, ..., r(n-2)]                          */
-   /* it represents the polynomial T1*T2|[n....2n-2]*/
-   r = (sollya_mpfi_t *)safeMalloc((2*n-1)*sizeof(sollya_mpfi_t));
+  /*compute the product of the two polynomials*/
+  /*the product has degree 2n-2=> we have to store 2n-1 coeffs*/
+  /*in r we store only the upper part of the polynomial*/
+  /*r = [0, 0 ...., 0, r0, ..., r(n-2)]                          */
+  /* it represents the polynomial T1*T2|[n....2n-2]*/
+  r = (sollya_mpfi_t *)safeMalloc((2*n-1)*sizeof(sollya_mpfi_t));
   
-   for(i=0; i < 2*n-1; i++){
-     sollya_mpfi_init2(r[i], prec);
-     sollya_mpfi_set_ui(r[i],0);
-   }
+  for(i=0; i < 2*n-1; i++){
+    sollya_mpfi_init2(r[i], prec);
+    sollya_mpfi_set_ui(r[i],0);
+  }
    
   for(i=0; i<n; i++) {
     for (j=0; j<n; j++){
       sollya_mpfi_mul(temp1, c1->poly_array[i], c2->poly_array[j]);
       if ( (i+j) < n )
-	      sollya_mpfi_add(tt->poly_array[i+j], tt->poly_array[i+j], temp1);
+        sollya_mpfi_add(tt->poly_array[i+j], tt->poly_array[i+j], temp1);
       else
-	      sollya_mpfi_add(r[i+j], r[i+j], temp1);
+        sollya_mpfi_add(r[i+j], r[i+j], temp1);
 	      
-	    if ( abs(i-j) < n )
-	      sollya_mpfi_add(tt->poly_array[abs(i-j)], tt->poly_array[abs(i-j)], temp1);
+      if ( abs(i-j) < n )
+        sollya_mpfi_add(tt->poly_array[abs(i-j)], tt->poly_array[abs(i-j)], temp1);
       else
-	      sollya_mpfi_add(r[abs(i-j)], r[abs(i-j)], temp1);  
+        sollya_mpfi_add(r[abs(i-j)], r[abs(i-j)], temp1);  
     }
   }
   
@@ -415,7 +415,7 @@ void  multiplication_CM(chebModel *t,chebModel *c1, chebModel *c2, int boundLeve
    VERY IMPORTANT ASSUMPTIONS:
    We are given a cm for the function f over x, order n
    and a cm for basic function g over y, order n with:
-       range(f->poly)+ f->rem_bound \subseteq y
+   range(f->poly)+ f->rem_bound \subseteq y
 
    Note that these assumptions ARE NOT CHECKED inside the function.
    If these assumptions are true, it returns a valid tm for g(f(x)) over x.
@@ -424,10 +424,10 @@ void  multiplication_CM(chebModel *t,chebModel *c1, chebModel *c2, int boundLeve
    such that the image over which g is computed is small.
    We suppose here that the image for f is already computed tightly, 
    and will not be recomputed here.
-   */
+*/
 /*NOTE: targetRem is a parameter that will stop the composition 
-        of the computed remainder gets too large;
-        currently, it is not used, but this should change in the future*/
+  of the computed remainder gets too large;
+  currently, it is not used, but this should change in the future*/
 void composition_CM(chebModel *t,chebModel *g, chebModel *f, int boundLevel, mpfr_t targetRem, mp_prec_t prec){
 
   int i;
@@ -443,8 +443,8 @@ void composition_CM(chebModel *t,chebModel *g, chebModel *f, int boundLevel, mpf
   m=f->n;
   
   /*create tinterm an intermediary cm for 2/(b-a) *f(x)-(b+a)/(b-a)
-  that will be used just as a clone in multiplications:
-  tinterm can be viewed as the variable in T_n(x).
+    that will be used just as a clone in multiplications:
+    tinterm can be viewed as the variable in T_n(x).
   */
   tinterm=createEmptycModelPrecomp(m,f->x, f->cheb_array, f->cheb_matrix, prec);
   copycModel(tinterm,f);
@@ -565,7 +565,7 @@ void composition_CM(chebModel *t,chebModel *g, chebModel *f, int boundLevel, mpf
 
 
 void computeMonotoneRemainderCheb(sollya_mpfi_t *bound, int typeOfFunction, int nodeType, node *f, mpfr_t p,
-                              int n, sollya_mpfi_t *poly_array, sollya_mpfi_t x){
+                                  int n, sollya_mpfi_t *poly_array, sollya_mpfi_t x){
   sollya_mpfi_t xinf, xsup;
   mpfr_t xinfFr, xsupFr;
   sollya_mpfi_t bound1, bound2, boundf1, boundf2;
@@ -664,9 +664,9 @@ void base_CMAux(chebModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t 
   tt=createEmptycModelPrecomp(n,x, t->cheb_array,t->cheb_matrix, prec);
   
   fValues= (sollya_mpfi_t *)safeMalloc((n)*sizeof(sollya_mpfi_t));
-    for(i=0;i<n;i++){
-      sollya_mpfi_init2(fValues[i], prec);
-    }
+  for(i=0;i<n;i++){
+    sollya_mpfi_init2(fValues[i], prec);
+  }
   /* We use AD for computing bound on the derivatives up to (n+1)th derivative */
   nDeriv= (sollya_mpfi_t *)safeCalloc((n+2),sizeof(sollya_mpfi_t));
   for(i=0;i<=n+1;i++) sollya_mpfi_init2(nDeriv[i], prec);
@@ -810,7 +810,7 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
       tt=createEmptycModelPrecomp(n,t->x, t->cheb_array,t->cheb_matrix, prec);
       /*do the necessary chages from child to parent*/
       for(i=0;i<n;i++) 
-      sollya_mpfi_neg(tt->poly_array[i], child1_tm->poly_array[i]);
+        sollya_mpfi_neg(tt->poly_array[i], child1_tm->poly_array[i]);
       sollya_mpfi_neg(tt->rem_bound,child1_tm->rem_bound);
     
       copycModel(t,tt);
@@ -864,25 +864,25 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
       break;
 
     case MUL:
-     /*create a new empty taylor model the children*/
-     child1_tm=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec);
-     child2_tm=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec);
-     /*call cheby_model on the children*/
-     cheb_model(child1_tm, accessThruMemRef(f)->child1,n,x,boundLevel, verbosity, prec);
-     cheb_model(child2_tm, accessThruMemRef(f)->child2,n,x,boundLevel, verbosity, prec);
+      /*create a new empty taylor model the children*/
+      child1_tm=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec);
+      child2_tm=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec);
+      /*call cheby_model on the children*/
+      cheb_model(child1_tm, accessThruMemRef(f)->child1,n,x,boundLevel, verbosity, prec);
+      cheb_model(child2_tm, accessThruMemRef(f)->child2,n,x,boundLevel, verbosity, prec);
     
-     /*do the necessary chages from children to parent*/
-     tt=createEmptycModelPrecomp(n,child1_tm->x, child1_tm->cheb_array,  child1_tm->cheb_matrix, prec);
+      /*do the necessary chages from children to parent*/
+      tt=createEmptycModelPrecomp(n,child1_tm->x, child1_tm->cheb_array,  child1_tm->cheb_matrix, prec);
      
-     multiplication_CM(tt,child1_tm, child2_tm,boundLevel,0,prec);
+      multiplication_CM(tt,child1_tm, child2_tm,boundLevel,0,prec);
      
-     copycModel(t,tt);
+      copycModel(t,tt);
 
-     /*clear old cheby model*/
-     clearcModelLight(child1_tm);
-     clearcModelLight(child2_tm);     
-     clearcModelLight(tt);
-     break;
+      /*clear old cheby model*/
+      clearcModelLight(child1_tm);
+      clearcModelLight(child2_tm);     
+      clearcModelLight(tt);
+      break;
 
     case DIV:
   
@@ -956,73 +956,73 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
     case PROCEDUREFUNCTION:
       
       if ((accessThruMemRef((accessThruMemRef(f)->child1))->nodeType)==VARIABLE) {
-         child1_tm=createEmptycModelPrecomp(n,t->x, t->cheb_array,t->cheb_matrix, prec);
-         /* CM for elementary function */
-         if (accessThruMemRef(f)->nodeType == LIBRARYFUNCTION)
-	   base_CMAux(child1_tm, MONOTONE_REMAINDER_LIBRARY_FUNCTION, 0, accessThruMemRef(f), NULL, n, x, verbosity,prec);
-         else if (accessThruMemRef(f)->nodeType == PROCEDUREFUNCTION)
-	   base_CMAux(child1_tm, MONOTONE_REMAINDER_PROCEDURE_FUNCTION, 0, accessThruMemRef(f), NULL, n, x, verbosity,prec);
-	 else
-	   base_CMAux(child1_tm, MONOTONE_REMAINDER_BASE_FUNCTION, accessThruMemRef(f)->nodeType, NULL, NULL, n,x, verbosity,prec);
+        child1_tm=createEmptycModelPrecomp(n,t->x, t->cheb_array,t->cheb_matrix, prec);
+        /* CM for elementary function */
+        if (accessThruMemRef(f)->nodeType == LIBRARYFUNCTION)
+          base_CMAux(child1_tm, MONOTONE_REMAINDER_LIBRARY_FUNCTION, 0, accessThruMemRef(f), NULL, n, x, verbosity,prec);
+        else if (accessThruMemRef(f)->nodeType == PROCEDUREFUNCTION)
+          base_CMAux(child1_tm, MONOTONE_REMAINDER_PROCEDURE_FUNCTION, 0, accessThruMemRef(f), NULL, n, x, verbosity,prec);
+        else
+          base_CMAux(child1_tm, MONOTONE_REMAINDER_BASE_FUNCTION, accessThruMemRef(f)->nodeType, NULL, NULL, n,x, verbosity,prec);
 
-      copycModel(t,child1_tm);
-      clearcModelLight(child1_tm);   
+        copycModel(t,child1_tm);
+        clearcModelLight(child1_tm);   
       }
       else{   
       
-      /*create a new empty CM for the child*/
-      child1_tm=createEmptycModelPrecomp(n,t->x, t->cheb_array,t->cheb_matrix, prec);
+        /*create a new empty CM for the child*/
+        child1_tm=createEmptycModelPrecomp(n,t->x, t->cheb_array,t->cheb_matrix, prec);
     
-      /*call cheb_model on the child*/
-      cheb_model(child1_tm, accessThruMemRef(f)->child1,n,x,boundLevel, verbosity, prec);
+        /*call cheb_model on the child*/
+        cheb_model(child1_tm, accessThruMemRef(f)->child1,n,x,boundLevel, verbosity, prec);
  
-      sollya_mpfi_init2(rangeg, prec);
+        sollya_mpfi_init2(rangeg, prec);
       
-      chebPolynomialBound(child1_tm->poly_bound, n, child1_tm->poly_array, boundLevel);
-      sollya_mpfi_add(rangeg,child1_tm->rem_bound, child1_tm->poly_bound);
+        chebPolynomialBound(child1_tm->poly_bound, n, child1_tm->poly_array, boundLevel);
+        sollya_mpfi_add(rangeg,child1_tm->rem_bound, child1_tm->poly_bound);
 
-      child2_tm=createEmptycModelCompute(n,rangeg,1,1, prec);
+        child2_tm=createEmptycModelCompute(n,rangeg,1,1, prec);
       
-      /*CM for elementary functions*/
-      if (accessThruMemRef(f)->nodeType == LIBRARYFUNCTION)
-        base_CMAux(child2_tm, MONOTONE_REMAINDER_LIBRARY_FUNCTION, 0, accessThruMemRef(f), NULL, n, rangeg, verbosity,prec);
-      else if (accessThruMemRef(f)->nodeType == PROCEDUREFUNCTION)
-        base_CMAux(child2_tm, MONOTONE_REMAINDER_PROCEDURE_FUNCTION, 0, accessThruMemRef(f), NULL, n, rangeg, verbosity,prec);
-      else 
-        base_CMAux(child2_tm, MONOTONE_REMAINDER_BASE_FUNCTION, accessThruMemRef(f)->nodeType, NULL, NULL, n,rangeg, verbosity,prec);
+        /*CM for elementary functions*/
+        if (accessThruMemRef(f)->nodeType == LIBRARYFUNCTION)
+          base_CMAux(child2_tm, MONOTONE_REMAINDER_LIBRARY_FUNCTION, 0, accessThruMemRef(f), NULL, n, rangeg, verbosity,prec);
+        else if (accessThruMemRef(f)->nodeType == PROCEDUREFUNCTION)
+          base_CMAux(child2_tm, MONOTONE_REMAINDER_PROCEDURE_FUNCTION, 0, accessThruMemRef(f), NULL, n, rangeg, verbosity,prec);
+        else 
+          base_CMAux(child2_tm, MONOTONE_REMAINDER_BASE_FUNCTION, accessThruMemRef(f)->nodeType, NULL, NULL, n,rangeg, verbosity,prec);
 
      
       
-      tt=createEmptycModelPrecomp(n,child1_tm->x, child1_tm->cheb_array, child1_tm->cheb_matrix, prec);
-      composition_CM(tt,child2_tm, child1_tm, boundLevel,NULL, prec);
+        tt=createEmptycModelPrecomp(n,child1_tm->x, child1_tm->cheb_array, child1_tm->cheb_matrix, prec);
+        composition_CM(tt,child2_tm, child1_tm, boundLevel,NULL, prec);
       
-      /*clear old child*/
-      clearcModelLight(child1_tm);
-      /*we do not need values of chebpoints and chebMatrix in interval rangeg*/
-      clearcModelComplete(child2_tm); 
-      copycModel(t,tt);
-      clearcModelLight(tt);
-      sollya_mpfi_clear(rangeg);  
-    }    
-    break;
+        /*clear old child*/
+        clearcModelLight(child1_tm);
+        /*we do not need values of chebpoints and chebMatrix in interval rangeg*/
+        clearcModelComplete(child2_tm); 
+        copycModel(t,tt);
+        clearcModelLight(tt);
+        sollya_mpfi_clear(rangeg);  
+      }    
+      break;
    
     case POW:
       simplifiedChild2=simplifyTreeErrorfree(accessThruMemRef(f)->child2);
       simplifiedChild1=simplifyTreeErrorfree(accessThruMemRef(f)->child1);
       
       if ((accessThruMemRef(simplifiedChild2)->nodeType==CONSTANT) &&(accessThruMemRef(simplifiedChild1)->nodeType==CONSTANT)) { 
-         /*We are in the  ct1^ct2 case*/
-         sollya_mpfi_init2(temp1, prec);
-         sollya_mpfi_set_fr(temp1, *(accessThruMemRef(simplifiedChild1)->value));
-         sollya_mpfi_init2(temp2, prec);
-         sollya_mpfi_set_fr(temp2, *(accessThruMemRef(simplifiedChild2)->value));
-         sollya_mpfi_pow(temp1,temp1,temp2);
-         tt=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec); 
-         constcModel(tt,temp1);
-         copycModel(t,tt);
-         clearcModelLight(tt);
-         sollya_mpfi_clear(temp1);
-         sollya_mpfi_clear(temp2);
+        /*We are in the  ct1^ct2 case*/
+        sollya_mpfi_init2(temp1, prec);
+        sollya_mpfi_set_fr(temp1, *(accessThruMemRef(simplifiedChild1)->value));
+        sollya_mpfi_init2(temp2, prec);
+        sollya_mpfi_set_fr(temp2, *(accessThruMemRef(simplifiedChild2)->value));
+        sollya_mpfi_pow(temp1,temp1,temp2);
+        tt=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec); 
+        constcModel(tt,temp1);
+        copycModel(t,tt);
+        clearcModelLight(tt);
+        sollya_mpfi_clear(temp1);
+        sollya_mpfi_clear(temp2);
       }
       else if (accessThruMemRef(simplifiedChild2)->nodeType==CONSTANT) { 
         /*We are in the  f^p case*/
@@ -1053,8 +1053,8 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
        
       } 
       else if (accessThruMemRef(simplifiedChild1)->nodeType==CONSTANT) { 
-         /*we have the p^f case*/
-         /*create a new empty cheby model for the child*/
+        /*we have the p^f case*/
+        /*create a new empty cheby model for the child*/
         child2_tm=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec);
         /*call cheb_model for the child*/
         cheb_model(child2_tm, accessThruMemRef(f)->child2,n,x, boundLevel, verbosity, prec);
@@ -1102,25 +1102,25 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
         composition_CM(logf_tm, logx_tm,child1_tm, boundLevel, NULL,prec);
         
         /*glog f*/
-       ttt=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec);       
-       multiplication_CM(ttt,logf_tm,child2_tm, boundLevel,0,prec);
+        ttt=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec);       
+        multiplication_CM(ttt,logf_tm,child2_tm, boundLevel,0,prec);
        
        
-       /*exp(g log f)*/
-       chebPolynomialBound(ttt->poly_bound, n,ttt->poly_array,boundLevel);
-       sollya_mpfi_add(rangef,ttt->rem_bound, ttt->poly_bound);
-       expx_tm=createEmptycModelCompute(n,rangef,1,1, prec);
-       base_CMAux(expx_tm, MONOTONE_REMAINDER_BASE_FUNCTION, EXP, NULL, NULL, n,rangef, verbosity,prec);
+        /*exp(g log f)*/
+        chebPolynomialBound(ttt->poly_bound, n,ttt->poly_array,boundLevel);
+        sollya_mpfi_add(rangef,ttt->rem_bound, ttt->poly_bound);
+        expx_tm=createEmptycModelCompute(n,rangef,1,1, prec);
+        base_CMAux(expx_tm, MONOTONE_REMAINDER_BASE_FUNCTION, EXP, NULL, NULL, n,rangef, verbosity,prec);
        
-       tt=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec);    
-       composition_CM(tt,expx_tm,ttt, boundLevel, NULL,prec);
+        tt=createEmptycModelPrecomp(n,t->x,t->cheb_array, t->cheb_matrix, prec);    
+        composition_CM(tt,expx_tm,ttt, boundLevel, NULL,prec);
 
         /*cleaning*/
         clearcModelLight(child2_tm);
         clearcModelLight(child1_tm);
         clearcModelLight(ttt);
         clearcModelLight(logf_tm);
-         /*we do not need values of chebpoints and chebMatrix in interval rangef*/
+        /*we do not need values of chebpoints and chebMatrix in interval rangef*/
         clearcModelComplete(expx_tm);
         clearcModelComplete(logx_tm);
        
@@ -1128,16 +1128,16 @@ void cheb_model(chebModel *t, node *f, int n, sollya_mpfi_t x, int boundLevel, i
         copycModel(t,tt);
         clearcModelLight(tt);
         sollya_mpfi_clear(rangef);
-     }
-    free_memory(simplifiedChild2);
-    free_memory(simplifiedChild1);
-    break;
+      }
+      free_memory(simplifiedChild2);
+      free_memory(simplifiedChild1);
+      break;
     
-  default:
-    sollyaFprintf(stderr,"Error: CM: unknown identifier (%d) in the tree\n",accessThruMemRef(f)->nodeType);
-  exit(1);
+    default:
+      sollyaFprintf(stderr,"Error: CM: unknown identifier (%d) in the tree\n",accessThruMemRef(f)->nodeType);
+      exit(1);
+    }
   }
-}
   return;
 }
 

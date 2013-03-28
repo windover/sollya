@@ -1,13 +1,19 @@
 /*
 
-Copyright 2012 by
+  Copyright 2012 by
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
 
-Contributor Ch. Lauter
+  and by
 
-christoph.lauter@ens-lyon.org
+  Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+  Sophia Antipolis, France.
+
+  Contributors Ch. Lauter, S. Chevillard
+
+  christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
 
 This software is a computer program whose purpose is to provide an
 environment for safe floating-point code development. It is

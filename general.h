@@ -1,6 +1,6 @@
 /*
 
-Copyright 2007-2012 by
+Copyright 2007-2013 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,

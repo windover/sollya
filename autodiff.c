@@ -1,61 +1,61 @@
 /*
 
-Copyright 2008-2012 by
+  Copyright 2008-2012 by
 
-Laboratoire de l'Informatique du Parallelisme,
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
+  Laboratoire de l'Informatique du Parallelisme,
+  UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
-LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
+  LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
 
-and by
+  and by
 
-Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
-Sophia Antipolis, France.
+  Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+  Sophia Antipolis, France.
 
-Contributors S. Chevillard, M. Joldes, Ch. Lauter
+  Contributors S. Chevillard, M. Joldes, Ch. Lauter
 
-sylvain.chevillard@ens-lyon.org
-mioara.joldes@ens-lyon.fr
-christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
+  mioara.joldes@ens-lyon.fr
+  christoph.lauter@ens-lyon.org
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use,
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info".
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use,
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info".
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability.
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability.
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or
-data to be ensured and,  more generally, to use and operate it in the
-same conditions as regards security.
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  therefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -512,8 +512,8 @@ void symbolic_poly_evaluation_powers(sollya_mpfi_t res, sollya_mpfi_t *coeffs_ar
 /*  u=tan(x), tan^(n) / n! = p_(n)(u) with
     p_0 = u;
 
-recurrence formula: p_(n+1)(u) = (p_n(u))' / (n+1) = p'_n(u) * (1+u^2) / (n+1)
-   -> p_n of degree n+1
+    recurrence formula: p_(n+1)(u) = (p_n(u))' / (n+1) = p'_n(u) * (1+u^2) / (n+1)
+    -> p_n of degree n+1
 */
 
 void tan_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
@@ -569,8 +569,8 @@ void tan_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
 /*  u=tanh(x), tanh^(n) / n! = p_(n)(u) with
     p_0 = u;
 
-recurrence formula: p_(n+1)(u) = (p_n(u))' / (n+1) = p'_n(u) * (1-u^2) / (n+1)
-   -> p_n of degree n+1
+    recurrence formula: p_(n+1)(u) = (p_n(u))' / (n+1) = p'_n(u) * (1-u^2) / (n+1)
+    -> p_n of degree n+1
 */
 
 void tanh_diff(sollya_mpfi_t *res, sollya_mpfi_t x, int n, int *silent) {
@@ -1481,7 +1481,7 @@ void baseFunction_diff(sollya_mpfi_t *res, int nodeType, sollya_mpfi_t x, int n,
     acos_diff(res, x, n, silent);
     break;
   case ATAN:
-     atan_diff(res, x, n, silent);
+    atan_diff(res, x, n, silent);
     break;
   case SINH:
     sinh_diff(res, x, n, silent);
@@ -1719,7 +1719,7 @@ void auto_diff_scaled(sollya_mpfi_t* res, node *f, sollya_mpfi_t x0, int n) {
     
   default:
     sollyaFprintf(stderr,"Error in autodiff: unknown identifier (%d) in the tree\n",accessThruMemRef(f)->nodeType);
-   exit(1);
+    exit(1);
   }
 
   return;

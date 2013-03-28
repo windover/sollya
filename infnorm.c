@@ -1,60 +1,60 @@
 /*
 
-Copyright 2006-2012 by
+  Copyright 2006-2013 by
 
-Laboratoire de l'Informatique du Parallelisme,
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
+  Laboratoire de l'Informatique du Parallelisme,
+  UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
-LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
+  LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
 
-and by
+  and by
 
-Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
-Sophia Antipolis, France.
+  Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+  Sophia Antipolis, France.
 
-Contributors Ch. Lauter, S. Chevillard
+  Contributors Ch. Lauter, S. Chevillard
 
-christoph.lauter@ens-lyon.org
-sylvain.chevillard@ens-lyon.org
+  christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use,
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info".
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use,
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info".
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability.
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability.
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or
-data to be ensured and,  more generally, to use and operate it in the
-same conditions as regards security.
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  therefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -116,7 +116,7 @@ void sollya_mpfi_pow(sollya_mpfi_t z, sollya_mpfi_t x, sollya_mpfi_t y) {
   sollya_mpfi_t res;
 
   if (sollya_mpfi_has_nan(x) ||sollya_mpfi_has_nan(y)) { sollya_mpfi_set_nan(z); return; }
-    if (sollya_mpfi_is_empty(x) || sollya_mpfi_is_empty(y)) { sollya_mpfi_set_empty(z); return; }
+  if (sollya_mpfi_is_empty(x) || sollya_mpfi_is_empty(y)) { sollya_mpfi_set_empty(z); return; }
 
   prec = sollya_mpfi_get_prec(y);
   mpfr_init2(l,prec); sollya_mpfi_get_left(l,y);
@@ -154,7 +154,7 @@ void sollya_mpfi_pow(sollya_mpfi_t z, sollya_mpfi_t x, sollya_mpfi_t y) {
       
       mpfr_div_2ui(r,l,1,GMP_RNDN);
       if (sollya_mpfi_is_nonneg(x) || (!mpfr_integer_p(r))) { /* x-> x^k is increasing monotonic when x>=0
-                                                               or when k is odd */
+                                                                 or when k is odd */
         mpfr_pow(lx,lx,l,GMP_RNDD);
         mpfr_pow(rx,rx,l,GMP_RNDU);
         sollya_mpfi_interv_fr(res,lx,rx);
@@ -1382,8 +1382,8 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	    sollya_mpfi_init2(denominatorInZI,prec);
 	    
 	    if (internalTheo != NULL) {
-	      	  leftTheoConstant = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
-		  rightTheoConstant = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
+              leftTheoConstant = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
+              rightTheoConstant = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
 	    } else {
 	      leftTheoConstant = NULL;
 	      rightTheoConstant = NULL;
@@ -2119,10 +2119,10 @@ chain* evaluateITaylorInner(sollya_mpfi_t result, node *func, node *deriv, solly
 
     if (size > DIFFSIZE) {
       printMessage(1,SOLLYA_MSG_NO_TAYLOR_EVALUATION_AS_NO_DERIVATIVE_GETS_HUGE,"Waring: during recursive Taylor evaluation the expression of a derivative has become\n");
-	printMessage(1,SOLLYA_MSG_CONTINUATION,"as great that it contains more than %d nodes.\n",DIFFSIZE);
-	printMessage(1,SOLLYA_MSG_CONTINUATION,"Will now stop recursive Taylor evaluation on this expression.\n");
-	printMessage(2,SOLLYA_MSG_CONTINUATION,"Information: the size of the derivative is %d, we had %d recursion(s) left.\n",size,recurse-1);
-	taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, hopitalrecursions+1, NULL, linearTheo,noExcludes);
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"as great that it contains more than %d nodes.\n",DIFFSIZE);
+      printMessage(1,SOLLYA_MSG_CONTINUATION,"Will now stop recursive Taylor evaluation on this expression.\n");
+      printMessage(2,SOLLYA_MSG_CONTINUATION,"Information: the size of the derivative is %d, we had %d recursion(s) left.\n",size,recurse-1);
+      taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, hopitalrecursions+1, NULL, linearTheo,noExcludes);
     } else {
       taylorExcludesLinear = evaluateITaylor(linearTerm, deriv, nextderiv, x, prec, recurse - 1, linearTheo,noExcludes);
     }
@@ -2812,7 +2812,7 @@ void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv,
   i = 0;
   for (curr=zeros;curr!=NULL;curr=curr->next) i++;
   printMessage(2,SOLLYA_MSG_CERTAIN_NUM_OF_INTVALS_ENCLOSING_ZEROS_OF_DERIV,
-	  "Information: %d interval(s) have (has) been found that possibly contain(s) the zeros of the derivative.\n",i);
+               "Information: %d interval(s) have (has) been found that possibly contain(s) the zeros of the derivative.\n",i);
 
   curr = zeros;
   while (curr != NULL) {
@@ -4158,8 +4158,8 @@ chain *uncertifiedZeroDenominators(node *tree, mpfr_t a, mpfr_t b, mp_prec_t pre
     return uncertifiedZeroDenominators(tree->child1,a,b,prec);
     break;
   default:
-   sollyaFprintf(stderr,"Error: uncertifiedZeroDenominators: unknown identifier (%d) in the tree\n",tree->nodeType);
-   exit(1);
+    sollyaFprintf(stderr,"Error: uncertifiedZeroDenominators: unknown identifier (%d) in the tree\n",tree->nodeType);
+    exit(1);
   }
   return NULL;
 }
@@ -4483,28 +4483,28 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
 /* Return values:
 
    0 -> evaluation did not allow for a faithful evaluation nor to get
-        below the threshold but the proof interval was a closed subset
-        of the reals or an exact infinity
+   below the threshold but the proof interval was a closed subset
+   of the reals or an exact infinity
 
    1 -> evaluation gave a faithful result, we do not know if it is
-        exact or inexact
+   exact or inexact
 
    2 -> evaluation got the proof interval below the cutoff
 
    3 -> evaluation did not allow to conclude on a function as it
-        evaluated to NaN or Inf
+   evaluated to NaN or Inf
 
    4 -> evaluation gave a faithfully resp. correctly rounded result
-        and we know that it is exact
+   and we know that it is exact
 
    5 -> evaluation gave a faithful result and we know that it is
-        inexact 
+   inexact 
 
    6 -> evaluation gave a correctly rounded result, we do not know if
-        it is inexact
+   it is inexact
 	
    7 -> evaluation gave a correctly rounded result and we know that it
-        is inexact
+   is inexact
 
 */
 int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *func, node *deriv, mpfr_t x, mpfr_t cutoff, mp_prec_t startprec, node *altX) {
@@ -4619,9 +4619,9 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
       No, two sollya_mpfi_get_left/right on resDown and resUp directly do not work:
 
       ----|-----------|-----------|----
-                   |--yI-|
-          left        RN          right
-     */
+      |--yI-|
+      left        RN          right
+    */
     if ((mpfr_number_p(resDown)) &&
 	(mpfr_number_p(resUp)) &&
 	(sollya_mpfi_bounded_p(yI))) {
@@ -4661,7 +4661,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	     interval at a slightly higher precision to see if we
 	     can't get correct rounding "for just one dollar more."
 	     
-	   */
+          */
 	  pTemp = p + (p >> 2); /* That is 25% more of precision */
 	  
 	  /* Recompute at that slightly higher precision */
@@ -4805,25 +4805,25 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
        There are 3 possible cases:
 
        a) The loop above has been left because both endpoints of the 
-          proof interval rounded to the same value, resUp = resDown.
-          In this case, the midpoint of resUp and resDown is 
-	  resUp = resDown, which is also the correct rounding.
+       proof interval rounded to the same value, resUp = resDown.
+       In this case, the midpoint of resUp and resDown is 
+       resUp = resDown, which is also the correct rounding.
 
        b) The loop above has been left because resUp was the 
-          next floating-point number above resDown. resDown
-          and resUp are the two possible answers for a faithful
-	  rounding. Their midpoint is the point where the rounding 
-	  changes. The proof interval contained that midpoint.
-          Returning the correct rounding of the midpoint to the 
-          nearest floating-point value hence chooses the even of 
-          both possible faithful roundings.
+       next floating-point number above resDown. resDown
+       and resUp are the two possible answers for a faithful
+       rounding. Their midpoint is the point where the rounding 
+       changes. The proof interval contained that midpoint.
+       Returning the correct rounding of the midpoint to the 
+       nearest floating-point value hence chooses the even of 
+       both possible faithful roundings.
 
        c) The loop above has been left because the proof interval
-          was contained in [-cutoff,cutoff]. In this case, resUp and 
-	  resDown have both been set to the midpoint of the proof 
-          interval, which is certainly less than cutoff in magnitude.
-	  Computing the midpoint of resUp and resDown and rounding 
-          to target precision does not change anything to that value.
+       was contained in [-cutoff,cutoff]. In this case, resUp and 
+       resDown have both been set to the midpoint of the proof 
+       interval, which is certainly less than cutoff in magnitude.
+       Computing the midpoint of resUp and resDown and rounding 
+       to target precision does not change anything to that value.
     */
     mpfr_div_2ui(resDown, resDown, 1, GMP_RNDN); /* exact, power of 2 */
     mpfr_div_2ui(resUp, resUp, 1, GMP_RNDN); /* exact, power of 2 */

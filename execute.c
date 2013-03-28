@@ -1,61 +1,61 @@
 /*
 
-Copyright 2007-2013 by
+  Copyright 2007-2013 by
 
-Laboratoire de l'Informatique du Parallelisme,
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
+  Laboratoire de l'Informatique du Parallelisme,
+  UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
-LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
+  LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
 
-and by
+  and by
 
-Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
-Sophia Antipolis, France.
+  Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+  Sophia Antipolis, France.
 
-Contributors Ch. Lauter, S. Chevillard, M. Joldes
+  Contributors Ch. Lauter, S. Chevillard, M. Joldes
 
-christoph.lauter@ens-lyon.org
-sylvain.chevillard@ens-lyon.org
-mioara.joldes@ens-lyon.fr
+  christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
+  mioara.joldes@ens-lyon.fr
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use,
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info".
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use,
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info".
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability.
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability.
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or
-data to be ensured and,  more generally, to use and operate it in the
-same conditions as regards security.
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  therefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -204,7 +204,7 @@ int isElliptic(node *);
    * The object is neither a LIST nor a FINALELLIPTICLIST
    * The object has the random-access already set up
    * The list contains ellipses that still need to be
-     expanded before we know its length.
+   expanded before we know its length.
 
 */
 void setupRandomAccessOnLists(node *obj) {
@@ -3563,7 +3563,7 @@ int isRangeNonEmpty(node *tree) {
 
 
 int isError(node *tree) {
-    if (tree->nodeType == MEMREF) return isError(tree->child1);
+  if (tree->nodeType == MEMREF) return isError(tree->child1);
   if (tree->nodeType == ERRORSPECIAL) return 1;
   return 0;
 }
@@ -7124,7 +7124,7 @@ void autoprint(node *thing, int inList, node *func, node *cst) {
 	    mpfr_number_p(*(accessThruMemRef(tempNode2)->child1->value)) && 
 	    mpfr_number_p(*(accessThruMemRef(tempNode2)->child2->value)) && 
 	    (!mpfr_zero_p(*(accessThruMemRef(tempNode2)->child2->value)))) {
-	    printTree(tempNode2);
+          printTree(tempNode2);
 	} else {
 	  mpfr_init2(a,tools_precision);
 	  mpfr_init2(b,tools_precision);
@@ -8157,7 +8157,7 @@ int executeCommandInner(node *tree) {
       } else {
 	if (getFunction((char *) (curr->value)) != NULL) {
 	  printMessage(1,SOLLYA_MSG_IDENTIFIER_IS_LIBRARY_FUNC_CANNOT_BE_LOCAL_VAR,"Warning: the identifier \"%s\" is already bound to a library function.\nIt cannot be declared as a local variable. The declaration of \"%s\" will have no effect.\n",
-		     (char *) (curr->value),(char *) (curr->value));
+                       (char *) (curr->value),(char *) (curr->value));
           considerDyingOnError();
 	} else {
           if (getConstantFunction((char *) (curr->value)) != NULL) {
@@ -8966,10 +8966,10 @@ int executeCommandInner(node *tree) {
 	    isPureTree(tempNode5) &&
 	    (!isConstant(tempNode4)) && 
 	    isConstant(tempNode5)) {
-	    outputMode();
-	    autoprint(tempNode,0,tempNode4,tempNode5); 
-	    sollyaPrintf("\n");
-	    autoprintAlreadyDone = 1;
+          outputMode();
+          autoprint(tempNode,0,tempNode4,tempNode5); 
+          sollyaPrintf("\n");
+          autoprintAlreadyDone = 1;
 	}
 	freeThing(tempNode2);
 	freeThing(tempNode3);
@@ -14823,7 +14823,7 @@ int isEqualThing(node *tree, node *tree2) {
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     if (!isEqualThing(tree->child2,tree2->child2)) return 0;
     break;  			
-   case IMPLEMENTPOLY:
+  case IMPLEMENTPOLY:
     if (!isEqualChain(tree->arguments,tree2->arguments,isEqualThingOnVoid)) return 0;
     break; 			
   case IMPLEMENTCONST:
@@ -17583,7 +17583,7 @@ node *performBind(node *proc, char *ident, node *thing) {
      We continue by generating the list of arguments 
      different from ident.
 
-   */
+  */
   newArgs = NULL;
   curr = proc->arguments;
   while (curr != NULL) {
@@ -17646,8 +17646,8 @@ void *makeMonomialFromIntOnVoid(void *n) {
 
 /* Check that tree is a finite non-empty list that does not contain the symbol "..."
    Return 1 if, moreover, one of the following conditions is satisfied:
-     * either the list contains only non-negative and distinct integers;
-     * or the list contains only pure trees (i.e. mathematical expressions).
+   * either the list contains only non-negative and distinct integers;
+   * or the list contains only pure trees (i.e. mathematical expressions).
    In case of success, a list of pure trees is stored in monomials. If tree
    is a list of integers [n1...nk], monomials contain the functions [x^n1...x^nk],
    and otherwise monomials is just the content of tree.
@@ -17703,17 +17703,17 @@ node *evaluateThingInnerRemez(node *tree, char *timingString) {
   mpfr_t tmp, a, b, c, d, quality;
 
   /* We process the arguments:
-       * the first one must be a function f
-       * the second one can be an integer n, a list of integers [|n1...nk|] or a list of functions [|g1...gk|]
-         n is equivalent to [|0...n|] and [|n1...nk|] is equivalent to [|x^n1...x^nk|]
-       * the third argument must be an interval
-       * the fourth argument is optional and must be a function w (default is 1)
-       * the fifth argument is optional and must be a postive number (default is 1e-5). This is the required quality.
-       * the sixth argument is optional and must be a positive number r or an interval [r1, r2] (default is [0, +Inf]).
-         r is equivalent to [r,r]. This argument is officially undocumented. The description of this argument is given
-         in the commit message of revision 1405.
+   * the first one must be a function f
+   * the second one can be an integer n, a list of integers [|n1...nk|] or a list of functions [|g1...gk|]
+   n is equivalent to [|0...n|] and [|n1...nk|] is equivalent to [|x^n1...x^nk|]
+   * the third argument must be an interval
+   * the fourth argument is optional and must be a function w (default is 1)
+   * the fifth argument is optional and must be a postive number (default is 1e-5). This is the required quality.
+   * the sixth argument is optional and must be a positive number r or an interval [r1, r2] (default is [0, +Inf]).
+   r is equivalent to [r,r]. This argument is officially undocumented. The description of this argument is given
+   in the commit message of revision 1405.
 
-     Note: the parser has already ensured that the first three arguments exist.
+   Note: the parser has already ensured that the first three arguments exist.
   */
 
   arguments = copyChainWithoutReversal(tree->arguments, evaluateThingInnerOnVoid);
@@ -17840,17 +17840,17 @@ node *evaluateThingInnerFpminimax(node *tree, char *timingString) {
   curr = arguments;
 
   /* We process the arguments:
-       * the first one must be a function f
-       * the second one can be an integer, a list of integers or a list of functions as for remez
-       * the third argument must be a list containing only integers and keywords D, DD, etc.
-       * the fourth argument must be an interval or a list of constants
-       * the fifth, sixth and seventh arguments are optional and can be
-             - RELATIVE | ABSOLUTE (default is  RELATIVE)
-             - FIXED | FLOATING (default is FLOATING)
-             - a function (default is 0)
-       * the eighth argument is optional and is a function q (constrained part)
+   * the first one must be a function f
+   * the second one can be an integer, a list of integers or a list of functions as for remez
+   * the third argument must be a list containing only integers and keywords D, DD, etc.
+   * the fourth argument must be an interval or a list of constants
+   * the fifth, sixth and seventh arguments are optional and can be
+   - RELATIVE | ABSOLUTE (default is  RELATIVE)
+   - FIXED | FLOATING (default is FLOATING)
+   - a function (default is 0)
+   * the eighth argument is optional and is a function q (constrained part)
 
-     Note: the parser has already ensured that the first four arguments exist.
+   Note: the parser has already ensured that the first four arguments exist.
   */
 
   firstArg = copyThing((node *) (curr->value)); curr = curr->next;
@@ -17872,63 +17872,63 @@ node *evaluateThingInnerFpminimax(node *tree, char *timingString) {
     eighthArg = copyThing((node *) (curr->value)); curr = curr->next;
   }
 
- if (curr != NULL) {
-   printMessage(1,SOLLYA_MSG_FPMINIMAX_TOO_MANY_ARGUMENTS,"Warning: too many arguments given to fpminimax command. The remaining arguments will be ignored.\n");
+  if (curr != NULL) {
+    printMessage(1,SOLLYA_MSG_FPMINIMAX_TOO_MANY_ARGUMENTS,"Warning: too many arguments given to fpminimax command. The remaining arguments will be ignored.\n");
     considerDyingOnError();
   }
 
 
- /* We now handle the three optional parameters that can be permuted */
- relabsArg = RELATIVESYM;
- fpfixedArg = FLOATING;
- constrainedPartArg = makeConstantDouble(0.0);
+  /* We now handle the three optional parameters that can be permuted */
+  relabsArg = RELATIVESYM;
+  fpfixedArg = FLOATING;
+  constrainedPartArg = makeConstantDouble(0.0);
 
- if ( (fifthArg != NULL) && (!isDefault(fifthArg)) ) {
-   switch(accessThruMemRef(fifthArg)->nodeType) {
-   case RELATIVESYM: case ABSOLUTESYM: relabsArg = accessThruMemRef(fifthArg)->nodeType; break;
-   case FLOATING: case FIXED: fpfixedArg = accessThruMemRef(fifthArg)->nodeType; break;
-   default:
-     if (isPureTree(fifthArg)) {
-       freeThing(constrainedPartArg); constrainedPartArg = copyTree(fifthArg);
-     }
-     else {
-       printMessage(1, SOLLYA_MSG_INVALID_FIFTH_ARGUMENT, "Error in fpminimax: invalid fifth argument\n");
-       failure = 1;
-     }
-   }
- }
+  if ( (fifthArg != NULL) && (!isDefault(fifthArg)) ) {
+    switch(accessThruMemRef(fifthArg)->nodeType) {
+    case RELATIVESYM: case ABSOLUTESYM: relabsArg = accessThruMemRef(fifthArg)->nodeType; break;
+    case FLOATING: case FIXED: fpfixedArg = accessThruMemRef(fifthArg)->nodeType; break;
+    default:
+      if (isPureTree(fifthArg)) {
+        freeThing(constrainedPartArg); constrainedPartArg = copyTree(fifthArg);
+      }
+      else {
+        printMessage(1, SOLLYA_MSG_INVALID_FIFTH_ARGUMENT, "Error in fpminimax: invalid fifth argument\n");
+        failure = 1;
+      }
+    }
+  }
 
- if ( (sixthArg != NULL) && (!isDefault(sixthArg)) ) {
-   switch(accessThruMemRef(sixthArg)->nodeType) {
-   case RELATIVESYM: case ABSOLUTESYM: relabsArg = accessThruMemRef(sixthArg)->nodeType; break;
-   case FLOATING: case FIXED: fpfixedArg = accessThruMemRef(sixthArg)->nodeType; break;
-   default:
-     if (isPureTree(sixthArg)) {
-       freeThing(constrainedPartArg); constrainedPartArg = copyTree(sixthArg);
-     }
-     else {
-       printMessage(1, SOLLYA_MSG_INVALID_FIFTH_ARGUMENT, "Error in fpminimax: invalid fifth argument\n");
-       failure = 1;
-     }
-   }
- }
+  if ( (sixthArg != NULL) && (!isDefault(sixthArg)) ) {
+    switch(accessThruMemRef(sixthArg)->nodeType) {
+    case RELATIVESYM: case ABSOLUTESYM: relabsArg = accessThruMemRef(sixthArg)->nodeType; break;
+    case FLOATING: case FIXED: fpfixedArg = accessThruMemRef(sixthArg)->nodeType; break;
+    default:
+      if (isPureTree(sixthArg)) {
+        freeThing(constrainedPartArg); constrainedPartArg = copyTree(sixthArg);
+      }
+      else {
+        printMessage(1, SOLLYA_MSG_INVALID_FIFTH_ARGUMENT, "Error in fpminimax: invalid fifth argument\n");
+        failure = 1;
+      }
+    }
+  }
 
- if ( (seventhArg != NULL) && (!isDefault(seventhArg)) ) {
-   switch(accessThruMemRef(seventhArg)->nodeType) {
-   case RELATIVESYM: case ABSOLUTESYM: relabsArg = accessThruMemRef(seventhArg)->nodeType; break;
-   case FLOATING: case FIXED: fpfixedArg = accessThruMemRef(seventhArg)->nodeType; break;
-   default:
-     if (isPureTree(seventhArg)) {
-       freeThing(constrainedPartArg); constrainedPartArg = copyTree(seventhArg);
-     }
-     else {
-       printMessage(1, SOLLYA_MSG_INVALID_FIFTH_ARGUMENT, "Error in fpminimax: invalid fifth argument\n");
-       failure = 1;
-     }
-   }
- }
+  if ( (seventhArg != NULL) && (!isDefault(seventhArg)) ) {
+    switch(accessThruMemRef(seventhArg)->nodeType) {
+    case RELATIVESYM: case ABSOLUTESYM: relabsArg = accessThruMemRef(seventhArg)->nodeType; break;
+    case FLOATING: case FIXED: fpfixedArg = accessThruMemRef(seventhArg)->nodeType; break;
+    default:
+      if (isPureTree(seventhArg)) {
+        freeThing(constrainedPartArg); constrainedPartArg = copyTree(seventhArg);
+      }
+      else {
+        printMessage(1, SOLLYA_MSG_INVALID_FIFTH_ARGUMENT, "Error in fpminimax: invalid fifth argument\n");
+        failure = 1;
+      }
+    }
+  }
 
- /* Finally we handle the eighth optional argument */
+  /* Finally we handle the eighth optional argument */
   if ( (eighthArg == NULL) || isDefault(eighthArg) )   pstarArg = NULL;
   else pstarArg = copyThing(eighthArg);
 
@@ -19396,11 +19396,11 @@ node *evaluateThingInnerst(node *tree) {
 	  if (isPureList(copy->child1)) {
 	    if ((accessThruMemRef(copy->child1)->argArray != NULL) && 
 		((resA >= 0) && (resA < accessThruMemRef(copy->child1)->argArraySize))) {
-		if (timingString != NULL) pushTimeCounter();
-		tempNode = copyThing((accessThruMemRef(copy->child1)->argArray)[(accessThruMemRef(copy->child1)->argArraySize - 1) - resA]);
-		freeThing(copy);
-		copy = tempNode;
-		if (timingString != NULL) popTimeCounter(timingString);
+              if (timingString != NULL) pushTimeCounter();
+              tempNode = copyThing((accessThruMemRef(copy->child1)->argArray)[(accessThruMemRef(copy->child1)->argArraySize - 1) - resA]);
+              freeThing(copy);
+              copy = tempNode;
+              if (timingString != NULL) popTimeCounter(timingString);
 	    } else {
 	      if (resA >= 0) {
 		setupRandomAccessOnLists(copy->child1);
@@ -19736,13 +19736,13 @@ node *evaluateThingInnerst(node *tree) {
 	isConstant(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       if (checkInequalityFast(&resF, copy->child1, copy->child2)) {
-          if (resF < 0) {
-            freeThing(copy);
-            copy = makeTrue();		    
-          } else {
-            freeThing(copy);
-            copy = makeFalse();		    
-          }
+        if (resF < 0) {
+          freeThing(copy);
+          copy = makeTrue();		    
+        } else {
+          freeThing(copy);
+          copy = makeFalse();		    
+        }
       } else {
         mpfr_init2(a,tools_precision);
         mpfr_init2(b,tools_precision);
@@ -20247,13 +20247,13 @@ node *evaluateThingInnerst(node *tree) {
 	isConstant(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       if (checkInequalityFast(&resF, copy->child1, copy->child2)) {
-          if (resF > 0) {
-            freeThing(copy);
-            copy = makeTrue();		    
-          } else {
-            freeThing(copy);
-            copy = makeFalse();		    
-          }
+        if (resF > 0) {
+          freeThing(copy);
+          copy = makeTrue();		    
+        } else {
+          freeThing(copy);
+          copy = makeFalse();		    
+        }
       } else {
         mpfr_init2(a,tools_precision);
         mpfr_init2(b,tools_precision);
@@ -20320,13 +20320,13 @@ node *evaluateThingInnerst(node *tree) {
 	isConstant(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       if (checkInequalityFast(&resF, copy->child1, copy->child2)) {
-          if (resF < 0) {
-            freeThing(copy);
-            copy = makeTrue();		    
-          } else {
-            freeThing(copy);
-            copy = makeFalse();		    
-          }
+        if (resF < 0) {
+          freeThing(copy);
+          copy = makeTrue();		    
+        } else {
+          freeThing(copy);
+          copy = makeFalse();		    
+        }
       } else {
         mpfr_init2(a,tools_precision);
         mpfr_init2(b,tools_precision);
@@ -20393,13 +20393,13 @@ node *evaluateThingInnerst(node *tree) {
 	isConstant(copy->child2)) {
       if (timingString != NULL) pushTimeCounter();
       if (checkInequalityFast(&resF, copy->child1, copy->child2)) {
-          if (resF > 0) {
-            freeThing(copy);
-            copy = makeTrue();		    
-          } else {
-            freeThing(copy);
-            copy = makeFalse();		    
-          }
+        if (resF > 0) {
+          freeThing(copy);
+          copy = makeTrue();		    
+        } else {
+          freeThing(copy);
+          copy = makeFalse();		    
+        }
       } else {
         mpfr_init2(a,tools_precision);
         mpfr_init2(b,tools_precision);
@@ -21112,9 +21112,9 @@ node *evaluateThingInnerst(node *tree) {
 	safeFree(copy);
 	copy = evaluateThing(tempNode);
       } else {
-	  copy->child1 = evaluateThingInner(tree->child1);
-	  copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
-	  strcpy(copy->string,tree->string);
+        copy->child1 = evaluateThingInner(tree->child1);
+        copy->string = (char *) safeCalloc(strlen(tree->string)+1,sizeof(char));
+        strcpy(copy->string,tree->string);
       }
     } else {
       copy->child1 = evaluateThingInner(tree->child1);
@@ -21192,8 +21192,8 @@ node *evaluateThingInnerst(node *tree) {
 	  mpfr_clear(b);
 	}
       } else {
-	  copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
-	  copy->child1 = copyThing(tempNode);
+        copy->arguments = copyChainWithoutReversal(tree->arguments, copyThingOnVoid);
+        copy->child1 = copyThing(tempNode);
       }
     } else {
       if (isExternalProcedureUsage(tempNode)) {
@@ -22373,7 +22373,7 @@ node *evaluateThingInnerst(node *tree) {
 	    sollya_mpfi_clear(tempIA2);
 	  }
 	} else {
-	 printMessage(1,SOLLYA_MSG_CHEBYSHEVFORM_DEGREE_MUST_NOT_BE_NEGATIVE,"Warning: the degree of a Chebyshev must not be negative.\n");
+          printMessage(1,SOLLYA_MSG_CHEBYSHEVFORM_DEGREE_MUST_NOT_BE_NEGATIVE,"Warning: the degree of a Chebyshev must not be negative.\n");
 	}
       }
     }
@@ -23166,9 +23166,9 @@ node *evaluateThingInnerst(node *tree) {
 	if (timingString != NULL) popTimeCounter(timingString);
         sollya_mpfi_clear(tempIA);
         if (resA) {
-            tempNode = makeConstant(c);
-            freeThing(copy);
-            copy = tempNode;
+          tempNode = makeConstant(c);
+          freeThing(copy);
+          copy = tempNode;
         }
 	mpfr_clear(c);
       } 

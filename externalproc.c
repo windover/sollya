@@ -1,49 +1,54 @@
 /*
 
-Copyright 2007-2009 by 
+  Copyright 2007-2012 by 
 
-Laboratoire de l'Informatique du Parallelisme, 
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+  Laboratoire de l'Informatique du Parallelisme, 
+  UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
-Contributor Ch. Lauter
+  and by
 
-christoph.lauter@ens-lyon.org
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  Contributor Ch. Lauter
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
+  christoph.lauter@ens-lyon.org
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability. 
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use, 
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info". 
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability. 
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  therefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or 
+  data to be ensured and,  more generally, to use and operate it in the 
+  same conditions as regards security. 
+
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
+
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -54,8 +59,8 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
    Compile with 
 
-     gcc -fPIC -Wall -c externalproc.c 
-     gcc -fPIC -shared -o externalproc externalproc.o 
+   gcc -fPIC -Wall -c externalproc.c 
+   gcc -fPIC -shared -o externalproc externalproc.o 
 
    Procedure foo will be linked by
 
@@ -72,29 +77,29 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
    * void :        the C function has no pointer argument for the result
    * constant:     the first argument of the C function is of C type mpfr_t *, 
-                   the result is returned by affecting the MPFR variable
+   the result is returned by affecting the MPFR variable
    * function:     the first argument of the C function is of C type sollya_obj_t *,
-                   the result is returned by the sollya_obj_t  pointed with a new sollya_obj_t 
+   the result is returned by the sollya_obj_t  pointed with a new sollya_obj_t 
    * object:       the first argument of the C function is of C type sollya_obj_t *,
-                   the result is returned by the sollya_obj_t  pointed with a new sollya_obj_t 
+   the result is returned by the sollya_obj_t  pointed with a new sollya_obj_t 
    * range:        the first argument of the C function is of C type mpfi_t *,
-                   the result is returned by affecting the MPFI variable
+   the result is returned by affecting the MPFI variable
    * integer:      the first argument of the C function is of C type int *,
-                   the result is returned by affecting the int variable
+   the result is returned by affecting the int variable
    * string:       the first argument of the C function is of C type char **,
-                   the result is returned by the char * pointed with a new char *
+   the result is returned by the char * pointed with a new char *
    * boolean:      the first argument of the C function is of C type int *,
-                   the result is returned by affecting the int variable with a boolean value
+   the result is returned by affecting the int variable with a boolean value
    * list of type: the first argument of the C function is of a C type depending
-                   on the Sollya return type. 
-                   For a list of 
-		   - constant: sollya_constant_list_t *
-                   - function: sollya_obj_list_t *
-		   - object:   sollya_obj_list_t *
-                   - range:    sollya_constant_list_t *
-                   - integer:  sollya_int_list_t *
-		   - string:   sollya_string_list_t *
-		   - boolean:  sollya_boolean_list_t *
+   on the Sollya return type. 
+   For a list of 
+   - constant: sollya_constant_list_t *
+   - function: sollya_obj_list_t *
+   - object:   sollya_obj_list_t *
+   - range:    sollya_constant_list_t *
+   - integer:  sollya_int_list_t *
+   - string:   sollya_string_list_t *
+   - boolean:  sollya_boolean_list_t *
 	       
    The C function affects its possible pointer argument if and only if it succeeds.
    This means, if the function returns an integer indicating failure, it does not 
@@ -114,15 +119,15 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
    * string:       the C type the void * is to be cast to is char *
    * boolean:      the C type the void * is to be cast to is int *
    * list of type: the C type the void * is to be cast to a list of a
-                   type depending on the type of the list argument. 
-                   For a list of
-		   - constant: sollya_constant_list_t
-                   - function: sollya_obj_list_t
-                   - object:   sollya_obj_list_t
-                   - range:    sollya_interval_list_t
-                   - integer:  sollya_int_list_t
-		   - string:   sollya_string_list_t
-		   - boolean:  sollya_boolean_list_t.
+   type depending on the type of the list argument. 
+   For a list of
+   - constant: sollya_constant_list_t
+   - function: sollya_obj_list_t
+   - object:   sollya_obj_list_t
+   - range:    sollya_interval_list_t
+   - integer:  sollya_int_list_t
+   - string:   sollya_string_list_t
+   - boolean:  sollya_boolean_list_t.
 
    The C function is not supposed to alter the memory pointed by its array argument void **.
 

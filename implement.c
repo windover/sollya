@@ -1,55 +1,55 @@
 /*
 
-Copyright 2006-2011 by 
+  Copyright 2006-2012 by 
 
-Laboratoire de l'Informatique du Parallelisme, 
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+  Laboratoire de l'Informatique du Parallelisme, 
+  UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
-and by
+  and by
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
-Contributors Ch. Lauter, S. Chevillard
+  Contributors Ch. Lauter, S. Chevillard
 
-christoph.lauter@ens-lyon.org
-sylvain.chevillard@ens-lyon.org
+  christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use, 
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info". 
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability. 
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability. 
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  therefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or 
+  data to be ensured and,  more generally, to use and operate it in the 
+  same conditions as regards security. 
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -94,9 +94,9 @@ int determinePowers(mpfr_t *coefficients, int degree, int *mulPrec, int *powPrec
 
 
 int determinePrecisionsHelper(mpfr_t *coefficients, int degree, 
-			int *addPrec, int *mulPrec, 
-			mpfr_t accuracy, rangetype range, 
-			mp_prec_t prec) {
+                              int *addPrec, int *mulPrec, 
+                              mpfr_t accuracy, rangetype range, 
+                              mp_prec_t prec) {
   
   mpfr_t temp, temp2;
   int precOfAccur, res;
@@ -463,12 +463,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      /* The operation's precision is always infinite because of the operator */
 
 	      c = sollya_snprintf(buffer1,CODESIZE,
-			   "Mul12(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,%s,%s);",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                  "Mul12(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,%s,%s);",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = sollya_snprintf(buffer2,CODESIZE,
-			   "double %s_%s_%d_pow2h, %s_%s_%d_pow2m;",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
+                                  "double %s_%s_%d_pow2h, %s_%s_%d_pow2m;",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      overlaps[i] = 53;
 	      if (gappaAssign != NULL) {
@@ -485,13 +485,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      /* The operation's precision is fixed because of the operands */
 
 	      c = sollya_snprintf(buffer1,CODESIZE,
-			   "Mul23(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%sh,%sm,%sh,%sm);",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],
-			   ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                  "Mul23(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%sh,%sm,%sh,%sm);",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],
+                                  ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = sollya_snprintf(buffer2,CODESIZE,
-			   "double %s_%s_%d_pow2h, %s_%s_%d_pow2m, %s_%s_%d_pow2l;",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
+                                  "double %s_%s_%d_pow2h, %s_%s_%d_pow2m, %s_%s_%d_pow2l;",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	      
 	      overlaps[i] = 49;
 	      if (gappaAssign != NULL) {
@@ -508,13 +508,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      /* The operation's precision is fixed because the operands are renormalized x's */
 
 	      c = sollya_snprintf(buffer1,CODESIZE,
-			   "Mul33(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%sh,%sm,%sl,%sh,%sm,%sl);",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],
-			   ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                  "Mul33(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%sh,%sm,%sl,%sh,%sm,%sl);",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],
+                                  ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = sollya_snprintf(buffer2,CODESIZE,
-			   "double %s_%s_%d_pow2h, %s_%s_%d_pow2m, %s_%s_%d_pow2l;",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
+                                  "double %s_%s_%d_pow2h, %s_%s_%d_pow2m, %s_%s_%d_pow2l;",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      overlaps[i] = 48;
 	      if (gappaAssign != NULL) {
@@ -538,13 +538,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		/* The operation's precision is fixed because of the operands */
 
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			     ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]);
+                                    "Mul123(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                    ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		overlaps[i] = 47;
 		if (gappaAssign != NULL) {
@@ -567,18 +567,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if (overlaps[operand2[i]] + 100 < powers[i]) {
 		  /* If we are here, we must renormalize the operand */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  varNum[operand2[i]]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand2[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -591,14 +591,14 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 		t = c; t2 = c2;
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			     ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                    "Mul133(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                    ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);		
+                                    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);		
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		overlaps[i] = overlaps[operand2[i]] - 5;
 		if (overlaps[i] > 47) overlaps[i] = 47;
@@ -624,18 +624,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if (overlaps[operand2[i]] + 96 < powers[i]) {
 		/* If we are here, we must renormalize the operand */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                    "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		varNum[operand2[i]]++;
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
-			      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-			      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand2[i]] = 52;
 		if (gappaAssign != NULL) {
@@ -648,14 +648,14 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      
 	      t = c; t2 = c2;
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			   "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			   ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                  "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                  ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      overlaps[i] = overlaps[operand2[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
@@ -681,18 +681,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if (overlaps[operand2[i]] + 98 < powers[i]) {
 		/* If we are here, we must renormalize the operand */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                    "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		varNum[operand2[i]]++;
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
-			      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-			      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand2[i]] = 52;
 		if (gappaAssign != NULL) {
@@ -705,15 +705,15 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 	      t = c; t2 = c2;
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			   "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%sl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			   ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                  "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%sl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                  ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      overlaps[i] = overlaps[operand2[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
@@ -739,13 +739,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		/* Produce a triple-double out an exact double-double x^2 and a double x */
 		/* The operation's precision is fixed because of the operands */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			     ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
+                                    "Mul123(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                    ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		overlaps[i] = 47;
 		if (gappaAssign != NULL) {
@@ -767,18 +767,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if (overlaps[operand1[i]] + 100 < powers[i]) {
 		  /* If we are here, we must renormalize the operand */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  varNum[operand1[i]]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -791,14 +791,14 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 		t = c; t2 = c2;
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			     ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                    "Mul133(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                    ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);		
+                                    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);		
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		overlaps[i] = overlaps[operand1[i]] - 5;
 		if (overlaps[i] > 47) overlaps[i] = 47;
@@ -823,18 +823,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if (overlaps[operand1[i]] + 96 < powers[i]) {
 		/* If we are here, we must renormalize the operand */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                    "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		varNum[operand1[i]]++;
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
-			      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-			      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand1[i]] = 52;
 		if (gappaAssign != NULL) {
@@ -847,14 +847,14 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      
 	      t = c; t2 = c2;
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			   "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			   ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                  "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                  ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      overlaps[i] = overlaps[operand1[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
@@ -877,18 +877,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if (overlaps[operand1[i]] + 98 < powers[i]) {
 		/* If we are here, we must renormalize the operand */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                    "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		varNum[operand1[i]]++;
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
-			      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-			      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand1[i]] = 52;
 		if (gappaAssign != NULL) {
@@ -901,15 +901,15 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 	      t = c; t2 = c2;
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			   "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%sl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			   ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                  "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%sl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                  ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      overlaps[i] = overlaps[operand1[i]] - 4;
 	      if (overlaps[i] > 48) overlaps[i] = 48;
@@ -934,13 +934,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  /* Produce a triple-double x^4 out of two double-double x^2 */
 		  /* The operation's precision is fixed because of the operands */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul23(&%s_%s_%d_pow4h,&%s_%s_%d_pow4m,&%s_%s_%d_pow4l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[3],name,((variablename == NULL) ? "_x_" : variablename),varNum[3],name,((variablename == NULL) ? "_x_" : variablename),varNum[3],
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
+                                      "Mul23(&%s_%s_%d_pow4h,&%s_%s_%d_pow4m,&%s_%s_%d_pow4l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[3],name,((variablename == NULL) ? "_x_" : variablename),varNum[3],name,((variablename == NULL) ? "_x_" : variablename),varNum[3],
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_%s_%d_pow4h, %s_%s_%d_pow4m, %s_%s_%d_pow4l;",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[3],name,((variablename == NULL) ? "_x_" : variablename),varNum[3],name,((variablename == NULL) ? "_x_" : variablename),varNum[3]);
+                                      "double %s_%s_%d_pow4h, %s_%s_%d_pow4m, %s_%s_%d_pow4l;",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[3],name,((variablename == NULL) ? "_x_" : variablename),varNum[3],name,((variablename == NULL) ? "_x_" : variablename),varNum[3]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  overlaps[i] = 49;
 		  if (gappaAssign != NULL) {
@@ -962,18 +962,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if (overlaps[operand2[i]] + 96 < powers[i]) {
 		    /* If we are here, we must renormalize the operand */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                        "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		    varNum[operand2[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -986,15 +986,15 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 		  t = c; t2 = c2;
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  overlaps[i] = overlaps[operand2[i]] - 4;
 		  if (overlaps[i] > 48) overlaps[i] = 48;
@@ -1021,18 +1021,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if (overlaps[operand1[i]] + 96 < powers[i]) {
 		    /* If we are here, we must renormalize the operand */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                        "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		    varNum[operand1[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1045,15 +1045,15 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 		  t = c; t2 = c2;
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                      "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  overlaps[i] = overlaps[operand1[i]] - 4;
 		  if (overlaps[i] > 48) overlaps[i] = 48;
@@ -1079,18 +1079,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
 		      /* Renormalize first opernand1[i] */
 		      c = sollya_snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                          "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		      varNum[operand1[i]]++;
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
-				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                           "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                           name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      overlaps[operand1[i]] = 52;
 		      if (gappaAssign != NULL) {
@@ -1102,18 +1102,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    } else {
 		      /* Renormalize first opernand2[i] */
 		      c = sollya_snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                          "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		      varNum[operand2[i]]++;
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
-				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                           "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                           name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      overlaps[operand2[i]] = 52;
 		      if (gappaAssign != NULL) {
@@ -1134,18 +1134,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		      if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
 			/* Renormalize first opernand1[i] */
 			c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                            "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 			varNum[operand1[i]]++;
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                             "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                             name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			overlaps[operand1[i]] = 52;
 			if (gappaAssign != NULL) {
@@ -1157,18 +1157,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		      } else {
 			/* Renormalize first opernand2[i] */
 			c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                            "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 			varNum[operand2[i]]++;
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                             "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                             name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			overlaps[operand2[i]] = 52;
 			if (gappaAssign != NULL) {
@@ -1183,16 +1183,16 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  }
 		  
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  overlaps[i] = overlaps[operand1[i]] - 4;
 		  if (overlaps[i] > overlaps[operand2[i]] - 4) overlaps[i] = overlaps[operand2[i]] - 4;
@@ -1220,18 +1220,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
 		  /* Renormalize first opernand1[i] */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  varNum[operand1[i]]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -1243,18 +1243,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		} else {
 		  /* Renormalize first opernand2[i] */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  varNum[operand2[i]]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand2[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -1275,18 +1275,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if (overlaps[operand1[i]] < overlaps[operand2[i]]) {
 		    /* Renormalize first opernand1[i] */
 		    c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                        "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		    varNum[operand1[i]]++;
 		    if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		    c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1298,18 +1298,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  } else {
 		    /* Renormalize first opernand2[i] */
 		    c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                        "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		    varNum[operand2[i]]++;
 		    if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		    c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1324,16 +1324,16 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      }
 	      
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			   "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                  "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      overlaps[i] = overlaps[operand1[i]] - 4;
 	      if (overlaps[i] > overlaps[operand2[i]] - 4) overlaps[i] = overlaps[operand2[i]] - 4;
@@ -1360,12 +1360,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      case 1:
 		/* Produce a double-double x^2 out of a double x and a double x */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul12(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,%s,%s);",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                    "Mul12(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,%s,%s);",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_%s_%d_pow2h, %s_%s_%d_pow2m;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
+                                    "double %s_%s_%d_pow2h, %s_%s_%d_pow2m;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
@@ -1379,12 +1379,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      case 3:
 		/* Produce a double-double x^2 out of a double-double or better x and a double-double or better x */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul22(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,%sh,%sm,%sh,%sm);",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                    "Mul22(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,%sh,%sm,%sh,%sm);",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_%s_%d_pow2h, %s_%s_%d_pow2m;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
+                                    "double %s_%s_%d_pow2h, %s_%s_%d_pow2m;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
@@ -1415,18 +1415,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if (overlaps[operand2[i]] + 53 < powers[i]) {
 		    /* We renormalize */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                        "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		    varNum[operand2[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1440,13 +1440,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		
 		t = c; t2 = c2;
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul122(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			     ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                    "Mul122(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                    ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
@@ -1474,18 +1474,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if (overlaps[operand2[i]] + 53 < powers[i]) {
 		    /* We renormalize */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                        "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		    varNum[operand2[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1499,14 +1499,14 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 		t = c; t2 = c2;
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul22(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                    "Mul22(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
@@ -1539,18 +1539,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if (overlaps[operand1[i]] + 53 < powers[i]) {
 		    /* We renormalize */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                        "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		    varNum[operand1[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1564,13 +1564,13 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		
 		t = c; t2 = c2;
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul122(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			     ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                    "Mul122(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                    ((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
@@ -1598,18 +1598,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if (overlaps[operand1[i]] + 53 < powers[i]) {
 		    /* We renormalize */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-				 name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                        "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		    varNum[operand1[i]]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1623,14 +1623,14 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		
 		t = c; t2 = c2;
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul22(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                    "Mul22(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
@@ -1648,9 +1648,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      /* Produce a double-double out of two double-doubles or better */
 
 	      /* If operands are actually triple-doubles, their higher overlaps affect the precision of the
-		   operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
-		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
-		   is less than powers[i]. We do this for both one after the other.
+                 operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
+                 and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
+                 is less than powers[i]. We do this for both one after the other.
 	      */
 
 	      t = 0; t2 = 0; op1format = 2;
@@ -1661,18 +1661,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if (overlaps[operand1[i]] + 53 < powers[i]) {
 		  /* We renormalize */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]]+1,operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  varNum[operand1[i]]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -1692,18 +1692,18 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if (overlaps[operand2[i]] + 53 < powers[i]) {
 		  /* We renormalize */
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]]+1,operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  varNum[operand2[i]]++;
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
 		  if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		  overlaps[operand2[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -1717,14 +1717,14 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      t += c; t2 += c2;
 	      
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			   "Mul22(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                  "Mul22(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 	      if (gappaAssign != NULL) {
 		sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
@@ -1745,12 +1745,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if (variablePrecision == 1) {
 		/* Produce x^2 as a double out of x as a double */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "%s_%s_%d_pow2h = %s * %s;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[1],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                    "%s_%s_%d_pow2h = %s * %s;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[1],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_%s_%d_pow2h;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i]);
+                                    "double %s_%s_%d_pow2h;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
@@ -1765,12 +1765,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		   not critical because we suppose that x is renormalized. 
 		*/
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "%s_%s_%d_pow2h = %sh * %sh;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                    "%s_%s_%d_pow2h = %sh * %sh;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_%s_%d_pow2h;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i]);
+                                    "double %s_%s_%d_pow2h;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
@@ -1793,9 +1793,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		*/
 		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = %s * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "%s_%s_%d_pow%dh = %s * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -1805,8 +1805,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  }
 		} else {
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = %s * %s_%s_%d_pow%dh;",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "%s_%s_%d_pow%dh = %s * %s_%s_%d_pow%dh;",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -1817,8 +1817,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_%s_%d_pow%dh;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                    "double %s_%s_%d_pow%dh;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      } else {
 		/* Produce a double out of a double-double or better x and a double or better x^? */
@@ -1832,9 +1832,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = %sh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "%s_%s_%d_pow%dh = %sh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -1844,8 +1844,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  }
 		} else {
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = %sh * %s_%s_%d_pow%dh;",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "%s_%s_%d_pow%dh = %sh * %s_%s_%d_pow%dh;",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -1856,8 +1856,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_%s_%d_pow%dh;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                    "double %s_%s_%d_pow%dh;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      }
 	    }
@@ -1876,9 +1876,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		*/
 		if ((overlaps[operand1[i]] < 53) && (overlaps[operand1[i]] < powers[i])) {
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = %s * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                      "%s_%s_%d_pow%dh = %s * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -1888,8 +1888,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  }
 		} else {
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = %s * %s_%s_%d_pow%dh;",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                      "%s_%s_%d_pow%dh = %s * %s_%s_%d_pow%dh;",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -1900,8 +1900,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_%s_%d_pow%dh;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                    "double %s_%s_%d_pow%dh;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      } else {
 		/* Produce a double out of a double or better x^? and a double-double or better x */
@@ -1916,9 +1916,9 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		*/
 		if ((overlaps[operand1[i]] < 53) && (overlaps[operand1[i]] < powers[i])) {
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = %sh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                      "%s_%s_%d_pow%dh = %sh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -1928,8 +1928,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  }
 		} else {
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = %sh * %s_%s_%d_pow%dh;",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                      "%s_%s_%d_pow%dh = %sh * %s_%s_%d_pow%dh;",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,((variablename == NULL) ? "_x_" : variablename),name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -1940,8 +1940,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_%s_%d_pow%dh;",
-			     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                    "double %s_%s_%d_pow%dh;",
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      }
 	    } else {
@@ -1957,10 +1957,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
 		  /* Both operands are low precision triple-doubles */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm) * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "%s_%s_%d_pow%dh = (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm) * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
@@ -1971,10 +1971,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		} else {
 		  /* Only the first operand is a low precision triple-double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm) * %s_%s_%d_pow%dh;",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "%s_%s_%d_pow%dh = (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm) * %s_%s_%d_pow%dh;",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
@@ -1987,10 +1987,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
 		  /* Only the second operand is a low precision triple-double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm) * %s_%s_%d_pow%dh;",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
+                                      "%s_%s_%d_pow%dh = (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm) * %s_%s_%d_pow%dh;",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
@@ -2001,8 +2001,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		} else {
 		  /* Both operands can be truncated to a double without problems */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_%s_%d_pow%dh = %s_%s_%d_pow%dh * %s_%s_%d_pow%dh;",
-			       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
+                                      "%s_%s_%d_pow%dh = %s_%s_%d_pow%dh * %s_%s_%d_pow%dh;",
+                                      name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
@@ -2014,8 +2014,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      }
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = sollya_snprintf(buffer2,CODESIZE,
-			   "double %s_%s_%d_pow%dh;",
-			   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
+                                  "double %s_%s_%d_pow%dh;",
+                                  name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	    }
 	  }
@@ -2206,21 +2206,21 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
   switch (producedFormat = determineCoefficientFormat(coefficients[i])) {
   case 3:
     c = sollya_snprintf(buffer1,CODESIZE,
-		 "%s_t_%d_%dh = %s_coeff_%dh; %s_t_%d_%dm = %s_coeff_%dm; %s_t_%d_%dl = %s_coeff_%dl;",
-		 name,variableNumber,tempVarNum[variableNumber],name,i,
-		 name,variableNumber,tempVarNum[variableNumber],name,i,
-		 name,variableNumber,tempVarNum[variableNumber],name,i);
+                        "%s_t_%d_%dh = %s_coeff_%dh; %s_t_%d_%dm = %s_coeff_%dm; %s_t_%d_%dl = %s_coeff_%dl;",
+                        name,variableNumber,tempVarNum[variableNumber],name,i,
+                        name,variableNumber,tempVarNum[variableNumber],name,i,
+                        name,variableNumber,tempVarNum[variableNumber],name,i);
     if ((c < 0) || (c >= CODESIZE)) res = 0;
     c = sollya_snprintf(buffer2,CODESIZE,
-		 "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-		 name,variableNumber,tempVarNum[variableNumber],
-		 name,variableNumber,tempVarNum[variableNumber],
-		 name,variableNumber,tempVarNum[variableNumber]);
+                        "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                        name,variableNumber,tempVarNum[variableNumber],
+                        name,variableNumber,tempVarNum[variableNumber],
+                        name,variableNumber,tempVarNum[variableNumber]);
     if ((c < 0) || (c >= CODESIZE)) res = 0;	 
     variableNumber++;
     /* The overlap should be 53 since we have correctly rounded coefficients 
        But: there is the case of double renormalization in the firststep in strange honorcoeffprec cases.
-     */
+    */
     currOverlap = 52; 
     if (gappaAssign != NULL) {
       sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
@@ -2231,14 +2231,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
     break;
   case 2:
     c = sollya_snprintf(buffer1,CODESIZE,
-		 "%s_t_%d_%dh = %s_coeff_%dh; %s_t_%d_%dm = %s_coeff_%dm;",
-		 name,variableNumber,tempVarNum[variableNumber],name,i,
-		 name,variableNumber,tempVarNum[variableNumber],name,i);
+                        "%s_t_%d_%dh = %s_coeff_%dh; %s_t_%d_%dm = %s_coeff_%dm;",
+                        name,variableNumber,tempVarNum[variableNumber],name,i,
+                        name,variableNumber,tempVarNum[variableNumber],name,i);
     if ((c < 0) || (c >= CODESIZE)) res = 0;
     c = sollya_snprintf(buffer2,CODESIZE,
-		 "double %s_t_%d_%dh, %s_t_%d_%dm;",
-		 name,variableNumber,tempVarNum[variableNumber],
-		 name,variableNumber,tempVarNum[variableNumber]);
+                        "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                        name,variableNumber,tempVarNum[variableNumber],
+                        name,variableNumber,tempVarNum[variableNumber]);
     if ((c < 0) || (c >= CODESIZE)) res = 0;	    
     variableNumber++;
     /* The overlap is 53 since we have correctly rounded coefficients */
@@ -2252,12 +2252,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
     break;
   case 1:
     c = sollya_snprintf(buffer1,CODESIZE,
-		 "%s_t_%d_%dh = %s_coeff_%dh;",
-		 name,variableNumber,tempVarNum[variableNumber],name,i);
+                        "%s_t_%d_%dh = %s_coeff_%dh;",
+                        name,variableNumber,tempVarNum[variableNumber],name,i);
     if ((c < 0) || (c >= CODESIZE)) res = 0;
     c = sollya_snprintf(buffer2,CODESIZE,
-		 "double %s_t_%d_%dh;",
-		 name,variableNumber,tempVarNum[variableNumber]);
+                        "double %s_t_%d_%dh;",
+                        name,variableNumber,tempVarNum[variableNumber]);
     if ((c < 0) || (c >= CODESIZE)) res = 0;	    
     variableNumber++;
     /* The overlap is 53 since we have correctly rounded coefficients */
@@ -2339,15 +2339,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  if (variablePrecision == 1) {
 	    /* Multiplication by x stored as a double */
 	    c = sollya_snprintf(buffer1,CODESIZE,
-			 "MulAdd212(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
-			 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			 name,i,name,i,
-			 ((variablename == NULL) ? "_x_" : variablename),
-			 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                "MulAdd212(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                name,i,name,i,
+                                ((variablename == NULL) ? "_x_" : variablename),
+                                name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;
 	    c = sollya_snprintf(buffer2,CODESIZE,
-			 "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	    if (gappaAssign != NULL) {
 	      sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -2364,15 +2364,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  } else {
 	    /* Multiplication by x stored as a double-double (or better) */
 	    c = sollya_snprintf(buffer1,CODESIZE,
-			 "MulAdd22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm);",
-			 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			 name,i,name,i,
-			 ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
-			 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                "MulAdd22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                name,i,name,i,
+                                ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
+                                name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;
 	    c = sollya_snprintf(buffer2,CODESIZE,
-			 "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	    if (gappaAssign != NULL) {
 	      sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -2400,14 +2400,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 	    /* We must renormalize the power */
 	    c = sollya_snprintf(buffer1,CODESIZE,
-			 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			 name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-			 name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 	    powVarNum[k-1]++;
 	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	    c2 = sollya_snprintf(buffer2,CODESIZE,
-			  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-			  name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                 "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                 name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 	    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 	    powerOverlaps[k-1] = 52;
 	    t = c; t2 = c2;
@@ -2419,15 +2419,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    }
 	  }
 	  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-		       "MulAdd22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_t_%d_%dh,%s_t_%d_%dm);",
-		       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-		       name,i,name,i,
-		       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,
-		       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                              "MulAdd22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_t_%d_%dh,%s_t_%d_%dm);",
+                              name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                              name,i,name,i,
+                              name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,
+                              name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-		       "double %s_t_%d_%dh, %s_t_%d_%dm;",
-		       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                              "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                              name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 	  if (gappaAssign != NULL) {
 	    if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
@@ -2505,15 +2505,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-			       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                      name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  tempVarNum[variableNumber-1]++;
 		  currOverlap = 52;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -2525,14 +2525,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%sl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%sl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
@@ -2554,14 +2554,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                    "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 48;
 		if (gappaAssign != NULL) {
@@ -2582,14 +2582,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                    "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
@@ -2618,15 +2618,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-			       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                      name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 52;
 		  tempVarNum[variableNumber-1]++;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -2638,14 +2638,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE+t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
@@ -2666,14 +2666,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 49;
 		if (gappaAssign != NULL) {
@@ -2693,14 +2693,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%sh,%sm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                    "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%sh,%sm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
@@ -2728,15 +2728,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (100 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-			       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                      name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 52;
 		  tempVarNum[variableNumber-1]++;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -2749,14 +2749,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 3;
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(47,currOverlap-5);
@@ -2778,14 +2778,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 3;
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
@@ -2806,14 +2806,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 2;
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 53;
 		if (gappaAssign != NULL) {
@@ -2851,15 +2851,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (mulPrec[i] > (97 + currOverlap)) {
 		    /* We must renormalize the temporary */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-				 name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                        "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                        name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                        name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		    currOverlap = 52;
 		    tempVarNum[variableNumber-1]++;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                         "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    if (gappaAssign != NULL) {
@@ -2871,14 +2871,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 		  
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  oldCurrOverlap = currOverlap;
 		  currOverlap = MIN(48,currOverlap-4);
@@ -2899,14 +2899,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 49;
 		  if (gappaAssign != NULL) {
@@ -2926,14 +2926,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                      "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 47;
 		  if (gappaAssign != NULL) {
@@ -2966,14 +2966,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if (currOverlap < powerOverlaps[1]) {
 		      /* We have to renormalize first the temporary */
 		      c = sollya_snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-				   name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                          "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                          name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                          name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      tempVarNum[variableNumber-1]++;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
-				    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                           "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t = c; t2 = c2;
 		      currOverlap = 52;
@@ -2986,14 +2986,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    } else {
 		      /* We have to renormalize first x^2 */
 		      c = sollya_snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
-				   name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                          "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+                                          name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		      powVarNum[1]++;
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
-				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                           "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t = c; t2 = c2;
 		      powerOverlaps[1] = 52;
@@ -3009,16 +3009,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if (currOverlap <= powerOverlaps[1]) {
 			/* We have to renormalize the temporary */
 			c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-				     name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-				     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                            "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                            name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                            name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			tempVarNum[variableNumber-1]++;
 			t += c;
 			currOverlap = 52;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                             "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                             name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			t2 += c2;
 			if (gappaAssign != NULL) {
@@ -3030,14 +3030,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      } else {
 			/* We have to renormalize x^2 */
 			c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                            "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+                                            name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 			powVarNum[1]++;
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                             "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                             name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			t += c; t2 += c2;
 			powerOverlaps[1] = 52;
@@ -3052,14 +3052,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  oldCurrOverlap = currOverlap;
 		  currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[1])-4);
@@ -3085,14 +3085,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (mulPrec[i] > (97 + powerOverlaps[1])) {
 		    /* We must renormalize the power */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                        "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    powVarNum[1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
@@ -3105,14 +3105,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 		  
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                      "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(48,powerOverlaps[1]-4);
 		  if (gappaAssign != NULL) {
@@ -3137,14 +3137,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (mulPrec[i] > (100 + powerOverlaps[1])) {
 		    /* We must renormalize the power */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                        "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    powVarNum[1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
@@ -3157,14 +3157,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                      "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(47,powerOverlaps[1] - 5);
 		  if (gappaAssign != NULL) {
@@ -3198,15 +3198,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (currOverlap < powerOverlaps[k-1]) {
 		    /* We have to renormalize first the temporary */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-				 name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                        "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                        name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                        name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    t = c;
 		    tempVarNum[variableNumber-1]++;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                         "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t2 = c2;
 		    currOverlap = 52;
@@ -3219,14 +3219,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  } else {
 		    /* We have to renormalize first x^k */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				 name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-				 name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                        "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		    powVarNum[k-1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    powerOverlaps[k-1] = 52;
@@ -3242,15 +3242,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if (currOverlap <= powerOverlaps[k-1]) {
 		      /* We have to renormalize the temporary */
 		      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				   "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-				   name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                          "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                          name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                          name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		      t += c;
 		      tempVarNum[variableNumber-1]++;
 		      c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                           "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t2 += c2;
 		      currOverlap = 52;
@@ -3263,14 +3263,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    } else {
 		      /* We have to renormalize x^k */
 		      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				   "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				   name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-				   name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                          "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                          name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                          name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		      powVarNum[k-1]++;
 		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		      c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                           "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t += c; t2 += c2;
 		      powerOverlaps[k-1] = 52;
@@ -3285,14 +3285,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[k-1])-4);
@@ -3318,14 +3318,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (97 + powerOverlaps[k-1])) {
 		  /* We must renormalize the power */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
@@ -3338,14 +3338,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                    "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(48,powerOverlaps[k-1]-4);
 		if (gappaAssign != NULL) {
@@ -3370,14 +3370,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (100 + powerOverlaps[k-1])) {
 		  /* We must renormalize the power */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
@@ -3390,14 +3390,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],
-			     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                    "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(47,powerOverlaps[k-1]-5);
 		if (gappaAssign != NULL) {
@@ -3431,14 +3431,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		case 2:
 		  /* Multiply the double-double temporary by x as double-double (or better), produce a double-double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			       ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                      "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -3452,14 +3452,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		default:
 		  /* Multiply the double temporary by x as a double-double (or better), produce a double-double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%sh,%sm);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                      "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%sh,%sm);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -3482,14 +3482,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		case 2:
 		  /* Multiply the double-double temporary by x as double, produce a double-double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       ((variablename == NULL) ? "_x_" : variablename),
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      ((variablename == NULL) ? "_x_" : variablename),
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -3503,14 +3503,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		default:
 		  /* Multiply the double temporary by x as a double, produce a double-double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       ((variablename == NULL) ? "_x_" : variablename),
-			       name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      ((variablename == NULL) ? "_x_" : variablename),
+                                      name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -3547,14 +3547,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 		  /* We must renormalize the power */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
@@ -3567,14 +3567,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                    "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 		if (gappaAssign != NULL) {
 		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
@@ -3599,15 +3599,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 		  /* We must renormalize the power */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  powerOverlaps[k-1] = 52;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -3619,14 +3619,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],
-			     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                    "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 		if (gappaAssign != NULL) {
 		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
@@ -3653,14 +3653,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     produce a double 
 		  */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_t_%d_%dh = %s_t_%d_%dh * %sh;",
-			       name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       ((variablename == NULL) ? "_x_" : variablename));
+                                      "%s_t_%d_%dh = %s_t_%d_%dh * %sh;",
+                                      name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      ((variablename == NULL) ? "_x_" : variablename));
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh;",
-			       name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh;",
+                                      name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -3674,14 +3674,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		case 1:
 		  /* Multiply the double temporary by x as a double, produce a double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_t_%d_%dh = %s_t_%d_%dh * %s;",
-			       name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       ((variablename == NULL) ? "_x_" : variablename));
+                                      "%s_t_%d_%dh = %s_t_%d_%dh * %s;",
+                                      name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      ((variablename == NULL) ? "_x_" : variablename));
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh;",
-			       name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh;",
+                                      name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -3714,11 +3714,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) { 
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_t_%d_%dh = %s_t_%d_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
-			       name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "%s_t_%d_%dh = %s_t_%d_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+                                      name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
@@ -3729,10 +3729,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  } 
 		} else {
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_t_%d_%dh = %s_t_%d_%dh * %s_%s_%d_pow%dh;",
-			       name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "%s_t_%d_%dh = %s_t_%d_%dh * %s_%s_%d_pow%dh;",
+                                      name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if (gappaAssign != NULL) {
 		    if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -3745,8 +3745,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh;",
-			     name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh;",
+                                    name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      } else {
 		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
@@ -3812,15 +3812,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      if (addPrec[i] > (97 + currOverlap)) {
 		/* We must renormalize the temporary */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-			     name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                    name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 52;
 		tempVarNum[variableNumber-1]++;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
-			      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-			      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		t = c; t2 = c2;
 		if (gappaAssign != NULL) {
@@ -3832,14 +3832,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      }
 
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			   "Add33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			   name,i,name,i,name,i,
-			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                  "Add33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                  name,i,name,i,name,i,
+                                  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      oldCurrOverlap = currOverlap;
 	      currOverlap = currOverlap - 5;
@@ -3864,15 +3864,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      if (addPrec[i] > (103 + currOverlap)) {
 		/* We must renormalize the temporary */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-			     name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                    name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 52;
 		tempVarNum[variableNumber-1]++;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
-			      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-			      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		t = c; t2 = c2;
 		if (gappaAssign != NULL) {
@@ -3884,14 +3884,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      }
 
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			   "Add233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			   name,i,name,i,
-			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                  "Add233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                  name,i,name,i,
+                                  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE+t)) res = 0;
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 	      oldCurrOverlap = currOverlap;
 	      currOverlap = MIN(45,currOverlap - 5);
@@ -3916,15 +3916,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      if (addPrec[i] > (104 + currOverlap)) {
 		/* We must renormalize the temporary */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-			     name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                    name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 52;
 		tempVarNum[variableNumber-1]++;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
-			      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-			      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		t = c; t2 = c2;
 		if (gappaAssign != NULL) {
@@ -3936,14 +3936,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      }
 
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			   "Add133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			   name,i,
-			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                  "Add133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                  name,i,
+                                  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 	      oldCurrOverlap = currOverlap;
 	      currOverlap = MIN(47,currOverlap - 2);
@@ -3973,14 +3973,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      */
 
 	      c = sollya_snprintf(buffer1,CODESIZE,
-			   "Add233Cond(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			   name,i,name,i,name,i);
+                                  "Add233Cond(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                  name,i,name,i,name,i);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = sollya_snprintf(buffer2,CODESIZE,
-			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      currOverlap = 45; /* TODO: Verify this value */
 	      if (gappaAssign != NULL) {
@@ -4000,14 +4000,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      */
 	      
 	      c = sollya_snprintf(buffer1,CODESIZE,
-			   "Add23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh,%s_t_%d_%dm);",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			   name,i,name,i,
-			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                  "Add23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                  name,i,name,i,
+                                  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = sollya_snprintf(buffer2,CODESIZE,
-			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    	
 	      currOverlap = 45; /* TODO: verify this value and precision bound below */
 	      if (gappaAssign != NULL) {
@@ -4026,14 +4026,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      */
 
 	      c = sollya_snprintf(buffer1,CODESIZE,
-			   "Add123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_t_%d_%dh,%s_t_%d_%dm);",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			   name,i,
-			   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                  "Add123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                  name,i,
+                                  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = sollya_snprintf(buffer2,CODESIZE,
-			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      currOverlap = 52;
 	      if (gappaAssign != NULL) {
@@ -4061,14 +4061,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 	      producedFormat = 3;
 	      c = sollya_snprintf(buffer1,CODESIZE,
-			   "Add133Cond(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			   name,variableNumber-1,tempVarNum[variableNumber-1],
-			   name,i,name,i,name,i);
+                                  "Add133Cond(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_coeff_%dh,%s_coeff_%dm,%s_coeff_%dl);",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                  name,variableNumber-1,tempVarNum[variableNumber-1],
+                                  name,i,name,i,name,i);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = sollya_snprintf(buffer2,CODESIZE,
-			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 	      currOverlap = 47; /* TODO: Verify this value and the precision bound below */
 	      if (gappaAssign != NULL) {
@@ -4088,14 +4088,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      */
 	      
 	      c = sollya_snprintf(buffer1,CODESIZE,
-			   "Add213(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh);",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			   name,i,name,i,
-			   name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                  "Add213(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh);",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                  name,i,name,i,
+                                  name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = sollya_snprintf(buffer2,CODESIZE,
-			   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      currOverlap = 47; /* TODO: Verify this value */
 	      if (gappaAssign != NULL) {
@@ -4113,14 +4113,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 	      producedFormat = 2;
 	      c = sollya_snprintf(buffer1,CODESIZE,
-			   "Add12(%s_t_%d_%dh,%s_t_%d_%dm,%s_coeff_%dh,%s_t_%d_%dh);",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			   name,i,
-			   name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                  "Add12(%s_t_%d_%dh,%s_t_%d_%dm,%s_coeff_%dh,%s_t_%d_%dh);",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                  name,i,
+                                  name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      c = sollya_snprintf(buffer2,CODESIZE,
-			   "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                  "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                  name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 	      currOverlap = 53; 
 	      if (gappaAssign != NULL) {
@@ -4158,14 +4158,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      case 2:
 		/* Add the double-double coefficient to the double-double temporary, produce a double-double */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Add22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh,%s_t_%d_%dm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,i,name,i,
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Add22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,i,name,i,
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -4179,14 +4179,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		/* Add the double coefficient to the double-double temporary, produce a double-double */
 				
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Add122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_t_%d_%dh,%s_t_%d_%dm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,i,
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Add122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,i,
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 		/* TODO: verify the following precision bound */
 		if (gappaAssign != NULL) {
@@ -4214,14 +4214,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		/* Add the double-double coefficient to the double temporary, produce a double-double */
 				
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Add212(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,i,name,i,
-			     name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Add212(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,i,name,i,
+                                    name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	
 		/* TODO: verify the following precision bound */
 		if (gappaAssign != NULL) {
@@ -4235,14 +4235,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      case 1:
 		/* Add the double coefficient to the double temporary, produce a double-double */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Add12(%s_t_%d_%dh,%s_t_%d_%dm,%s_coeff_%dh,%s_t_%d_%dh);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,i,
-			     name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Add12(%s_t_%d_%dh,%s_t_%d_%dm,%s_coeff_%dh,%s_t_%d_%dh);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,i,
+                                    name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -4265,14 +4265,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      if (coeffFormat == 1) {
 		/* Add the double coefficient to the double temporary, produce a double */
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "%s_t_%d_%dh = %s_coeff_%dh + %s_t_%d_%dh;",
-			     name,variableNumber,tempVarNum[variableNumber],
-			     name,i,
-			     name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "%s_t_%d_%dh = %s_coeff_%dh + %s_t_%d_%dh;",
+                                    name,variableNumber,tempVarNum[variableNumber],
+                                    name,i,
+                                    name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh;",
-			     name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh;",
+                                    name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -4351,15 +4351,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-			       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                      name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 52;
 		  tempVarNum[variableNumber-1]++;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -4371,14 +4371,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%sl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%sl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
@@ -4400,14 +4400,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                    "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 48;
 		if (gappaAssign != NULL) {
@@ -4428,14 +4428,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                    "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm,%sl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
@@ -4464,15 +4464,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (97 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-			       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                      name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 52;
 		  tempVarNum[variableNumber-1]++;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -4484,14 +4484,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE+t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
@@ -4512,14 +4512,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%sh,%sm,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 49;
 		if (gappaAssign != NULL) {
@@ -4539,14 +4539,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		*/
 
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%sh,%sm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],
-			     ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                    "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%sh,%sm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
@@ -4574,15 +4574,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (100 + currOverlap)) {
 		  /* We must renormalize the temporary */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-			       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                      name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 52;
 		  tempVarNum[variableNumber-1]++;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -4595,14 +4595,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 3;
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(47,currOverlap-5);
@@ -4624,14 +4624,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 3;
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
@@ -4652,14 +4652,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		producedFormat = 2;
 		c = sollya_snprintf(buffer1,CODESIZE,
-			     "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     ((variablename == NULL) ? "_x_" : variablename),
-			     name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    ((variablename == NULL) ? "_x_" : variablename),
+                                    name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		currOverlap = 53;
 		if (gappaAssign != NULL) {
@@ -4697,15 +4697,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (mulPrec[i] > (97 + currOverlap)) {
 		    /* We must renormalize the temporary */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-				 name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                        "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                        name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                        name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		    currOverlap = 52;
 		    tempVarNum[variableNumber-1]++;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                         "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    if (gappaAssign != NULL) {
@@ -4717,14 +4717,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 		  
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = sollya_snprintf(buffer2+t2,CODESIZE+t2,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  oldCurrOverlap = currOverlap;
 		  currOverlap = MIN(48,currOverlap-4);
@@ -4745,14 +4745,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Mul23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 49;
 		  if (gappaAssign != NULL) {
@@ -4772,14 +4772,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  */
 
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                      "Mul123(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = 47;
 		  if (gappaAssign != NULL) {
@@ -4812,15 +4812,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if (currOverlap < powerOverlaps[1]) {
 		      /* We have to renormalize first the temporary */
 		      c = sollya_snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-				   name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                          "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                          name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                          name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      t = c;
 		      tempVarNum[variableNumber-1]++;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
-				    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                           "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t2 = c2;
 		      currOverlap = 52;
@@ -4833,14 +4833,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    } else {
 		      /* We have to renormalize first x^2 */
 		      c = sollya_snprintf(buffer1,CODESIZE,
-				   "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
-				   name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
-				   name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                          "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+                                          name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
+                                          name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		      powVarNum[1]++;
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
-				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                           "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t = c; t2 = c2;
 		      powerOverlaps[1] = 52;
@@ -4856,15 +4856,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if (currOverlap <= powerOverlaps[1]) {
 			/* We have to renormalize the temporary */
 			c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-				     name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-				     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                            "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                            name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                            name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			t += c;
 			tempVarNum[variableNumber-1]++;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                             "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                             name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			currOverlap = 52;
 			t2 += c2;
@@ -4877,14 +4877,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      } else {
 			/* We have to renormalize x^2 */
 			c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				     "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                            "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+                                            name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
+                                            name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 			powVarNum[1]++;
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                             "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                             name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			t += c; t2 += c2;
 			powerOverlaps[1] = 52;
@@ -4899,14 +4899,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  oldCurrOverlap = currOverlap;
 		  currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[1])-4);
@@ -4932,14 +4932,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (mulPrec[i] > (97 + powerOverlaps[1])) {
 		    /* We must renormalize the power */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                        "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    powVarNum[1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
@@ -4952,14 +4952,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 		  
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                      "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  currOverlap = MIN(48,powerOverlaps[1]-4);
 		  if (gappaAssign != NULL) {
@@ -4984,14 +4984,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (mulPrec[i] > (100 + powerOverlaps[1])) {
 		    /* We must renormalize the power */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
-				     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                        "Renormalize3(&%s_%s_%d_pow2h,&%s_%s_%d_pow2m,&%s_%s_%d_pow2l,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    powVarNum[1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
@@ -5004,14 +5004,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  }
 
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			       "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
+                                      "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		  currOverlap = MIN(48,powerOverlaps[1]-4);
 		  if (gappaAssign != NULL) {
@@ -5046,14 +5046,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  if (currOverlap < powerOverlaps[k-1]) {
 		    /* We have to renormalize first the temporary */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-				 name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-				 name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                        "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                        name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                        name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    tempVarNum[variableNumber-1]++;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				  name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                         "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    currOverlap = 52;
@@ -5066,14 +5066,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  } else {
 		    /* We have to renormalize first x^k */
 		    c = sollya_snprintf(buffer1,CODESIZE,
-				 "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				 name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-				 name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                        "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                        name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		    powVarNum[k-1]++;
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
-				  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				  name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                         "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    powerOverlaps[k-1] = 52;
@@ -5089,15 +5089,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if (currOverlap <= powerOverlaps[k-1]) {
 		      /* We have to renormalize the temporary */
 		      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				   "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
-				   name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
-				   name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                          "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
+                                          name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
+                                          name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		      tempVarNum[variableNumber-1]++;
 		      t += c;
 		      c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-				    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                           "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
+                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t2 += c2;
 		      currOverlap = 52;
@@ -5110,14 +5110,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    } else {
 		      /* We have to renormalize x^k */
 		      c = sollya_snprintf(buffer1+t,CODESIZE-t,
-				   "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-				   name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-				   name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                          "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                          name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                          name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		      powVarNum[k-1]++;
 		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		      c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-				    "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                           "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t += c; t2 += c2;
 		      powerOverlaps[k-1] = 52;
@@ -5132,14 +5132,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                    "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[k-1])-4);
@@ -5165,14 +5165,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (97 + powerOverlaps[k-1])) {
 		  /* We must renormalize the power */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
@@ -5185,14 +5185,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                    "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(48,powerOverlaps[k-1]-4);
 		if (gappaAssign != NULL) {
@@ -5218,14 +5218,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if (mulPrec[i] > (100 + powerOverlaps[k-1])) {
 		  /* We must renormalize the power */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
@@ -5238,14 +5238,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],
-			     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                    "Mul133(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
 		currOverlap = MIN(47,powerOverlaps[k-1]-5);
 		if (gappaAssign != NULL) {
@@ -5279,14 +5279,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		case 2:
 		  /* Multiply the double-double temporary by x as double-double (or better), produce a double-double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			       ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                      "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%sh,%sm);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -5300,14 +5300,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		default:
 		  /* Multiply the double temporary by x as a double-double (or better), produce a double-double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%sh,%sm);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                                      "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%sh,%sm);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -5330,14 +5330,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		case 2:
 		  /* Multiply the double-double temporary by x as double, produce a double-double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       ((variablename == NULL) ? "_x_" : variablename),
-			       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh,%s_t_%d_%dm);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      ((variablename == NULL) ? "_x_" : variablename),
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -5351,14 +5351,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		default:
 		  /* Multiply the double temporary by x as a double, produce a double-double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			       ((variablename == NULL) ? "_x_" : variablename),
-			       name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                      "Mul12(&%s_t_%d_%dh,&%s_t_%d_%dm,%s,%s_t_%d_%dh);",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                      ((variablename == NULL) ? "_x_" : variablename),
+                                      name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                      name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -5395,15 +5395,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 		  /* We must renormalize the power */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  powerOverlaps[k-1] = 52;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -5415,14 +5415,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
-			     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                    "Mul22(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 		if (gappaAssign != NULL) {
 		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
@@ -5447,15 +5447,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 		  /* We must renormalize the power */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "Renormalize3(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);\n",
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
 		  powerOverlaps[k-1] = 52;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
-				"double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-				name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -5467,14 +5467,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
-			     "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
-			     name,variableNumber-1,tempVarNum[variableNumber-1],
-			     name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                    "Mul122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_t_%d_%dh,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
+                                    name,variableNumber-1,tempVarNum[variableNumber-1],
+                                    name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
-			     "double %s_t_%d_%dh, %s_t_%d_%dm;",
-			     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh, %s_t_%d_%dm;",
+                                    name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
 		if (gappaAssign != NULL) {
 		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
@@ -5501,14 +5501,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		     produce a double 
 		  */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_t_%d_%dh = %s_t_%d_%dh * %sh;",
-			       name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       ((variablename == NULL) ? "_x_" : variablename));
+                                      "%s_t_%d_%dh = %s_t_%d_%dh * %sh;",
+                                      name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      ((variablename == NULL) ? "_x_" : variablename));
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh;",
-			       name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh;",
+                                      name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -5522,14 +5522,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		case 1:
 		  /* Multiply the double temporary by x as a double, produce a double */
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_t_%d_%dh = %s_t_%d_%dh * %s;",
-			       name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       ((variablename == NULL) ? "_x_" : variablename));
+                                      "%s_t_%d_%dh = %s_t_%d_%dh * %s;",
+                                      name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      ((variablename == NULL) ? "_x_" : variablename));
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c = sollya_snprintf(buffer2,CODESIZE,
-			       "double %s_t_%d_%dh;",
-			       name,variableNumber,tempVarNum[variableNumber]);
+                                      "double %s_t_%d_%dh;",
+                                      name,variableNumber,tempVarNum[variableNumber]);
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -5562,11 +5562,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  
 		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) { 
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_t_%d_%dh = %s_t_%d_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
-			       name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "%s_t_%d_%dh = %s_t_%d_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
+                                      name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
@@ -5577,10 +5577,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  } 
 		} else {
 		  c = sollya_snprintf(buffer1,CODESIZE,
-			       "%s_t_%d_%dh = %s_t_%d_%dh * %s_%s_%d_pow%dh;",
-			       name,variableNumber,tempVarNum[variableNumber],
-			       name,variableNumber-1,tempVarNum[variableNumber-1],
-			       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
+                                      "%s_t_%d_%dh = %s_t_%d_%dh * %s_%s_%d_pow%dh;",
+                                      name,variableNumber,tempVarNum[variableNumber],
+                                      name,variableNumber-1,tempVarNum[variableNumber-1],
+                                      name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if (gappaAssign != NULL) {
 		    if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -5593,8 +5593,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
-			     "double %s_t_%d_%dh;",
-			     name,variableNumber,tempVarNum[variableNumber]);
+                                    "double %s_t_%d_%dh;",
+                                    name,variableNumber,tempVarNum[variableNumber]);
 		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
 	      } else {
 		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
@@ -5639,11 +5639,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  /* If we are not renormalized, we renormalize, otherwise we copy */
 	  if (currOverlap < 52) {
 	    c = sollya_snprintf(buffer1,CODESIZE,
-			 "Renormalize3(%s_resh,%s_resm,%s_resl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			 name,name,name,
-			 name,variableNumber-1,tempVarNum[variableNumber-1],
-			 name,variableNumber-1,tempVarNum[variableNumber-1],
-			 name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                "Renormalize3(%s_resh,%s_resm,%s_resl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                name,name,name,
+                                name,variableNumber-1,tempVarNum[variableNumber-1],
+                                name,variableNumber-1,tempVarNum[variableNumber-1],
+                                name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    if (gappaAssign != NULL) {
 	      sollya_snprintf(resultName,CODESIZE,"%s_res",name);
 	      sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
@@ -5652,10 +5652,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    }
 	  } else {
 	    c = sollya_snprintf(buffer1,CODESIZE,
-			 "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm; *%s_resl = %s_t_%d_%dl;",
-			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
-			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
-			 name,name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm; *%s_resl = %s_t_%d_%dl;",
+                                name,name,variableNumber-1,tempVarNum[variableNumber-1],
+                                name,name,variableNumber-1,tempVarNum[variableNumber-1],
+                                name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    if (gappaAssign != NULL) {
 	      sollya_snprintf(resultName,CODESIZE,"%s_res",name);
 	      sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
@@ -5669,9 +5669,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  break;
 	case 2:
 	  c = sollya_snprintf(buffer1,CODESIZE,
-		       "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm;",
-		       name,name,variableNumber-1,tempVarNum[variableNumber-1],
-		       name,name,variableNumber-1,tempVarNum[variableNumber-1]);
+                              "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm;",
+                              name,name,variableNumber-1,tempVarNum[variableNumber-1],
+                              name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = sollya_snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
@@ -5684,8 +5684,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  break;
 	default:
 	  c = sollya_snprintf(buffer1,CODESIZE,
-		       "*%s_resh = %s_t_%d_%dh;",
-		       name,name,variableNumber-1,tempVarNum[variableNumber-1]);
+                              "*%s_resh = %s_t_%d_%dh;",
+                              name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = sollya_snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			 
@@ -5707,11 +5707,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  /* If we are not renormalized, we renormalize, otherwise we copy */
 	  if (currOverlap < 52) {
 	    c = sollya_snprintf(buffer1,CODESIZE,
-			 "Renormalize3(%s_resh,%s_resm,%s_resl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
-			 name,name,name,
-			 name,variableNumber-1,tempVarNum[variableNumber-1],
-			 name,variableNumber-1,tempVarNum[variableNumber-1],
-			 name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                "Renormalize3(%s_resh,%s_resm,%s_resl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
+                                name,name,name,
+                                name,variableNumber-1,tempVarNum[variableNumber-1],
+                                name,variableNumber-1,tempVarNum[variableNumber-1],
+                                name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    if (gappaAssign != NULL) {
 	      sollya_snprintf(resultName,CODESIZE,"%s_res",name);
 	      sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
@@ -5720,10 +5720,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    }
 	  } else {
 	    c = sollya_snprintf(buffer1,CODESIZE,
-			 "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm; *%s_resl = %s_t_%d_%dl;",
-			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
-			 name,name,variableNumber-1,tempVarNum[variableNumber-1],
-			 name,name,variableNumber-1,tempVarNum[variableNumber-1]);
+                                "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm; *%s_resl = %s_t_%d_%dl;",
+                                name,name,variableNumber-1,tempVarNum[variableNumber-1],
+                                name,name,variableNumber-1,tempVarNum[variableNumber-1],
+                                name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    if (gappaAssign != NULL) {
 	      sollya_snprintf(resultName,CODESIZE,"%s_res",name);
 	      sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
@@ -5737,9 +5737,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  break;
 	case 2:
 	  c = sollya_snprintf(buffer1,CODESIZE,
-		       "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm;",
-		       name,name,variableNumber-1,tempVarNum[variableNumber-1],
-		       name,name,variableNumber-1,tempVarNum[variableNumber-1]);
+                              "*%s_resh = %s_t_%d_%dh; *%s_resm = %s_t_%d_%dm;",
+                              name,name,variableNumber-1,tempVarNum[variableNumber-1],
+                              name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = sollya_snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
@@ -5752,8 +5752,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  break;
 	default:
 	  c = sollya_snprintf(buffer1,CODESIZE,
-		       "*%s_resh = %s_t_%d_%dh;",
-		       name,name,variableNumber-1,tempVarNum[variableNumber-1]);
+                              "*%s_resh = %s_t_%d_%dh;",
+                              name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = sollya_snprintf(buffer2,CODESIZE," ");
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    

@@ -5,9 +5,15 @@
   Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
   UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
 
-  Contributors Ch. Lauter
+  and by
+
+  Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+  Sophia Antipolis, France.
+
+  Contributors Ch. Lauter and S. Chevillard
 
   christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
 
   This software is a computer program whose purpose is to provide an
   environment for safe floating-point code development. It is
@@ -1231,7 +1237,7 @@ sollya_obj_t sollya_lib_v_infnorm(sollya_obj_t obj1, sollya_obj_t obj2, va_list 
 sollya_obj_t sollya_lib_supnorm(sollya_obj_t obj1, sollya_obj_t obj2, sollya_obj_t obj3, sollya_obj_t obj4, sollya_obj_t obj5) {
   node *thingToEvaluate, *evaluatedThing;
   thingToEvaluate = makeSupnorm(addElement(addElement(addElement(addElement(addElement(NULL,copyThing(obj5)),copyThing(obj4)),
-                                                                  copyThing(obj3)),copyThing(obj2)),copyThing(obj1)));
+                                                                 copyThing(obj3)),copyThing(obj2)),copyThing(obj1)));
   evaluatedThing = evaluateThing(thingToEvaluate);
   freeThing(thingToEvaluate);
   return evaluatedThing;
@@ -3570,7 +3576,7 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t 
        2^(-p/2) or not. Here, p is the computing precision we used for
        the last interval evaluation.
 
-     */
+    */
     mpfr_init2(threshold, 12); /* Will store a power of 2 */
     mpfr_set_ui(threshold,1,GMP_RNDN);
     mpfr_div_2ui(threshold,threshold,(p >> 1),GMP_RNDN); /* exact: power of 2 */
@@ -3759,7 +3765,7 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y,
        2^(-p/2) or not. Here, p is the computing precision we used for
        the last interval evaluation.
 
-     */
+    */
     mpfr_init2(threshold, 12); /* Will store a power of 2 */
     mpfr_set_ui(threshold,1,GMP_RNDN);
     mpfr_div_2ui(threshold,threshold,(p >> 1),GMP_RNDN); /* exact: power of 2 */
@@ -4053,10 +4059,10 @@ sollya_obj_t sollya_lib_build_list(sollya_obj_t obj1, ...) {
   thinglist->next = NULL;
   curr = thinglist;
   while ((elem = va_arg(varlist,node *)) != NULL) {
-      curr->next = (chain *) safeMalloc(sizeof(chain));
-      curr = curr->next;
-      curr->value = elem;
-      curr->next = NULL;
+    curr->next = (chain *) safeMalloc(sizeof(chain));
+    curr = curr->next;
+    curr->value = elem;
+    curr->next = NULL;
   }
   va_end(varlist);
   
@@ -4081,10 +4087,10 @@ sollya_obj_t sollya_lib_build_end_elliptic_list(sollya_obj_t obj1, ...) {
   thinglist->next = NULL;
   curr = thinglist;
   while ((elem = va_arg(varlist,node *)) != NULL) {
-      curr->next = (chain *) safeMalloc(sizeof(chain));
-      curr = curr->next;
-      curr->value = elem;
-      curr->next = NULL;
+    curr->next = (chain *) safeMalloc(sizeof(chain));
+    curr = curr->next;
+    curr->value = elem;
+    curr->next = NULL;
   }
   va_end(varlist);
   
@@ -4108,10 +4114,10 @@ sollya_obj_t sollya_lib_v_build_list(va_list varlist) {
   thinglist->next = NULL;
   curr = thinglist;
   while ((elem = va_arg(varlist,node *)) != NULL) {
-      curr->next = (chain *) safeMalloc(sizeof(chain));
-      curr = curr->next;
-      curr->value = elem;
-      curr->next = NULL;
+    curr->next = (chain *) safeMalloc(sizeof(chain));
+    curr = curr->next;
+    curr->value = elem;
+    curr->next = NULL;
   }
   
   unevaluatedList = makeList(thinglist);
@@ -4134,10 +4140,10 @@ sollya_obj_t sollya_lib_v_build_end_elliptic_list(va_list varlist) {
   thinglist->next = NULL;
   curr = thinglist;
   while ((elem = va_arg(varlist,node *)) != NULL) {
-      curr->next = (chain *) safeMalloc(sizeof(chain));
-      curr = curr->next;
-      curr->value = elem;
-      curr->next = NULL;
+    curr->next = (chain *) safeMalloc(sizeof(chain));
+    curr = curr->next;
+    curr->value = elem;
+    curr->next = NULL;
   }
   
   unevaluatedList = makeFinalEllipticList(thinglist);

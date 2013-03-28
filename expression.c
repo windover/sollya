@@ -1,57 +1,57 @@
 /*
 
-Copyright 2006-2012 by
+  Copyright 2006-2013 by
 
-Laboratoire de l'Informatique du Parallelisme,
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
+  Laboratoire de l'Informatique du Parallelisme,
+  UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
-LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
+  LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
 
-and by
+  and by
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
-Contributors Ch. Lauter, S. Chevillard
+  Contributors Ch. Lauter, S. Chevillard
 
-christoph.lauter@ens-lyon.org
-sylvain.chevillard@ens-lyon.org
+  christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use,
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info".
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use,
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info".
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability.
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability.
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or
-data to be ensured and,  more generally, to use and operate it in the
-same conditions as regards security.
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  therefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -339,8 +339,8 @@ void free_memory(node *tree) {
     safeFree(tree);
     break;
   default:
-   sollyaFprintf(stderr,"Error: free_memory: unknown identifier (%d) in the tree\n",tree->nodeType);
-   exit(1);
+    sollyaFprintf(stderr,"Error: free_memory: unknown identifier (%d) in the tree\n",tree->nodeType);
+    exit(1);
   }
   return;
 }
@@ -511,8 +511,8 @@ void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
     sollyaFprintf(fd,"%s",tree->libFun->functionName);
     break;
   default:
-   sollyaFprintf(stderr,"fprintHeadFunction: unknown identifier (%d) in the tree\n",tree->nodeType);
-   exit(1);
+    sollyaFprintf(stderr,"fprintHeadFunction: unknown identifier (%d) in the tree\n",tree->nodeType);
+    exit(1);
   }
   return;
 }
@@ -1468,8 +1468,8 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     sollyaFprintf(fd,"%s",tree->libFun->functionName);
     break;
   default:
-   sollyaFprintf(stderr,"Error: fprintTreeWithPrintMode: unknown identifier in the tree\n");
-   exit(1);
+    sollyaFprintf(stderr,"Error: fprintTreeWithPrintMode: unknown identifier in the tree\n");
+    exit(1);
   }
   return;
 }
@@ -1939,8 +1939,8 @@ void printTree(node *tree) {
     sollyaPrintf("%s",tree->libFun->functionName);
     break;
   default:
-   sollyaFprintf(stderr,"Error: printTree: unknown identifier in the tree\n");
-   exit(1);
+    sollyaFprintf(stderr,"Error: printTree: unknown identifier in the tree\n");
+    exit(1);
   }
   return;
 }
@@ -2315,8 +2315,8 @@ char *sprintTree(node *tree) {
     sprintf(buffer,"%s", tree->libFun->functionName);
     break;
   default:
-   sollyaFprintf(stderr,"Error: sprintTree: unknown identifier in the tree\n");
-   exit(1);
+    sollyaFprintf(stderr,"Error: sprintTree: unknown identifier in the tree\n");
+    exit(1);
   }
 
   finalBuffer = (char *) safeCalloc(strlen(buffer)+1,sizeof(char));
@@ -2561,7 +2561,7 @@ void fprintTree(FILE *fd, node *tree) {
     fprintTree(fd,tree->child1);
     sollyaFprintf(fd,")");
     break;
-    case LIBRARYFUNCTION:
+  case LIBRARYFUNCTION:
     {
       if (accessThruMemRef(tree->child1)->nodeType == VARIABLE) {
 	for (i=1;i<=tree->libFunDeriv;i++) {
@@ -2651,8 +2651,8 @@ void fprintTree(FILE *fd, node *tree) {
     sollyaFprintf(fd,"%s",tree->libFun->functionName);
     break;
   default:
-   sollyaFprintf(stderr,"Error: fprintTree: unknown identifier in the tree\n");
-   exit(1);
+    sollyaFprintf(stderr,"Error: fprintTree: unknown identifier in the tree\n");
+    exit(1);
   }
   return;
 }
@@ -8224,7 +8224,7 @@ int arity(node *tree) {
     return 1;
     break;
 
- default:
+  default:
     sollyaFprintf(stderr,"Error: arity: unknown identifier in the tree\n");
     exit(1);
   }
@@ -8244,7 +8244,7 @@ int isSyntacticallyEqual(node *tree1, node *tree2) {
       ((tree1->libFun != tree2->libFun) ||
        (tree1->libFunDeriv != tree2->libFunDeriv))) return 0;
   if (tree1->nodeType == LIBRARYCONSTANT) 
-      return (tree1->libFun == tree2->libFun);
+    return (tree1->libFun == tree2->libFun);
   if ((tree1->nodeType == PROCEDUREFUNCTION) && 
       ((!isEqualThing(tree1->child2, tree2->child2)) ||
        (tree1->libFunDeriv != tree2->libFunDeriv))) return 0;
@@ -8374,7 +8374,7 @@ int isPolynomial(node *tree) {
     sollyaFprintf(stderr,"Error: isPolynomial: unknown identifier in the tree\n");
     exit(1);
   }
- return res;
+  return res;
 }
 
 int isAffine(node *tree) {
@@ -8473,7 +8473,7 @@ int isAffine(node *tree) {
     sollyaFprintf(stderr,"Error: isAffine: unknown identifier in the tree\n");
     exit(1);
   }
- return res;
+  return res;
 }
 
 
@@ -8793,7 +8793,7 @@ int getMaxPowerDividerUnsafe(node *tree) {
       mpfr_set_si(temp,r,GMP_RNDN);
       if (mpfr_cmp(*(accessThruMemRef(simplifiedNode)->value),temp) != 0) {
 	printMessage(1,SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_DOESNT_HOLD_ON_MACHINE_INT,
-"Warning: tried to compute degree of maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which cannot be represented on an integer variable.\n");
+                     "Warning: tried to compute degree of maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which cannot be represented on an integer variable.\n");
 	mpfr_clear(temp);
 	free_memory(simplifiedNode);
 	return -1;
@@ -9375,8 +9375,8 @@ node* expandDivision(node *tree) {
     break;
 
   default:
-   sollyaFprintf(stderr,"Error: expandDivision: unknown identifier in the tree\n");
-   exit(1);
+    sollyaFprintf(stderr,"Error: expandDivision: unknown identifier in the tree\n");
+    exit(1);
   }
   return copy;
 }
@@ -9981,8 +9981,8 @@ node* expandUnsimplified(node *tree) {
     copy->libFun = tree->libFun;
     break;
   default:
-   sollyaFprintf(stderr,"Error: expand: unknown identifier in the tree\n");
-   exit(1);
+    sollyaFprintf(stderr,"Error: expand: unknown identifier in the tree\n");
+    exit(1);
   }
   return copy;
 }
@@ -10066,8 +10066,8 @@ int isConstant(node *tree) {
     return isConstant(tree->child1);
     break;
   default:
-   sollyaFprintf(stderr,"Error: isConstant: unknown identifier in the tree\n");
-   exit(1);
+    sollyaFprintf(stderr,"Error: isConstant: unknown identifier in the tree\n");
+    exit(1);
   }
 }
 
@@ -10345,11 +10345,11 @@ void getCoefficientsCanonicalUnsafe(node **coefficients, node *poly) {
       deg = getDegree(poly);
       sign = 1;
       if (isPowerOfVariable(poly)) {
-	  newCoeff = (node *) safeMalloc(sizeof(node));
-	  newCoeff->nodeType = CONSTANT;
-	  newCoeff->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	  mpfr_init2(*(newCoeff->value),17);
-	  mpfr_set_d(*(newCoeff->value),1.0,GMP_RNDN);
+        newCoeff = (node *) safeMalloc(sizeof(node));
+        newCoeff->nodeType = CONSTANT;
+        newCoeff->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+        mpfr_init2(*(newCoeff->value),17);
+        mpfr_set_d(*(newCoeff->value),1.0,GMP_RNDN);
       } else {
 	newCoeff = copyTree(poly->child1);
       }
@@ -10741,7 +10741,7 @@ node* hornerPolynomialUnsafe(node *tree) {
   while ((degree >= 0) && (monomials[degree] == NULL)) degree--;
   if ((degree < 0) || (monomials[degree] == NULL)) {
     sollyaFprintf(stderr,
-"Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
+                  "Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
     exit(1);
     return NULL;
   }
@@ -10841,7 +10841,7 @@ node* dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha) {
   while ((degree >= 0) && (monomials[degree] == NULL)) degree--;
   if ((degree < 0) || (monomials[degree] == NULL)) {
     sollyaFprintf(stderr,
-"Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
+                  "Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
     exit(1);
     return NULL;
   }
@@ -11183,8 +11183,8 @@ node* hornerUnsimplified(node *tree) {
     copy->libFun = tree->libFun;
     break;
   default:
-   sollyaFprintf(stderr,"Error: horner: unknown identifier in the tree\n");
-   exit(1);
+    sollyaFprintf(stderr,"Error: horner: unknown identifier in the tree\n");
+    exit(1);
   }
   return copy;
 }
@@ -11454,8 +11454,8 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree-1,GMP_RNDN) != 0) {
 	  printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_POLYNOMIAL,
-		 "Warning: rounding occurred on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
-		 (int) tools_precision);
+                       "Warning: rounding occurred on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
+                       (int) tools_precision);
 	  printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	}
 	temp2->value = value;
@@ -11478,7 +11478,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	mpfr_init2(*value,tools_precision);
 	if (mpfr_set_si(*value,degree,GMP_RNDN) != 0) {
 	  printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_POLYNOMIAL,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
-		 (int) tools_precision);
+                       (int) tools_precision);
 	  printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	}
 	temp2->value = value;
@@ -11504,7 +11504,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  mpfr_init2(*value,tools_precision);
 	  if (mpfr_set_si(*value,i,GMP_RNDN) != 0) {
 	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_POLYNOMIAL,"Warning: rounding occurred on differentiating a polynomial. A constant could not be written on %d bits.\n",
-		   (int) tools_precision);
+                         (int) tools_precision);
 	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	  }
 	  temp2->value = value;
@@ -11518,8 +11518,8 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  mpfr_init2(*value,tools_precision);
 	  if (mpfr_set_si(*value,i-1,GMP_RNDN) != 0) {
 	    printMessage(1,SOLLYA_MSG_ROUNDING_UPON_DIFFERENTIATION_OF_POLYNOMIAL,
-		   "Warning: rounding occurred on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
-		   (int) tools_precision);
+                         "Warning: rounding occurred on differentiating a polynomial. An exponent constant could not be written on %d bits.\n",
+                         (int) tools_precision);
 	    printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the precision.\n");
 	  }
 	  temp2->value = value;
@@ -12070,8 +12070,8 @@ node *substitute(node* tree, node *t) {
     break;
 
   default:
-   sollyaFprintf(stderr,"Error: substitute: unknown identifier in the tree\n");
-   exit(1);
+    sollyaFprintf(stderr,"Error: substitute: unknown identifier in the tree\n");
+    exit(1);
   }
   return copy;
 }
@@ -12486,7 +12486,7 @@ node *makePolynomialConstantExpressions(node **coeffs, int deg) {
 }
 
 /* Builds a polynomial expression, written in Horner form of the polynomial
-                  sum_{i=0}^degree  coefficients[i]*x^i
+   sum_{i=0}^degree  coefficients[i]*x^i
    Moreover, while writting it in Horner form, it accounts for the sparsity of
    the polynomial.
 */
@@ -12586,8 +12586,8 @@ int treeSize(node *tree) {
     break;
 
   default:
-   sollyaFprintf(stderr,"Error: treeSize: unknown identifier (%d) in the tree\n",tree->nodeType);
-   exit(1);
+    sollyaFprintf(stderr,"Error: treeSize: unknown identifier (%d) in the tree\n",tree->nodeType);
+    exit(1);
   }
   return -1;
 }
@@ -13033,10 +13033,10 @@ node *makeCanonicalPolyUnsafe(node *poly, mp_prec_t prec) {
     if (coefficients[k] != NULL) {
       if (k == 0) {
 	tempNode2 = (node *) safeMalloc(sizeof(node));
-	  tempNode2->nodeType = ADD;
-	  tempNode2->child2 = coefficients[k];
-	  tempNode2->child1 = tempNode;
-	  tempNode = tempNode2;
+        tempNode2->nodeType = ADD;
+        tempNode2->child2 = coefficients[k];
+        tempNode2->child1 = tempNode;
+        tempNode = tempNode2;
       } else {
 	if (k == 1) {
 	  tempNode3 = (node *) safeMalloc(sizeof(node));
@@ -13382,8 +13382,8 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
     break;
 
   default:
-   sollyaFprintf(stderr,"Error: makeCanonical: unknown identifier in the tree\n");
-   exit(1);
+    sollyaFprintf(stderr,"Error: makeCanonical: unknown identifier in the tree\n");
+    exit(1);
   }
   return copy;
 }

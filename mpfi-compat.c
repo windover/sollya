@@ -1,60 +1,60 @@
 /*
 
-Copyright 2007-2011 by 
+  Copyright 2007-2013 by 
 
-Laboratoire de l'Informatique du Parallelisme, 
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
+  Laboratoire de l'Informatique du Parallelisme, 
+  UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
 
-LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
+  LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
 
-and by
+  and by
 
-Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
-Sophia Antipolis, France.
+  Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+  Sophia Antipolis, France.
 
-Contributors Ch. Lauter, S. Chevillard
+  Contributors Ch. Lauter, S. Chevillard
 
-christoph.lauter@ens-lyon.org
-sylvain.chevillard@ens-lyon.org
+  christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use, 
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info". 
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability. 
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability. 
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  therefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or 
+  data to be ensured and,  more generally, to use and operate it in the 
+  same conditions as regards security. 
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -480,44 +480,44 @@ define_log_func(log1p, -1)
    # op1 = NaN or op2 = NaN -> NaN
    # op1 empty or op2 empty -> empty
    # If op1 = [0] :
-     # If op2 = [0] -> NaN
-     # Else -> [0]    the argument here is: even if op2 contains 0,
-                                            the function op1/y is 0 everywhere
-                                            so we define it at y=0 by
-                                            continuity.
+   # If op2 = [0] -> NaN
+   # Else -> [0]    the argument here is: even if op2 contains 0,
+   the function op1/y is 0 everywhere
+   so we define it at y=0 by
+   continuity.
    # If op1 = [+Inf] or op1 = [-Inf] :
-     # If op2 = [+Inf] or op2 = [-Inf] -> NaN
-     # If 0 is inside op2 or op2=[0] -> [-Inf, Inf]    The argument when op2=[0] is:
-                                                       Inf/[0] is an Inf but we do not know its sign. So
-                                                       we return [-Inf, Inf] and we are sure.
-     # If 0 is not inside op2 (this includes the case when 0 does not belong to op2)
-             -> sgn(op2)*op1     the argument is: even
-                                 if op2 contains an Inf,
-                                 the function op1/y is constant
-                                 to Inf everywhere, so we
-                                 define it at Inf as this constant.
+   # If op2 = [+Inf] or op2 = [-Inf] -> NaN
+   # If 0 is inside op2 or op2=[0] -> [-Inf, Inf]    The argument when op2=[0] is:
+   Inf/[0] is an Inf but we do not know its sign. So
+   we return [-Inf, Inf] and we are sure.
+   # If 0 is not inside op2 (this includes the case when 0 does not belong to op2)
+   -> sgn(op2)*op1     the argument is: even
+   if op2 contains an Inf,
+   the function op1/y is constant
+   to Inf everywhere, so we
+   define it at Inf as this constant.
 
 
    Now, we know that op1 is neither [0], nor [-Inf] or [+Inf]
    #  If op2 = [0] -> [-Inf, Inf]    the argument here is: even if op1 contains 0,
-                                     x/[0] is always -Inf or +Inf, hence we
-                                     define it at 0 by continuity as -Inf or +Inf.
-                                     Sadly, we do not know the sign of 0, so we have
-                                     to return [-Inf, +Inf] as a result
+   x/[0] is always -Inf or +Inf, hence we
+   define it at 0 by continuity as -Inf or +Inf.
+   Sadly, we do not know the sign of 0, so we have
+   to return [-Inf, +Inf] as a result
    # If op2 = [-Inf] or [+Inf] -> [0]     (even if op1 contains an Inf: by continuity)
 
    Now, we know that neither op1 nor op2 are singular point intervals
    # If op2 does not contain 0 -> mpfi_div(op1, op2)
    # If op2 has 0 inside -> [-Inf, +Inf]
    # Else op2 = [0, b] or op2 = [a, 0]:
-     # In both cases, if op1 has 0 inside -> [-Inf, +Inf]
+   # In both cases, if op1 has 0 inside -> [-Inf, +Inf]
 
    # If op2 = [0, b]
-     # If op1 = [u, v] with 0<=u ->  [u/b, +Inf]
-     # If op1 = [u, v] with v<=0 ->  [-Inf, v/b]
+   # If op1 = [u, v] with 0<=u ->  [u/b, +Inf]
+   # If op1 = [u, v] with v<=0 ->  [-Inf, v/b]
    # Else (op2 = [a, 0]) :
-     # If op1 = [u, v] with 0<=u ->  [-Inf, u/a]
-     # If op1 = [u, v] with v<=0 ->  [v/a, +Inf]
+   # If op1 = [u, v] with 0<=u ->  [-Inf, u/a]
+   # If op1 = [u, v] with v<=0 ->  [v/a, +Inf]
 */     
 int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
@@ -602,27 +602,27 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 
 int sollya_mpfi_mul(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   /*
-     # op1 = NaN or op2 = NaN -> NaN
-     # op1 empty or op2 empty -> empty
-     # If op1 = [+Inf] or op1 = [-Inf] :
-         # If op2 = [0] -> NaN
-         # If op2 has 0 inside -> [-Inf, Inf]    The argument here is: Inf*y is an +/-Inf for
-                                                 every y. Since y can have both signs, we
-                                                 can have bot +Inf and -Inf.
-         # Else -> sgn(op2)*op1
-     # If op2 = [-Inf] or [+Inf] :
-         # If op1 = [0] -> NaN
-         # If op1 has 0 inside -> [-Inf, +Inf]
-         # Else -> sgn(op1)*op2
+    # op1 = NaN or op2 = NaN -> NaN
+    # op1 empty or op2 empty -> empty
+    # If op1 = [+Inf] or op1 = [-Inf] :
+    # If op2 = [0] -> NaN
+    # If op2 has 0 inside -> [-Inf, Inf]    The argument here is: Inf*y is an +/-Inf for
+    every y. Since y can have both signs, we
+    can have bot +Inf and -Inf.
+    # Else -> sgn(op2)*op1
+    # If op2 = [-Inf] or [+Inf] :
+    # If op1 = [0] -> NaN
+    # If op1 has 0 inside -> [-Inf, +Inf]
+    # Else -> sgn(op1)*op2
 
-     Now, we know that neither op1 or op2 is [-Inf] or [Inf].
-     # If op1 = [0] or op2 = [0] -> [0] the argument here is: even if the other contains an Inf,
-                                        the function 0*y is 0 everywhere
-                                        so we define it at y=Inf by
-                                        continuity.
+    Now, we know that neither op1 or op2 is [-Inf] or [Inf].
+    # If op1 = [0] or op2 = [0] -> [0] the argument here is: even if the other contains an Inf,
+    the function 0*y is 0 everywhere
+    so we define it at y=Inf by
+    continuity.
 
-     Now, we know that neither op1 nor op2 are singular point intervals
-     # Else -> mpfi_mul(op1, op2)
+    Now, we know that neither op1 nor op2 are singular point intervals
+    # Else -> mpfi_mul(op1, op2)
   */     
 
   if (sollya_mpfi_is_empty(op1) || sollya_mpfi_is_empty(op2)) return sollya_mpfi_set_empty(rop);

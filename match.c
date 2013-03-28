@@ -1,49 +1,49 @@
 /*
 
-Copyright 2011 by
+  Copyright 2011 by
 
-Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
-UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France.
 
-Contributors Ch. Lauter
+  Contributors Ch. Lauter
 
-christoph.lauter@ens-lyon.org
+  christoph.lauter@ens-lyon.org
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use,
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info".
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use,
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info".
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability.
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability.
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-herefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or
-data to be ensured and,  more generally, to use and operate it in the
-same conditions as regards security.
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  herefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -61,11 +61,11 @@ int tryMatch(chain **, node *, node *);
 /* Add association identifier -> thing to list 
    
    If identifier exists already:
-      - And is associated to a thing that is equal to thing, return success (1)
-      - And is associated to a different thing, return failure (0)
+   - And is associated to a thing that is equal to thing, return success (1)
+   - And is associated to a different thing, return failure (0)
 
    Otherwise: create the association identifier -> thing and add it to the 
-              list, return success (1)
+   list, return success (1)
 
 */
 int associateThing(chain **associations, char *identifier, node *thing) {
@@ -207,8 +207,8 @@ node *headFunction(node *tree) {
     copy->child2 = copyThing(tree->child2);
     break;
   default:
-   sollyaFprintf(stderr,"Error: headFunction: unknown identifier in the tree\n");
-   exit(1);
+    sollyaFprintf(stderr,"Error: headFunction: unknown identifier in the tree\n");
+    exit(1);
   }
   return copy;
 }
@@ -309,12 +309,12 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
 
      First check, if recursion is actually possible on the thing to match.
      Recursion is not possible:
-       - On a variable
-       - On a constant
-       - On pi
-       - On a library constant
-       - On a binary function (as we have only one variable on the 
-         possible matcher).
+     - On a variable
+     - On a constant
+     - On pi
+     - On a library constant
+     - On a binary function (as we have only one variable on the 
+     possible matcher).
 
      Second check if it is equal to the free mathematical variable. If
      it is, consider the free mathematic variable as the identity
@@ -399,13 +399,13 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
 	   again.
 
 	   There is no recursion possible:
-	     - if the current thing to match is one of 
-	        -- variable
-                -- constant
-                -- pi 
-                -- libraryconstant
-                -- binary function
-             - if the current possible matcher is a free variable in an application context
+           - if the current thing to match is one of 
+           -- variable
+           -- constant
+           -- pi 
+           -- libraryconstant
+           -- binary function
+           - if the current possible matcher is a free variable in an application context
 	*/
 	switch (accessThruMemRef(currentThingToMatch)->nodeType) {
 	case VARIABLE:
@@ -432,7 +432,7 @@ int tryMatchExtendedPureTree(chain **associations, node *thingToMatch, node *pos
 	       Move currentThingToMatch to the one, first and only
 	       child of the current thing to match.
 
-	     */
+            */
 	    tempNode = headFunction(currentThingToMatch);
 	    if (tempNode == NULL) {
 	      /* This case should never happen */
@@ -769,7 +769,7 @@ int tryMatchList(chain **associations, node *thingToMatch, node *possibleMatcher
 
      Now check if normalization is needed for final elliptic lists.
 
-   */
+  */
   okay = 1;
   myAssociations = NULL;
   freeLists = 0;
@@ -861,7 +861,7 @@ int tryMatchList(chain **associations, node *thingToMatch, node *possibleMatcher
 	/* We just have to repeat the last element of the sequence 
 	   
 	   We avoid mallocs here. We'll have to account for that later.
-	 */
+        */
 	implicitElement = (node *) (lastThingToMatch->value);
       }
 
@@ -918,7 +918,7 @@ int tryMatchPrepend(chain **associations, node *thingToMatch, node *possibleMatc
     tailAssoc = NULL;
     okay = tryMatch(&tailAssoc, tailList, accessThruMemRef(possibleMatcher)->child2);
     if (okay) {
-	okay = tryCombineAssociations(&myAssociations, headAssoc, tailAssoc);
+      okay = tryCombineAssociations(&myAssociations, headAssoc, tailAssoc);
     }
     if (tailAssoc != NULL) freeChain(tailAssoc, freeEntryOnVoid);
     freeThing(tailList);
@@ -972,7 +972,7 @@ int tryMatchAppend(chain **associations, node *thingToMatch, node *possibleMatch
     tailAssoc = NULL;
     okay = tryMatch(&tailAssoc, tailElement, accessThruMemRef(possibleMatcher)->child2);
     if (okay) {
-	okay = tryCombineAssociations(&myAssociations, headAssoc, tailAssoc);
+      okay = tryCombineAssociations(&myAssociations, headAssoc, tailAssoc);
     }
     if (tailAssoc != NULL) freeChain(tailAssoc, freeEntryOnVoid);
   }
@@ -1391,12 +1391,12 @@ int tryCutPrefixList(chain **associations, node **restList, node *mainList, node
       possibleMatchingPrefix = makeEmptyList();
       myRestList = copyThing(mainList);
       for (i=0; i<lenPrefix; i++) {
-	  tempNode = makeAppend(possibleMatchingPrefix, makeHead(copyThing(myRestList)));
-	  possibleMatchingPrefix = evaluateThing(tempNode);
-	  freeThing(tempNode);
-	  tempNode = makeTail(myRestList);
-	  myRestList = evaluateThing(tempNode);
-	  freeThing(tempNode);
+        tempNode = makeAppend(possibleMatchingPrefix, makeHead(copyThing(myRestList)));
+        possibleMatchingPrefix = evaluateThing(tempNode);
+        freeThing(tempNode);
+        tempNode = makeTail(myRestList);
+        myRestList = evaluateThing(tempNode);
+        freeThing(tempNode);
       }
       okay = tryMatch(associations, possibleMatchingPrefix, prefix);
       if (okay) {

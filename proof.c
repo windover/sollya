@@ -1,54 +1,58 @@
 /*
 
-Copyright 2006-2009 by 
+  Copyright 2006-2012 by 
 
-Laboratoire de l'Informatique du Parallelisme, 
-UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
+  Laboratoire de l'Informatique du Parallelisme, 
+  UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
-and by
+  LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
 
-LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
+  and by
 
-Contributors Ch. Lauter, S. Chevillard
+  Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
+  UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
 
-christoph.lauter@ens-lyon.org
-sylvain.chevillard@ens-lyon.org
 
-This software is a computer program whose purpose is to provide an
-environment for safe floating-point code development. It is
-particularily targeted to the automatized implementation of
-mathematical floating-point libraries (libm). Amongst other features,
-it offers a certified infinity norm, an automatic polynomial
-implementer and a fast Remez algorithm.
+  Contributors Ch. Lauter, S. Chevillard
 
-This software is governed by the CeCILL-C license under French law and
-abiding by the rules of distribution of free software.  You can  use, 
-modify and/ or redistribute the software under the terms of the CeCILL-C
-license as circulated by CEA, CNRS and INRIA at the following URL
-"http://www.cecill.info". 
+  christoph.lauter@ens-lyon.org
+  sylvain.chevillard@ens-lyon.org
 
-As a counterpart to the access to the source code and  rights to copy,
-modify and redistribute granted by the license, users are provided only
-with a limited warranty  and the software's author,  the holder of the
-economic rights,  and the successive licensors  have only  limited
-liability. 
+  This software is a computer program whose purpose is to provide an
+  environment for safe floating-point code development. It is
+  particularily targeted to the automatized implementation of
+  mathematical floating-point libraries (libm). Amongst other features,
+  it offers a certified infinity norm, an automatic polynomial
+  implementer and a fast Remez algorithm.
 
-In this respect, the user's attention is drawn to the risks associated
-with loading,  using,  modifying and/or developing or reproducing the
-software by the user in light of its specific status of free software,
-that may mean  that it is complicated to manipulate,  and  that  also
-therefore means  that it is reserved for developers  and  experienced
-professionals having in-depth computer knowledge. Users are therefore
-encouraged to load and test the software's suitability as regards their
-requirements in conditions enabling the security of their systems and/or 
-data to be ensured and,  more generally, to use and operate it in the 
-same conditions as regards security. 
+  This software is governed by the CeCILL-C license under French law and
+  abiding by the rules of distribution of free software.  You can  use, 
+  modify and/ or redistribute the software under the terms of the CeCILL-C
+  license as circulated by CEA, CNRS and INRIA at the following URL
+  "http://www.cecill.info". 
 
-The fact that you are presently reading this means that you have had
-knowledge of the CeCILL-C license and that you accept its terms.
+  As a counterpart to the access to the source code and  rights to copy,
+  modify and redistribute granted by the license, users are provided only
+  with a limited warranty  and the software's author,  the holder of the
+  economic rights,  and the successive licensors  have only  limited
+  liability. 
 
-This program is distributed WITHOUT ANY WARRANTY; without even the
-implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  In this respect, the user's attention is drawn to the risks associated
+  with loading,  using,  modifying and/or developing or reproducing the
+  software by the user in light of its specific status of free software,
+  that may mean  that it is complicated to manipulate,  and  that  also
+  therefore means  that it is reserved for developers  and  experienced
+  professionals having in-depth computer knowledge. Users are therefore
+  encouraged to load and test the software's suitability as regards their
+  requirements in conditions enabling the security of their systems and/or 
+  data to be ensured and,  more generally, to use and operate it in the 
+  same conditions as regards security. 
+
+  The fact that you are presently reading this means that you have had
+  knowledge of the CeCILL-C license and that you accept its terms.
+
+  This program is distributed WITHOUT ANY WARRANTY; without even the
+  implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
@@ -226,10 +230,10 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
     switch (theo->simplificationUsed) {
     case TAYLORPROOF:
       sollyaFprintf(fd,"Theorem %d shows that for all %s in the given domain the given expression is bounded by ",
-	      theo->theoLeft->number, ((variablename == NULL) ? "_x_" : variablename));
+                    theo->theoLeft->number, ((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->boundLeft));
       sollyaFprintf(fd,".\nFurther lemma %d.%d shows that the derivative of the given expression is ",
-	      theo->number,1);
+                    theo->number,1);
       fprintTree(fd,theo->leftDerivative);
       sollyaFprintf(fd,".\nOn the given domain, the values taken by this derivative are bounded by ");
       fprintInterval(fd,*(theo->boundLeftLinear));
@@ -241,8 +245,8 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sollyaFprintf(fd,"The (quasi-) point interval _xZ = ");
       fprintInterval(fd,*(theo->xZ));
       sollyaFprintf(fd,
-	   " is contained in the given domain.\nFor values %s in this interval _xZ, the given expression is bounded by ",
-	      ((variablename == NULL) ? "_x_" : variablename));
+                    " is contained in the given domain.\nFor values %s in this interval _xZ, the given expression is bounded by ",
+                    ((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->boundLeftConstant));
       if (!exprBoundTheoIsTrivial(theo->theoLeftConstant)) {
 	sollyaFprintf(fd," as shown by theorem %d.\n",theo->theoLeftConstant->number);
@@ -272,44 +276,44 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       fprintTree(fd,theo->theoRight->function);
       if (!exprBoundTheoIsTrivial(theo->theoLeft)) {
 	sollyaFprintf(fd,"\nAs per theorem %d, for %s in the given domain, f(%s) is bounded by ",
-		theo->theoLeft->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                      theo->theoLeft->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"\nTrivially for %s in the given domain, f(%s) is bounded by ",
-		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundLeft));
       if (!exprBoundTheoIsTrivial(theo->theoRight)) {
 	sollyaFprintf(fd,"\nAs per theorem %d, for %s in the given domain, g(%s) is bounded by ",
-		theo->theoRight->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                      theo->theoRight->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"\nTrivially for %s in the given domain, g(%s) is bounded by ",
-		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundRight));
       sollyaFprintf(fd,"\nAs shown by lemma %d.%d, the derivative of f(%s) is ",
-	      theo->number,1,((variablename == NULL) ? "_x_" : variablename));
+                    theo->number,1,((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->leftDerivative);
       sollyaFprintf(fd,"\nFurther by lemma %d.%d, we know that the derivative of g(%s) is ",
-	      theo->number,2,((variablename == NULL) ? "_x_" : variablename));
+                    theo->number,2,((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->rightDerivative);
       sollyaFprintf(fd,"\nThe (quasi-) point interval _xZ = ");
       fprintInterval(fd,*(theo->xZ));
       sollyaFprintf(fd," is contained in the given domain.\n");
       if (!exprBoundTheoIsTrivial(theo->theoLeftConstant)) {
 	sollyaFprintf(fd,"As per theorem %d, for %s in this interval _xZ, f(%s) is bounded by\n_xC = ",
-		theo->theoLeftConstant->number, ((variablename == NULL) ? "_x_" : variablename), ((variablename == NULL) ? "_x_" : variablename));
+                      theo->theoLeftConstant->number, ((variablename == NULL) ? "_x_" : variablename), ((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"Trivially, for %s in this interval _xZ, f(%s) is bounded by\n_xC = ",
-		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundLeftConstant));
       sollyaFprintf(fd,"\n");
       if (!exprBoundTheoIsTrivial(theo->theoRightConstant)) {
 	sollyaFprintf(fd,"As per theorem %d, for %s in the interval _xZ, g(%s) is bounded by\n_yC = ",
-		theo->theoRightConstant->number, ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                      theo->theoRightConstant->number, ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"Trivially, for %s in this interval _xZ, g(%s) is bounded by\n_yC = ",
-		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundRightConstant));
       sollyaFprintf(fd,".\nLet _X be the given domain. The interval evaluation of (_X - _xZ) gives ");
@@ -317,25 +321,25 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sollyaFprintf(fd,".\n");
       if (!exprBoundTheoIsTrivial(theo->theoLeftLinear)) {
 	sollyaFprintf(fd,"As per theorem %d, for %s in the given domain, the derivative of f(%s) is bounded by\n_xL = ",
-		theo->theoLeftLinear->number, ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                      theo->theoLeftLinear->number, ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"Trivially, for %s in the given domain, the derivative of f(%s) is bounded by\n_xL = ",
-		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundLeftLinear));
       sollyaFprintf(fd,".\n");
       if (!exprBoundTheoIsTrivial(theo->theoRightLinear)) {
 	sollyaFprintf(fd,"As per theorem %d, for %s in the given domain, the derivative of g(%s) is bounded by\n_yL = ",
-		theo->theoRightLinear->number, ((variablename == NULL) ? "_x_" : variablename), ((variablename == NULL) ? "_x_" : variablename));
+                      theo->theoRightLinear->number, ((variablename == NULL) ? "_x_" : variablename), ((variablename == NULL) ? "_x_" : variablename));
       } else {
 	sollyaFprintf(fd,"Trivially, for %s in the given domain, the derivative of g(%s) is bounded by\n_yL = ",
-		((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       }
       fprintInterval(fd,*(theo->boundRightLinear));
       sollyaFprintf(fd,".\nUsing Taylor\'s theorem, one verifies that the images of the given expression, function in %s,\n",
-	      ((variablename == NULL) ? "_x_" : variablename));
+                    ((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"for %s in the given domain, are contained in the intersection of the interval evaluation of\n",
-	      ((variablename == NULL) ? "_x_" : variablename));
+                    ((variablename == NULL) ? "_x_" : variablename));
       fx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
       gx = (char *) safeCalloc(strlen(((variablename == NULL) ? "_x_" : variablename))+4,sizeof(char));
       sprintf(fx,"f(%s)",((variablename == NULL) ? "_x_" : variablename));
@@ -382,7 +386,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       sollyaFprintf(fd," and therefore constant zero, too.\nBy Hopital's rule, the given expression");
       sollyaFprintf(fd," is bounded by the interval division of boundings\n");
       sollyaFprintf(fd,"of the derivatives of the numerator f(%s) and denominator g(%s) of the given expression.\n",
-	      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"As per lemma %d.%d, the derivative of f(%s) is ",theo->number,1,((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->leftDerivative);
       sollyaFprintf(fd,"As per lemma %d.%d, the derivative of g(%s) is ",theo->number,2,((variablename == NULL) ? "_x_" : variablename));
@@ -404,7 +408,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       fprintInterval(fd,*(theo->theoRightLinear->y));
       sollyaFprintf(fd,".\n");
       sollyaFprintf(fd,"This yields to the following bound for the given expression with %s in the given domain: ",
-	      ((variablename == NULL) ? "_x_" : variablename));
+                    ((variablename == NULL) ? "_x_" : variablename));
       fprintInterval(fd,*(theo->y));
       sollyaFprintf(fd,".\nThis is the bound that has had to be shown.\n");
       break;
@@ -452,7 +456,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
 	sollyaFprintf(fd,"Trivially, ");
       }
       sollyaFprintf(fd,"the images of f(%s) for %s in _xZ are in the point interval [0;0].\n",
-	      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"f(%s) is therefore constant zero in this interval _xZ.\n", ((variablename == NULL) ? "_x_" : variablename));
       if (!exprBoundTheoIsTrivial(theo->theoRightConstant)) {
 	sollyaFprintf(fd,"As per theorem %d, ",theo->theoRightConstant->number);
@@ -460,12 +464,12 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
 	sollyaFprintf(fd,"Trivially, ");
       }
       sollyaFprintf(fd,"the images of g(%s) for %s in _xZ are in the point interval [0;0].\n",
-	      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"g(%s) is therefore constant zero in this interval _xZ.\n", ((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"Hopital's rule, i.e. a first order Taylor expansion of f(%s) and g(%s), can therefore\n",
-	      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"be used for bounding the given expression, which will be replaced by f'(%s)/g'(%s).\n",
-	      ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       sollyaFprintf(fd,"Lemma %d.%d shows that f'(%s) is\nf'(%s) = ",theo->number,1,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
       fprintTree(fd,theo->leftDerivative);
       sollyaFprintf(fd,"\nLemma %d.%d shows that g'(%s) is\ng'(%s) = ",theo->number,2,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
@@ -499,7 +503,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       case 1:
 	if (!exprBoundTheoIsTrivial(theo->theoLeft)) {
 	  sollyaFprintf(fd,"As per theorem %d, for %s in the given domain, f(%s) = ",
-		  theo->theoLeft->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                        theo->theoLeft->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	  fprintTree(fd,theo->theoLeft->function);
 	  sollyaFprintf(fd," is bounded by ");
 	} else {
@@ -513,7 +517,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
       case 2:
 	if (!exprBoundTheoIsTrivial(theo->theoLeft)) {
 	  sollyaFprintf(fd,"As per theorem %d, for %s in the given domain, f(%s) = ",
-		  theo->theoLeft->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                        theo->theoLeft->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	  fprintTree(fd,theo->theoLeft->function);
 	  sollyaFprintf(fd," is bounded by ");
 	} else {
@@ -525,7 +529,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
 	sollyaFprintf(fd,".\n");
 	if (!exprBoundTheoIsTrivial(theo->theoRight)) {
 	  sollyaFprintf(fd,"As per theorem %d, for %s in the given domain, g(%s) = ",
-		  theo->theoRight->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                        theo->theoRight->number,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	  fprintTree(fd,theo->theoRight->function);
 	  sollyaFprintf(fd," is bounded by ");
 	} else {
@@ -538,7 +542,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
 	break;
       case MONOTONOCITY: 
 	sollyaFprintf(fd,"Lemma %d.%d shows that the derivative of the given expression is ",
-		theo->number,1);
+                      theo->number,1);
 	fprintTree(fd,theo->leftDerivative);
 	sollyaFprintf(fd,".\nOn the given domain, the values taken by this derivative are bounded by ");
 	fprintInterval(fd,*(theo->boundLeftLinear));
@@ -626,7 +630,7 @@ void fprintNumeratorSufficesLemma(FILE *fd, node *func, node *numerator, int the
   sollyaFprintf(fd,"Proof:\n");
   if (accessThruMemRef(func)->nodeType == DIV) {
     sollyaFprintf(fd,"The function f(%s) is a fraction. The function g(%s) is the numerator of this fraction.\n",
-	    ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                  ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   } else {
     if (isSyntacticallyEqual(func,numerator)) 
       sollyaFprintf(fd,"The functions f(%s) and g(%s) are equal.\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
@@ -711,7 +715,7 @@ int fprintNoZeroTheo(FILE *fd, noZeroTheo *theo, int start) {
     curr = curr->next;
   }
   sollyaFprintf(fd,"\nshow(s) (using f'(%s)) that all images f(%s) for %s in one of the domains\n",
-	  ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   sollyaFprintf(fd,"given in this theorem are contained in (the union of) the following interval(s)\n");
   curr = theo->exprBoundTheos;
   while (curr != NULL) {
@@ -790,18 +794,18 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   sollyaFprintf(fd,"\n");
   sollyaFprintf(fd,"Proof:\n");
   sollyaFprintf(fd,"As per lemma %d.%d, the derivative f'(%s) of the given function f(%s) is\nf'(%s) = ",
-	  theo->number,1,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                theo->number,1,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,theo->derivative);
   sollyaFprintf(fd,
-    ".\nLemma %d.%d shows that the set of the zeros of f'(%s), i.e. of the local extrema of f(%s) (since f is C^2), is a\n",
-	  theo->number,2,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                ".\nLemma %d.%d shows that the set of the zeros of f'(%s), i.e. of the local extrema of f(%s) (since f is C^2), is a\n",
+                theo->number,2,((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   sollyaFprintf(fd,"subset of the zeros of\ng(%s) = ",((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,theo->numeratorOfDerivative);
   sollyaFprintf(fd,".\nThe derivative of g(%s) is g'(%s) = ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,theo->derivativeOfNumeratorOfDerivative);
   sollyaFprintf(fd," as shown by lemma %d.%d.\n",theo->number,3);
   sollyaFprintf(fd,"As per theorem %d, g(%s) has no zero in the following domains:\n",
-	  theo->noZeros->number,((variablename == NULL) ? "_x_" : variablename));
+                theo->noZeros->number,((variablename == NULL) ? "_x_" : variablename));
   zeroFree = NULL;
   curr = theo->noZeros->exprBoundTheos;
   while (curr != NULL) {
@@ -839,7 +843,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
     }
   }
   sollyaFprintf(fd,".\nTheorems %d and %d show that the absolute value of f(%s) on the bounds of the given domain a = ",
-	  theo->evalLeftBound->number, theo->evalRightBound->number, ((variablename == NULL) ? "_x_" : variablename));
+                theo->evalLeftBound->number, theo->evalRightBound->number, ((variablename == NULL) ? "_x_" : variablename));
   mpfr_init2(a,sollya_mpfi_get_prec(*(theo->domain)));
   mpfr_init2(b,sollya_mpfi_get_prec(*(theo->domain)));  
   sollya_mpfi_get_left(a,*(theo->domain));
@@ -862,11 +866,11 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
     curr = curr->next;
   }
   sollyaFprintf(fd," show(s) using f'(%s) that the absolute value of f(%s) is less than or equal to this upper bound u\n",
-	  ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   sollyaFprintf(fd,"on all domains Z where g(%s) may have a zero, i.e. where f'(%s) may have a zero and f(%s) a local extremum.\n",
-	  ((variablename == NULL) ? "_x_" : variablename), ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
+                ((variablename == NULL) ? "_x_" : variablename), ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   sollyaFprintf(fd,"Theorem %d shows that there are no other domains with zeros of f'(%s) and we have shown that\n",
-	  theo->noZeros->number,((variablename == NULL) ? "_x_" : variablename));
+                theo->noZeros->number,((variablename == NULL) ? "_x_" : variablename));
   sollyaFprintf(fd,"the partitioning is complete.\n");
   prec = sollya_mpfi_get_prec(*(theo->evalLeftBound->y));
   p = sollya_mpfi_get_prec(*(theo->evalRightBound->y));
@@ -912,11 +916,11 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   }
   if (mpfr_greater_p(fl,fr)) {
     sollyaFprintf(fd,"Theorem %d shows that on a domain bound or a domain containing a zero of f'(%s)\n",
-	    innerLeftNumber,((variablename == NULL) ? "_x_" : variablename));
+                  innerLeftNumber,((variablename == NULL) ? "_x_" : variablename));
     sollyaFprintf(fd,"the value of f(%s) can principally be as great as ",((variablename == NULL) ? "_x_" : variablename));
     fprintValue(fd,fl);
     sollyaFprintf(fd,".\nTheorem %d shows that on a domain bound or a domain containing a zero of f'(%s)\n",
-	    innerRightNumber,((variablename == NULL) ? "_x_" : variablename));
+                  innerRightNumber,((variablename == NULL) ? "_x_" : variablename));
     sollyaFprintf(fd,"the value of f(%s) can principally as small as ",((variablename == NULL) ? "_x_" : variablename));
     fprintValue(fd,fr);
     sollyaFprintf(fd,".\nThe lower bound for the infinity norm on f(%s) in the given domain l = ",((variablename == NULL) ? "_x_" : variablename));
@@ -931,7 +935,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
       num = innerRightNumber;
     }
     sollyaFprintf(fd,"Theorem %d shows that on a domain bound or a domain containing a zero of f'(%s)\n",
-	    num,((variablename == NULL) ? "_x_" : variablename));
+                  num,((variablename == NULL) ? "_x_" : variablename));
     sollyaFprintf(fd,"the absolute value of f(%s) is not less than the lower bound l = ",((variablename == NULL) ? "_x_" : variablename));
     fprintValue(fd,l);
     sollyaFprintf(fd," given for the infinity norm.");
@@ -1094,7 +1098,7 @@ void fprintGappaAssignmentAsMaths(FILE *fd, gappaAssignment *assign) {
     break;
   case GAPPA_FMA_REL: 
     sollyaFprintf(fd,"M%s = (M%s * M%s) + M%s;\n",
-	    assign->resultVariable,assign->operand3Variable,assign->operand2Variable,assign->operand1Variable);
+                  assign->resultVariable,assign->operand3Variable,assign->operand2Variable,assign->operand1Variable);
     break;
   case GAPPA_COPY: 
     sollyaFprintf(fd,"M%s = M%s;\n",assign->resultVariable,assign->operand1Variable);
@@ -1131,13 +1135,13 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
       sollyaFprintf(fd,"%sm = double(%1.80e);\n",assign->resultVariable,assign->constMi);
       sollyaFprintf(fd,"%sl = double(%1.80e);\n",assign->resultVariable,assign->constLo);
       sollyaFprintf(fd,"%shml = %sh + %sm + %sl;\n\n",assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable);
       break;
     case 2:
       sollyaFprintf(fd,"%sh = double(%1.80e);\n",assign->resultVariable,assign->constHi);
       sollyaFprintf(fd,"%sm = double(%1.80e);\n",assign->resultVariable,assign->constMi);
       sollyaFprintf(fd,"%shm = %sh + %sm;\n\n",assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable);
       break;
     case 1:
       sollyaFprintf(fd,"%sh = double(%1.80e);\n\n",assign->resultVariable,assign->constHi);
@@ -1168,20 +1172,20 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
   case GAPPA_ADD_DOUBLE: 
     if ((assign->operand1UsedType == 2) && (assign->operand2UsedType == 2)) {
       sollyaFprintf(fd,"%sh double= (%sh + %sm) + (%sh + %sm);\n",
-	      assign->resultVariable,
-	      assign->operand1Variable,assign->operand1Variable,
-	      assign->operand2Variable,assign->operand2Variable);
+                    assign->resultVariable,
+                    assign->operand1Variable,assign->operand1Variable,
+                    assign->operand2Variable,assign->operand2Variable);
     } else {
       if (assign->operand1UsedType == 2) {
 	sollyaFprintf(fd,"%sh double= (%sh + %sm) + %sm;\n",
-		assign->resultVariable,assign->operand1Variable,assign->operand1Variable,assign->operand2Variable);
+                      assign->resultVariable,assign->operand1Variable,assign->operand1Variable,assign->operand2Variable);
       } else {
 	if (assign->operand2UsedType == 2) {
 	  sollyaFprintf(fd,"%sh double= %sh + (%sh + %sm);\n",
-		  assign->resultVariable,assign->operand1Variable,assign->operand2Variable,assign->operand2Variable);
+                        assign->resultVariable,assign->operand1Variable,assign->operand2Variable,assign->operand2Variable);
 	} else {
 	  sollyaFprintf(fd,"%sh = double(%sh + %sh);\n",
-		  assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
+                        assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
 	}
       }
     }
@@ -1189,20 +1193,20 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
   case GAPPA_MUL_DOUBLE: 
     if ((assign->operand1UsedType == 2) && (assign->operand2UsedType == 2)) {
       sollyaFprintf(fd,"%sh double= (%sh + %sm) * (%sh + %sm);\n",
-	      assign->resultVariable,
-	      assign->operand1Variable,assign->operand1Variable,
-	      assign->operand2Variable,assign->operand2Variable);
+                    assign->resultVariable,
+                    assign->operand1Variable,assign->operand1Variable,
+                    assign->operand2Variable,assign->operand2Variable);
     } else {
       if (assign->operand1UsedType == 2) {
 	sollyaFprintf(fd,"%sh double= (%sh + %sm) * %sm;\n",
-		assign->resultVariable,assign->operand1Variable,assign->operand1Variable,assign->operand2Variable);
+                      assign->resultVariable,assign->operand1Variable,assign->operand1Variable,assign->operand2Variable);
       } else {
 	if (assign->operand2UsedType == 2) {
 	  sollyaFprintf(fd,"%sh double= %sh * (%sh + %sm);\n",
-		  assign->resultVariable,assign->operand1Variable,assign->operand2Variable,assign->operand2Variable);
+                        assign->resultVariable,assign->operand1Variable,assign->operand2Variable,assign->operand2Variable);
 	} else {
 	  sollyaFprintf(fd,"%sh = double(%sh * %sh);\n",
-		  assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
+                        assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
 	}
       }
     }
@@ -1342,19 +1346,19 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
     sollyaFprintf(fd,"%sh ~ %shml;\n",assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"%sm -> %sh * overlap_%s;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"%sl / %sm -> - ((%sm - %sml) / %sml) / (1 + ((%sm - %sml) / %sml));\n",
-	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                  assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                  assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"(%shm - %shml) / %shml -> - (%sl / %sm) * (1 / (1 / overlap_%s + 1 + (%sl / %sm)));\n",
-	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                  assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                  assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"%sml -> %shml / ((1 + ((%sm - %sml) / %sml)) / overlap_%s + 1);\n",
-	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	    assign->resultVariable,assign->resultVariable);
+                  assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                  assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
-	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                  assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"%sh -> %shml / (overlap_%s / (1 + ((%sm - %sml) / %sml)) + 1);\n",
-	    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	    assign->resultVariable,assign->resultVariable);
+                  assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                  assign->resultVariable,assign->resultVariable);
     break;
   case GAPPA_ADD_REL: 
     switch (assign->resultType) {
@@ -1364,19 +1368,19 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
       sollyaFprintf(fd,"%sh ~ %shml;\n",assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sm -> %sh * overlap_%s;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sl / %sm -> - ((%sm - %sml) / %sml) / (1 + ((%sm - %sml) / %sml));\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"(%shm - %shml) / %shml -> - (%sl / %sm) * (1 / (1 / overlap_%s + 1 + (%sl / %sm)));\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sml -> %shml / ((1 + ((%sm - %sml) / %sml)) / overlap_%s + 1);\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sh -> %shml / (overlap_%s / (1 + ((%sm - %sml) / %sml)) + 1);\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable);
       break;
     case 2:
       sollyaFprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
@@ -1394,19 +1398,19 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
       sollyaFprintf(fd,"%sh ~ %shml;\n",assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sm -> %sh * overlap_%s;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sl / %sm -> - ((%sm - %sml) / %sml) / (1 + ((%sm - %sml) / %sml));\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"(%shm - %shml) / %shml -> - (%sl / %sm) * (1 / (1 / overlap_%s + 1 + (%sl / %sm)));\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sml -> %shml / ((1 + ((%sm - %sml) / %sml)) / overlap_%s + 1);\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sh -> %shml / (overlap_%s / (1 + ((%sm - %sml) / %sml)) + 1);\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable);
       break;
     case 2:
       sollyaFprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
@@ -1424,19 +1428,19 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
       sollyaFprintf(fd,"%sh ~ %shml;\n",assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sm -> %sh * overlap_%s;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sl / %sm -> - ((%sm - %sml) / %sml) / (1 + ((%sm - %sml) / %sml));\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"(%shm - %shml) / %shml -> - (%sl / %sm) * (1 / (1 / overlap_%s + 1 + (%sl / %sm)));\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sml -> %shml / ((1 + ((%sm - %sml) / %sml)) / overlap_%s + 1);\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable);
       sollyaFprintf(fd,"%sh -> %shml / (overlap_%s / (1 + ((%sm - %sml) / %sml)) + 1);\n",
-	      assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
-	      assign->resultVariable,assign->resultVariable);
+                    assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
+                    assign->resultVariable,assign->resultVariable);
       break;
     case 2:
       sollyaFprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
@@ -1581,32 +1585,32 @@ void fprintGappaAssignmentAsOverlapBound(FILE *fd, gappaAssignment *assign) {
     break;
   case GAPPA_RENORMALIZE: 
     sollyaFprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
-	    assign->resultVariable,assign->resultOverlap);
+                  assign->resultVariable,assign->resultOverlap);
     sollyaFprintf(fd,"/\\ |%sml| in [1b-1021,1b1023]\n",
-	    assign->resultVariable);
+                  assign->resultVariable);
     break;
   case GAPPA_ADD_REL: 
     if (assign->resultType == 3) {
       sollyaFprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
-	      assign->resultVariable,assign->resultOverlap);
+                    assign->resultVariable,assign->resultOverlap);
       sollyaFprintf(fd,"/\\ |%sml| in [1b-1021,1b1023]\n",
-	      assign->resultVariable);
+                    assign->resultVariable);
     }
     break;
   case GAPPA_MUL_REL: 
     if (assign->resultType == 3) {
       sollyaFprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
-	      assign->resultVariable,assign->resultOverlap);
+                    assign->resultVariable,assign->resultOverlap);
       sollyaFprintf(fd,"/\\ |%sml| in [1b-1021,1b1023]\n",
-	      assign->resultVariable);
+                    assign->resultVariable);
     }
     break;
   case GAPPA_FMA_REL: 
     if (assign->resultType == 3) {
       sollyaFprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
-	      assign->resultVariable,assign->resultOverlap);
+                    assign->resultVariable,assign->resultOverlap);
       sollyaFprintf(fd,"/\\ |%sml| in [1b-1021,1b1023]\n",
-	      assign->resultVariable);
+                    assign->resultVariable);
     }
     break;
   case GAPPA_COPY: 
@@ -1840,19 +1844,19 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
     sollyaFprintf(fd,"%shm ~ %shml;\n",proof->variableName,proof->variableName);
     sollyaFprintf(fd,"%sm -> %sh * overlap_%s;\n",proof->variableName,proof->variableName,proof->variableName);
     sollyaFprintf(fd,"%sl / %sm -> - ((%sm - %sml) / %sml) / (1 + ((%sm - %sml) / %sml));\n",
-	    proof->variableName,proof->variableName,proof->variableName,proof->variableName,
-	    proof->variableName,proof->variableName,proof->variableName,proof->variableName);
+                  proof->variableName,proof->variableName,proof->variableName,proof->variableName,
+                  proof->variableName,proof->variableName,proof->variableName,proof->variableName);
     sollyaFprintf(fd,"(%shm - %shml) / %shml -> - (%sl / %sm) * (1 / (1 / overlap_%s + 1 + (%sl / %sm)));\n",
-	    proof->variableName,proof->variableName,proof->variableName,proof->variableName,
-	    proof->variableName,proof->variableName,proof->variableName,proof->variableName);
+                  proof->variableName,proof->variableName,proof->variableName,proof->variableName,
+                  proof->variableName,proof->variableName,proof->variableName,proof->variableName);
     sollyaFprintf(fd,"%sml -> %shml / ((1 + ((%sm - %sml) / %sml)) / overlap_%s + 1);\n",
-	    proof->variableName,proof->variableName,proof->variableName,proof->variableName,
-	    proof->variableName,proof->variableName);
+                  proof->variableName,proof->variableName,proof->variableName,proof->variableName,
+                  proof->variableName,proof->variableName);
     sollyaFprintf(fd,"(%sh - %shm) / %shm -> - 1 / (1 / overlap_%s + 1);\n",
-	    proof->variableName,proof->variableName,proof->variableName,proof->variableName);
+                  proof->variableName,proof->variableName,proof->variableName,proof->variableName);
     sollyaFprintf(fd,"%sh -> %shml / (overlap_%s / (1 + ((%sm - %sml) / %sml)) + 1);\n",
-	    proof->variableName,proof->variableName,proof->variableName,proof->variableName,
-	    proof->variableName,proof->variableName);
+                  proof->variableName,proof->variableName,proof->variableName,proof->variableName,
+                  proof->variableName,proof->variableName);
     break;
   case 2:
     sollyaFprintf(fd,"%sh ~ %shm;\n",proof->variableName,proof->variableName);
