@@ -172,7 +172,7 @@ void *copyIntPtrOnVoid(void *i) {
 
   copy = (int *) safeMalloc(sizeof(int));
   *copy = *((int *) i);
- 
+
   return (void *) copy;
 }
 
@@ -206,7 +206,7 @@ chain* concatChains(chain *c1, chain *c2) {
 /* Removes the first occurence of n in a chain containing int values
    The chain c is modified.
    If n is not the first element of the chain, the returned pointer
-   points at the same place as c 
+   points at the same place as c
 */
 chain *removeInt(chain *c, int n) {
   chain *curr;
@@ -332,7 +332,7 @@ void sortChain(chain *c,  int (*f) (void *, void *)) {
   if (c->next == NULL) return;
 
   /* else... */
- 
+
   curr1 = c;
   while (curr1 != NULL) {
     curr2 = curr1->next;

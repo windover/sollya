@@ -54,7 +54,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/* The following #defined is needed to activate some features in the 
+/* The following #defined is needed to activate some features in the
    sollya-messaging header file that are only needed when used with this
    sollya-messaging implementation file.
 */

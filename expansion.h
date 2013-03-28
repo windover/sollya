@@ -9,9 +9,9 @@
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or 
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -19,9 +19,9 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
- * 
+ *
  */
 
 #ifndef EXPANSION_H
@@ -46,14 +46,14 @@ void p(double *p_resh, double *p_resm, double x);
 void p(double *p_resh, double *p_resm, double *p_resl, double x);
 #elif defined(DD_TO_DD)
 void p(double *p_resh, double *p_resm, double xh, double xm);
-#elif defined(DD_TO_TD) 
+#elif defined(DD_TO_TD)
 void p(double *p_resh, double *p_resm, double *p_resl, double xh, double xm);
 #elif defined(TD_TO_TD)
 void p(double *p_resh, double *p_resm, double *p_resl, double xh, double xm, double xl);
 #endif
 
 typedef union {
-  int64_t l; 
+  int64_t l;
   double d;
 } db_number;
 
@@ -61,7 +61,7 @@ typedef union {
         {double _z, _a=a, _b=b;    \
          s = _a + _b;              \
          _z = s - _a;              \
-         r = _b - _z;   }            
+         r = _b - _z;   }
 
 
 #define Add12Cond(s, r, a, b)      \
@@ -95,7 +95,7 @@ do {                                                                            
   _v3 = (xl) + (yl);                                                                   \
   _v4 = _v2 + _v3;                                                                     \
   Add12((*(zh)),(*(zl)),_v1,_v4);                                                      \
-} while (2+2==5) 
+} while (2+2==5)
 
 
 #define Mul12(rh,rl,u,v)                        \
@@ -160,8 +160,8 @@ double mh, ml;                                        \
     Add12((*(resh)),(*(resl)),_t3,_t8);              \
 }
 
-/* Eps MulAdd212 <= 2^-100 
-   for |(ah + bh) * (bh + bl)| <= 1/4 * |ch + cl| 
+/* Eps MulAdd212 <= 2^-100
+   for |(ah + bh) * (bh + bl)| <= 1/4 * |ch + cl|
 */
 #define MulAdd22(resh,resl,ch,cl,ah,al,bh,bl)        \
 {                                                    \
@@ -186,7 +186,7 @@ double mh, ml;                                        \
     Add12(_t1,_t2,(a),(bh));                         \
     _t3 = _t2 + (bl);                                \
     Add12((*(resh)),(*(resl)),_t1,_t3);              \
-}    
+}
 
 
 #define Add122Cond(resh,resl,a,bh,bl)                \
@@ -196,7 +196,7 @@ double mh, ml;                                        \
     Add12Cond(_t1,_t2,(a),(bh));                     \
     _t3 = _t2 + (bl);                                \
     Add12((*(resh)),(*(resl)),_t1,_t3);              \
-}    
+}
 
 
 #define Add212(resh,resl,ah,al,b)                    \
@@ -220,19 +220,19 @@ double mh, ml;                                        \
   *pzh=_ch+_cl;   *pzl=(_ch-(*pzh))+_cl;         \
 }
 
-/* 
+/*
    Coefficients for 1/sqrt(m) with 1/2 < m < 2
    The corresponding relative polynomial approximation error is less than
    eps < 2^(-8.3127) (cf. Maple file)
    The Itanium instruction frsqrta is slightly more accurate; it can
    therefore easily replace the polynomial evaluation.
 */
-   
-#define SQRTPOLYC0 2.50385236695888790947606139525305479764938354492188e+00   
-#define SQRTPOLYC1 -3.29763389114324168005509818613063544034957885742188e+00  
-#define SQRTPOLYC2 2.75726076139124520736345402838196605443954467773438e+00   
-#define SQRTPOLYC3 -1.15233725777933848632983426796272397041320800781250e+00  
-#define SQRTPOLYC4 1.86900066679800969104974228685023263096809387207031e-01   
+
+#define SQRTPOLYC0 2.50385236695888790947606139525305479764938354492188e+00
+#define SQRTPOLYC1 -3.29763389114324168005509818613063544034957885742188e+00
+#define SQRTPOLYC2 2.75726076139124520736345402838196605443954467773438e+00
+#define SQRTPOLYC3 -1.15233725777933848632983426796272397041320800781250e+00
+#define SQRTPOLYC4 1.86900066679800969104974228685023263096809387207031e-01
 #define SQRTTWO52 4.50359962737049600000000000000000000000000000000000e+15
 
 
@@ -328,7 +328,7 @@ double mh, ml;                                        \
 
 
    Arguments:       a triple double number ah, am, al
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(ah) > abs(am) > abs(al)
@@ -362,16 +362,16 @@ double mh, ml;                                        \
    Arguments:       two double double numbers:
                     ah, al and
 		    bh, bl
-   
+
    Results:         a triple double number resh, resm, resl
 
-   Preconditions:   abs(ah) > abs(al) 
+   Preconditions:   abs(ah) > abs(al)
                     ah and al do not overlap
 		    ah = round-to-nearest(ah + al)
-		    abs(bh) > abs(bl) 
+		    abs(bh) > abs(bl)
                     bh and bl do not overlap
 		    bh = round-to-nearest(bh + bl)
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(-49) * abs(resh)
@@ -396,13 +396,13 @@ double mh, ml;                                        \
 
 /* Mul233
 
-   Procedure for multiplying a double double number by 
+   Procedure for multiplying a double double number by
    a triple double number resulting in a triple double number
 
 
    Arguments:       a double double number ah, al
                     a triple double number bh, bm, bl
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(ah) > abs(al)
@@ -413,7 +413,7 @@ double mh, ml;                                        \
 		    where
 		    b_o >= 2
 		    b_u >= 1
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(\gamma) * abs(resh)
@@ -421,8 +421,8 @@ double mh, ml;                                        \
 		    \gamma >= min(48,b_o-4,b_o+b_u-4)
 		    resh+resm+resl=(ah+al) * (bh+bm+bl) * (1+eps)
 		    where
-		    abs(eps) <= 
-                       (2^(-99-b_o) + 2^(-99-b_o-b_u) + 2^(-152)) / 
+		    abs(eps) <=
+                       (2^(-99-b_o) + 2^(-99-b_o-b_u) + 2^(-152)) /
 		         (1 - 2^(-53) - 2^(-b_o+1) - 2^(-b_o-b_u+1))
 
    Details:         resh, resm and resl are considered to be pointers
@@ -457,7 +457,7 @@ double mh, ml;                                        \
    Arguments:       two triple double numbers:
                     ah, am, al and
 		    bh, bm, bl
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(bh) <= 0.75 * abs(ah)  OR  ( sign(bh) = sign(ah) AND abs(bh) <= abs(ah))  (i)
@@ -469,14 +469,14 @@ double mh, ml;                                        \
 		    b_o >= a_o >= 4
 		    b_u >= a_u >= 4
 
-		    Condition (i) may not be respected if 
+		    Condition (i) may not be respected if
 		    one can assume in this case that ah=am=al=0
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(-min(a_o,b_o) + 5) * abs(resh)
 		    resh+resm+resl = (ah+am+al + bh+bm+bl) * (1+eps)
-                    where 
+                    where
 		    abs(eps) <= 2^(-min(a_o+a_u,b_o+b_u)-47) + 2^(-min(a_o,a_u)-98)
 
    Details:         resh, resm and resl are considered to be pointers
@@ -498,13 +498,13 @@ double mh, ml;                                        \
 
 /* Add233
 
-   Procedure for adding a double double number to a triple 
+   Procedure for adding a double double number to a triple
    double number resulting in a triple double number
 
 
    Arguments:       a double double number ah, al
                     a triple double number bh, bm, bl
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(ah) > abs(al)
@@ -516,7 +516,7 @@ double mh, ml;                                        \
 		    where
 		    b_o >= 2
 		    b_u >= 1
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(\gamma) * abs(resh)
@@ -524,7 +524,7 @@ double mh, ml;                                        \
 		    \gamma >= min(45,b_o-4,b_o+b_u-2)
 		    resh+resm+resl=((ah+al) + (bh+bm+bl)) * (1+eps)
 		    where
-		    abs(eps) <= 
+		    abs(eps) <=
                        <= 2^(-b_o-b_u-52) + 2^(-b_o-104) + 2^(-153)
 
    Details:         resh, resm and resl are considered to be pointers
@@ -543,27 +543,27 @@ double mh, ml;                                        \
 
 /* Add123
 
-   Procedure for adding a double number to a double 
+   Procedure for adding a double number to a double
    double number resulting in a triple double number
 
 
-   Arguments:       a double number a 
+   Arguments:       a double number a
                     a double double number bh, bl
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(bh) <= 2^(-2) * abs(a)
 		    abs(bl) <= 2^(-53) * abs(bh)
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(-\gamma) * abs(resh)
 		    where
-		    
+
 		    \gamma >= 52
 
 		    resh+resm+resl=(a + (bh+bl)) exactly
-		    
+
 
    Details:         resh, resm and resl are considered to be pointers
 */
@@ -577,27 +577,27 @@ double mh, ml;                                        \
 
 /* Add213
 
-   Procedure for adding a double double number to a double 
+   Procedure for adding a double double number to a double
    number resulting in a triple double number
 
 
-   Arguments:       a double double number ah, al 
+   Arguments:       a double double number ah, al
                     a double number b
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(b) <= 2^(-2) * abs(ah)
 		    abs(al) <= 2^(-53) * abs(ah)
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(-\gamma) * abs(resh)
 		    where
-		    
+
 		    \gamma >= 52
 
 		    resh+resm+resl=(a + (bh+bm+bl)) exactly
-		    
+
 
    Details:         resh, resm and resl are considered to be pointers
 */
@@ -613,21 +613,21 @@ double mh, ml;                                        \
 
 /* Add23
 
-   Procedure for adding a double-double number to a double-double 
+   Procedure for adding a double-double number to a double-double
    number resulting in a triple double number
 
 
    Arguments:       a double double number ah, al
                     a double double number bh, bl
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(bh) <= 2^(-2) * abs(ah)
                     abs(al) <= 2^(-53) * abs(ah)
 		    abs(bl) <= 2^(-53) * abs(bh)
-		    
+
    Guarantees:      TO DO
-		    
+
 
    Details:         resh, resm and resl are considered to be pointers
 */
@@ -647,13 +647,13 @@ double mh, ml;                                        \
 
 /* Add133
 
-   Procedure for adding a double number to a triple 
+   Procedure for adding a double number to a triple
    double number resulting in a triple double number
 
 
-   Arguments:       a double number a 
+   Arguments:       a double number a
                     a triple double number bh, bm, bl
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(bh) <= 2^(-2) * abs(a)
@@ -662,7 +662,7 @@ double mh, ml;                                        \
 		    where
 		    b_o >= 2
 		    b_u >= 1
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(\gamma) * abs(resh)
@@ -670,7 +670,7 @@ double mh, ml;                                        \
 		    \gamma >= min(47,2-b_o,1-b_o-b_u)
 		    resh+resm+resl=(a + (bh+bm+bl)) * (1+eps)
 		    where
-		    abs(eps) <= 
+		    abs(eps) <=
                        <= 2^(-52-b_o-b_u) + 2^(-154)
 
 
@@ -688,13 +688,13 @@ double mh, ml;                                        \
 
 /* Add133Cond
 
-   Procedure for adding a double number to a triple 
+   Procedure for adding a double number to a triple
    double number resulting in a triple double number
 
 
-   Arguments:       a double number a 
+   Arguments:       a double number a
                     a triple double number bh, bm, bl
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(bm) <= 2^(-b_o) * abs(bh)
@@ -702,7 +702,7 @@ double mh, ml;                                        \
 		    where
 		    b_o >= 2
 		    b_u >= 1
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(\gamma) * abs(resh)
@@ -712,7 +712,7 @@ double mh, ml;                                        \
 
 		    resh+resm+resl=(a + (bh+bm+bl)) * (1+eps)
 		    where
-		    abs(eps) <= 
+		    abs(eps) <=
 
 		    TODO
 
@@ -733,13 +733,13 @@ double mh, ml;                                        \
 
 /* Add233Cond
 
-   Procedure for adding a double double number to a triple 
+   Procedure for adding a double double number to a triple
    double number resulting in a triple double number
 
 
    Arguments:       a double double number ah, al
                     a triple double number bh, bm, bl
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(ah) > abs(al)
@@ -750,7 +750,7 @@ double mh, ml;                                        \
 		    where
 		    b_o >= 2
 		    b_u >= 1
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(\gamma) * abs(resh)
@@ -758,7 +758,7 @@ double mh, ml;                                        \
 		    \gamma >= ????
 		    resh+resm+resl=((ah+al) + (bh+bm+bl)) * (1+eps)
 		    where
-		    abs(eps) <= 
+		    abs(eps) <=
                        <= ????
 
    Details:         resh, resm and resl are considered to be pointers
@@ -787,7 +787,7 @@ double mh, ml;                                        \
    Arguments:       two triple double numbers:
                     ah, am, al and
 		    bh, bm, bl
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(am) <= 2^(-a_o) * abs(ah)
@@ -798,16 +798,16 @@ double mh, ml;                                        \
 		    b_o, a_o >= 5
 		    b_u, a_u >= 5
 
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(-g_o) * abs(resh)
 		    with
 		    g_o > min(48,-4+a_o,-4+b_o,-4+a_o-b_o)
 		    resh+resm+resl = (ah+am+al) * (bh+bm+bl) * (1+eps)
-                    where 
+                    where
 		    abs(eps) <= 2^-151 + 2^-99-a_o + 2^-99-b_o +
-		    + 2^-49-a_o-a_u + 2^-49-b_o-b_u + 2^50-a_o-b_o-b_u + 
+		    + 2^-49-a_o-a_u + 2^-49-b_o-b_u + 2^50-a_o-b_o-b_u +
 		    + 2^50-a_o-b_o-b_u + 2^-101-a_o-b_o + 2^-52-a_o-a_u-b_o-b_u
 
    Details:         resh, resm and resl are considered to be pointers
@@ -847,7 +847,7 @@ double mh, ml;                                        \
 
    Arguments:       a double a
 		    a triple double bh, bm, bl
-   
+
    Results:         a triple double number resh, resm, resl
 
    Preconditions:   abs(bm) <= 2^(-b_o) * abs(bh)
@@ -856,14 +856,14 @@ double mh, ml;                                        \
 		    b_o >= 2
 		    b_u >= 2
 
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(-g_o) * abs(resh)
 		    with
-		    g_o > min(47,-5-b_o,-5+b_o+b_u) 
+		    g_o > min(47,-5-b_o,-5+b_o+b_u)
 		    resh+resm+resl = a * (bh+bm+bl) * (1+eps)
-                    where 
+                    where
 		    abs(eps) <= 2^-49-b_o-b_u + 2^-101-b_o + 2^-156
 
    Details:         resh, resm and resl are considered to be pointers
@@ -889,16 +889,16 @@ double mh, ml;                                        \
 
    Arguments:       a double a
 		    a double double bh, bl
-   
+
    Results:         a triple double number resh, resm, resl
-		    
+
    Guarantees:      resm and resl are non-overlapping
                     resm = round-to-nearest(resm + resl)
 		    abs(resm) <= 2^(-g_o) * abs(resh)
 		    with
-		    g_o > 47 
+		    g_o > 47
 		    resh+resm+resl = a * (bh+bm) * (1+eps)
-                    where 
+                    where
 		    abs(eps) <= 2^-154
 
    Details:         resh, resm and resl are considered to be pointers
@@ -919,12 +919,12 @@ double mh, ml;                                        \
 /* sqrt13
 
    Computes a triple-double approximation of sqrt(x)
-   
+
    Should be provable to be exact to at least 140 bits.
 
    Only handles the following special cases:
    - x == 0
-   - subnormal x 
+   - subnormal x
    The following cases are not handled:
    - x < 0
    - x = +/-Infty, NaN
@@ -1040,7 +1040,7 @@ double mh, ml;                                        \
 /* recpr33()
 
    Computes a triple-double reciprocal of a triple-double
-   
+
    Should be provable to be exact to at least 140 bits
 
    No special case handling is done

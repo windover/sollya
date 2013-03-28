@@ -57,8 +57,8 @@
 #include "mpfi-compat.h"
 #include <gmp.h>
 #include "execute.h"
-#include <stdio.h> 
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include "general.h"
@@ -85,9 +85,9 @@ void fPrintXmlInner(FILE *fd, node *tree) {
     return;
     break;
   case VARIABLE:
-    if (variablename == NULL) 
+    if (variablename == NULL)
       sollyaFprintf(fd,"<ci> _x_ </ci>\n");
-    else 
+    else
       sollyaFprintf(fd,"<ci> %s </ci>\n",variablename);
     break;
   case CONSTANT:
@@ -278,7 +278,7 @@ void fPrintXmlInner(FILE *fd, node *tree) {
     fPrintXmlInner(fd, tree->child1);
     sollyaFprintf(fd,"</apply>\n");
     break;
-  case ERF: 
+  case ERF:
     sollyaFprintf(fd,"<apply>\n");
     sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.openmath.org/CDs/errorFresnelInts.ocd\" encoding=\"OpenMath\">erf</csymbol>\n");
     fPrintXmlInner(fd, tree->child1);
@@ -318,14 +318,14 @@ void fPrintXmlInner(FILE *fd, node *tree) {
       sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">%s</csymbol>\n",
                     tree->libFun->functionName);
       fPrintXmlInner(fd, tree->child1);
-      sollyaFprintf(fd,"</apply>\n");	 
+      sollyaFprintf(fd,"</apply>\n");
     } else {
       sollyaFprintf(fd,"<apply>\n");
       sollyaFprintf(fd,"<diff/>\n");
       sollyaFprintf(fd,"<bvar>\n");
-      if (variablename == NULL) 
+      if (variablename == NULL)
 	sollyaFprintf(fd,"<ci> _x_ </ci>\n");
-      else 
+      else
 	sollyaFprintf(fd,"<ci> %s </ci>\n",variablename);
       sollyaFprintf(fd,"<degree>\n");
       sollyaFprintf(fd,"<cn> %d </cn>\n",tree->libFunDeriv);
@@ -335,7 +335,7 @@ void fPrintXmlInner(FILE *fd, node *tree) {
       sollyaFprintf(fd,"<csymbol definitionURL=\"http://www.google.com/\" encoding=\"OpenMath\">%s</csymbol>\n",
                     tree->libFun->functionName);
       fPrintXmlInner(fd, tree->child1);
-      sollyaFprintf(fd,"</apply>\n");	 
+      sollyaFprintf(fd,"</apply>\n");
       sollyaFprintf(fd,"</apply>\n");
     }
     break;
@@ -347,14 +347,14 @@ void fPrintXmlInner(FILE *fd, node *tree) {
                     procString);
       safeFree(procString);
       fPrintXmlInner(fd, tree->child1);
-      sollyaFprintf(fd,"</apply>\n");	 
+      sollyaFprintf(fd,"</apply>\n");
     } else {
       sollyaFprintf(fd,"<apply>\n");
       sollyaFprintf(fd,"<diff/>\n");
       sollyaFprintf(fd,"<bvar>\n");
-      if (variablename == NULL) 
+      if (variablename == NULL)
 	sollyaFprintf(fd,"<ci> _x_ </ci>\n");
-      else 
+      else
 	sollyaFprintf(fd,"<ci> %s </ci>\n",variablename);
       sollyaFprintf(fd,"<degree>\n");
       sollyaFprintf(fd,"<cn> %d </cn>\n",tree->libFunDeriv);
@@ -366,7 +366,7 @@ void fPrintXmlInner(FILE *fd, node *tree) {
                     procString);
       safeFree(procString);
       fPrintXmlInner(fd, tree->child1);
-      sollyaFprintf(fd,"</apply>\n");	 
+      sollyaFprintf(fd,"</apply>\n");
       sollyaFprintf(fd,"</apply>\n");
     }
     break;
@@ -395,7 +395,7 @@ void fPrintXmlInner(FILE *fd, node *tree) {
     sollyaFprintf(stderr,"Error: fPrintXml: unknown identifier (%d) in the tree\n",tree->nodeType);
     exit(1);
   }
-  return;  
+  return;
 }
 
 void fPrintXml(FILE *fd, node *tree) {
@@ -411,9 +411,9 @@ void fPrintXml(FILE *fd, node *tree) {
   sollyaFprintf(fd,"<semantics>\n");
   sollyaFprintf(fd,"<annotation-xml encoding=\"MathML-Content\">\n");
   sollyaFprintf(fd,"<lambda>\n");
-  if (variablename != NULL) 
+  if (variablename != NULL)
     sollyaFprintf(fd,"<bvar><ci> %s </ci></bvar>\n",variablename);
-  else 
+  else
     sollyaFprintf(fd,"<bvar><ci> _x_ </ci></bvar>\n");
   sollyaFprintf(fd,"<apply>\n");
   fPrintXmlInner(fd,tree);
@@ -431,7 +431,7 @@ void fPrintXml(FILE *fd, node *tree) {
 /* From: libxml2-2.6.30 and reader1.c example*/
 /* http://xmlsoft.org/examples/index.html#reader1.c*/
 
-/** 
+/**
  * section: xmlReader
  * synopsis: Parse an XML file with an xmlReader
  * purpose: Demonstrate the use of xmlReaderForFile() to parse an XML file
@@ -645,7 +645,7 @@ int search_math_tree (xmlTextReaderPtr reader)
 	  }
 	  temp = makeConstant(n);
 	  mpfr_clear(n);
-	} 
+	}
     }
   else if (xmlTextReaderNodeType(reader)==15)
     {
@@ -661,7 +661,7 @@ int search_math_tree (xmlTextReaderPtr reader)
 	  temp=mthis->operator(mthis->op1,mthis->op2);
 	  /*printTree(temp);  printMessage(2,"\n");*/
 	  if (mthis->parent) mthis=mthis->parent;
-	  if (mthis->child)  sollyaXmlFreeFunc(mthis->child); 
+	  if (mthis->child)  sollyaXmlFreeFunc(mthis->child);
 	  mthis->child=0;
 	}
       else if (!strcmp((char*)xml_name, "csymbol")) mthis->op_type=0;
@@ -785,7 +785,7 @@ processNode(xmlTextReaderPtr reader) {
 
   xml_value = xmlTextReaderConstValue(reader);
 
-  printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION,"Depth: %02d Type: %02d Name: %s", 
+  printMessage(3,SOLLYA_MSG_XML_PARSER_STATE_INFORMATION,"Depth: %02d Type: %02d Name: %s",
 	       xmlTextReaderDepth(reader),
 	       xmlTextReaderNodeType(reader),
 	       xml_name);
@@ -842,7 +842,7 @@ void sollyaXmlMarkFreed(void *ptr) {
       return;
     }
   }
-  
+
 }
 
 void cleanupSollyaXmlMemory() {
@@ -874,7 +874,7 @@ void *sollyaXmlReallocFunc(void *ptr, size_t size) {
   void *reallocPtr;
 
   reallocPtr = safeRealloc(ptr, size);
-  
+
   if (ptr == NULL) {
     /* realloc is like malloc */
     sollyaXmlMarkAllocated(reallocPtr);
@@ -886,7 +886,7 @@ void *sollyaXmlReallocFunc(void *ptr, size_t size) {
       /* realloc is a real realloc
 
 	 If the new pointer is the same, do nothing.
-	 Otherwise mark the old pointer as freed and the new one as 
+	 Otherwise mark the old pointer as freed and the new one as
 	 allocated.
       */
       if (reallocPtr != ptr) {
@@ -895,7 +895,7 @@ void *sollyaXmlReallocFunc(void *ptr, size_t size) {
       }
     }
   }
-  
+
   return reallocPtr;
 }
 
@@ -909,11 +909,11 @@ char *sollyaXmlStrdupFunc(const char *str) {
 
 
 /* Reads the file filename containing a lambda construct
-   into a node * 
+   into a node *
    Return NULL if parsing the file is impossible
 
    Indication: use make... found in expression.h for building the nodes.
-   Attention: do not forget do free incomplete trees if the 
+   Attention: do not forget do free incomplete trees if the
    parsing fails. Use free_memory(node *) for this (found in expression.h).
 
    If warnings to the user shall be indicated, use printMessage(verbosity level, format string, ...)
@@ -922,10 +922,10 @@ char *sollyaXmlStrdupFunc(const char *str) {
 node *readXml(char *filename) {
   node* result=NULL;
 
-  /* Initialize the xml memory functions */   
+  /* Initialize the xml memory functions */
   sollyaXmlAllocatedMemory = NULL;
   if (xmlMemSetup(sollyaXmlFreeFunc, sollyaXmlMallocFunc, sollyaXmlReallocFunc, sollyaXmlStrdupFunc)) return NULL;
-	
+
   /*
    * this initialize the library and check potential ABI mismatches
    * between the version it was compiled for and the actual shared

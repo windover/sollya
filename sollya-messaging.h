@@ -63,7 +63,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
    TO ADD A MESSAGE, ADD A #define AT THE END OF THE LIST IN
    sollya-messages.h. THEN ADD A CORRESPONDING MESSAGE TEXT IN THE
-   TABLE BELOW. 
+   TABLE BELOW.
 
    ATTENTION: THE MESSAGE NUMBERS MUST NOT BE NEGATIVE!
 
@@ -551,7 +551,7 @@ static const messageEntry messageTextsTable[] = {
   { SOLLYA_MSG_CHEBYSHEVFORM_ERROR_IN_COMPUTATION                     , "An error occurred during computation of a Chebyshev form."},
   { SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS         , "Error in Chebyshev form computation: copy of incompatible models."},
   { SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_UNKNOWN_FUNC_FOR_ZUMKELLER      , "Error in Chebyshev form computation: unkown type of function used with Zumkeller's technique."},
-  { SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_NOT_A_POLYNOMIAL                , "Error in Chebyshev form computation: the given function is not a polynomial, no modification is made." },  
+  { SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_NOT_A_POLYNOMIAL                , "Error in Chebyshev form computation: the given function is not a polynomial, no modification is made." },
   { SOLLYA_MSG_SPECIAL_ALGORITHM_USED_FOR_COEFF                       , "A special algorithm is used to extract the i-th coefficient of an expression that is a polynomial." },
   { SOLLYA_MSG_NO_CORRECT_ROUNDING_FOR_ROUND_OPERATOR                 , "No correctly rounded result could be obtained upon evaluation of a rounding operator." },
   { SOLLYA_MSG_ROUNDING_OF_BOUNDARY_INSTEAD_OF_CORRECT_ROUNDING       , "The returned rounding is the rounding of the rounding boundary because correct rounding has not been possible." },

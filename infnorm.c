@@ -90,7 +90,7 @@ int sollya_mpfi_equal_p(sollya_mpfi_t r1, sollya_mpfi_t r2) {
 
   sollya_mpfi_get_left(x1, r1); sollya_mpfi_get_left(x2, r2); test = mpfr_equal_p(x1, x2);
   sollya_mpfi_get_right(x1, r1); sollya_mpfi_get_right(x2, r2); test = test && mpfr_equal_p(x1, x2);
-  
+
   mpfr_clear(x1); mpfr_clear(x2);
   return test;
 }
@@ -131,27 +131,27 @@ void sollya_mpfi_pow(sollya_mpfi_t z, sollya_mpfi_t x, sollya_mpfi_t y) {
                              we return 1 also, by continuity */
       if (sollya_mpfi_is_infinity(x)) sollya_mpfi_set_nan(z);
       else sollya_mpfi_set_d(z,1.0);
-    
+
       mpfr_clear(l); mpfr_clear(r); sollya_mpfi_clear(res);
       return;
     } else {
       precx = sollya_mpfi_get_prec(x);
-      if (sollya_mpfi_get_prec(res) > precx) 
+      if (sollya_mpfi_get_prec(res) > precx)
         precx = sollya_mpfi_get_prec(res);
 
       mpfr_init2(lx,precx);
       mpfr_init2(rx,precx);
-      
+
       sollya_mpfi_get_right(rx,x);
       sollya_mpfi_get_left(lx,x);
-     
+
       if (mpfr_sgn(l) < 0) {
 	must_divide = 1;
 	mpfr_neg(l,l,GMP_RNDN);
       } else {
 	must_divide = 0;
       }
-      
+
       mpfr_div_2ui(r,l,1,GMP_RNDN);
       if (sollya_mpfi_is_nonneg(x) || (!mpfr_integer_p(r))) { /* x-> x^k is increasing monotonic when x>=0
                                                                  or when k is odd */
@@ -395,10 +395,10 @@ void sollya_mpfi_erf(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   mpfr_init2(ropl,sollya_mpfi_get_prec(rop));
   mpfr_init2(ropr,sollya_mpfi_get_prec(rop));
-  
+
   sollya_mpfi_get_left(opl,op);
   sollya_mpfi_get_right(opr,op);
-  
+
   mpfr_erf(ropl,opl,GMP_RNDD);
   mpfr_erf(ropr,opr,GMP_RNDU);
 
@@ -418,10 +418,10 @@ void sollya_mpfi_erfc(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   mpfr_init2(ropl,sollya_mpfi_get_prec(rop));
   mpfr_init2(ropr,sollya_mpfi_get_prec(rop));
-  
+
   sollya_mpfi_get_left(opl,op);
   sollya_mpfi_get_right(opr,op);
-  
+
   mpfr_erfc(ropl,opr,GMP_RNDD);
   mpfr_erfc(ropr,opl,GMP_RNDU);
 
@@ -441,10 +441,10 @@ void sollya_mpfi_ceil(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   mpfr_init2(ropl,sollya_mpfi_get_prec(op));
   mpfr_init2(ropr,sollya_mpfi_get_prec(op));
-  
+
   sollya_mpfi_get_left(opl,op);
   sollya_mpfi_get_right(opr,op);
-  
+
   mpfr_ceil(ropl,opr);
   mpfr_ceil(ropr,opl);
 
@@ -464,10 +464,10 @@ void sollya_mpfi_floor(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   mpfr_init2(ropl,sollya_mpfi_get_prec(op));
   mpfr_init2(ropr,sollya_mpfi_get_prec(op));
-  
+
   sollya_mpfi_get_left(opl,op);
   sollya_mpfi_get_right(opr,op);
-  
+
   mpfr_floor(ropl,opr);
   mpfr_floor(ropr,opl);
 
@@ -487,10 +487,10 @@ void sollya_mpfi_nearestint(sollya_mpfi_t rop, sollya_mpfi_t op) {
 
   mpfr_init2(ropl,sollya_mpfi_get_prec(op));
   mpfr_init2(ropr,sollya_mpfi_get_prec(op));
-  
+
   sollya_mpfi_get_left(opl,op);
   sollya_mpfi_get_right(opr,op);
-  
+
   mpfr_nearestint(ropl,opr);
   mpfr_nearestint(ropr,opl);
 
@@ -574,13 +574,13 @@ int newtonMPFRWithStartPoint(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, 
 	mpfr_set(res,b,GMP_RNDN);
 	okay = 1;
       } else {
-	
+
 	mpfr_mul(temp1,temp1,temp2,GMP_RNDN);
 	hasZero = (mpfr_sgn(temp1) <= 0);
 
 	mpfr_set(x,start,GMP_RNDN);
 	lucky = 0;
-	
+
 	i = 5000;
 	while((n<=(unsigned long int) prec+25) && (mpfr_cmp(am,x) <= 0) && (mpfr_cmp(x,bm) <= 0) && (i > 0)) {
 	  evaluate(temp1, myTree, x, prec);
@@ -603,7 +603,7 @@ int newtonMPFRWithStartPoint(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, 
 	  }
 	  mpfr_set(x,x2,GMP_RNDN);
 	}
-	
+
 	if (mpfr_cmp(x,a) < 0) {
 	  mpfr_set(res,a,GMP_RNDN);
 	  if (hasZero) {
@@ -651,7 +651,7 @@ int newtonMPFRWithStartPoint(mpfr_t res, node *tree, node *diff_tree, mpfr_t a, 
 	  }
 	}
       }
-    } 
+    }
   }
 
   if (freeTrees) {
@@ -714,13 +714,13 @@ int newtonMPFRWithStartPointFaithful(mpfr_t res, node *tree, node *diff_tree, mp
 	mpfr_set(res,b,GMP_RNDN);
 	okay = 1;
       } else {
-	
+
 	mpfr_mul(temp1,temp1,temp2,GMP_RNDN);
 	hasZero = (mpfr_sgn(temp1) <= 0);
 
 	mpfr_set(x,start,GMP_RNDN);
 	lucky = 0;
-	
+
 	i = 5000;
 	while((n<=(unsigned long int) prec+25) && (mpfr_cmp(am,x) <= 0) && (mpfr_cmp(x,bm) <= 0) && (i > 0)) {
 	  evaluateFaithful(temp1, myTree, x, prec);
@@ -743,7 +743,7 @@ int newtonMPFRWithStartPointFaithful(mpfr_t res, node *tree, node *diff_tree, mp
 	  }
 	  mpfr_set(x,x2,GMP_RNDN);
 	}
-	
+
 	if (mpfr_cmp(x,a) < 0) {
 	  mpfr_set(res,a,GMP_RNDN);
 	  if (hasZero) {
@@ -791,7 +791,7 @@ int newtonMPFRWithStartPointFaithful(mpfr_t res, node *tree, node *diff_tree, mp
 	  }
 	}
       }
-    } 
+    }
   }
 
   if (freeTrees) {
@@ -844,7 +844,7 @@ void makeMpfiAroundMpfr(sollya_mpfi_t res, mpfr_t x, unsigned int thousandUlps) 
   mpfr_init2(xp,prec);
   mpfr_init2(xs,prec);
   sollya_mpfi_init2(xI,prec);
-  
+
   mpfr_set(xp,x,GMP_RNDD);
   mpfr_set(xs,x,GMP_RNDU);
 
@@ -852,11 +852,11 @@ void makeMpfiAroundMpfr(sollya_mpfi_t res, mpfr_t x, unsigned int thousandUlps) 
   mpfr_nextabove(xs);
 
   sollya_mpfi_interv_fr(xI,xp,xs);
-  
+
   sollya_mpfi_blow(xI,xI,(((double) thousandUlps) * 250.0)); /* THIS CAST IS DANGEROUS ON SYSTEMS WHERE INTS ARE 64 BITS */
 
   sollya_mpfi_set(res,xI);
-  
+
   sollya_mpfi_clear(xI);
   mpfr_clear(xp);
   mpfr_clear(xs);
@@ -877,7 +877,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
   chain *leftExcludes, *rightExcludes, *excludes, *t1, *t2;
   chain *leftExcludesConstant, *rightExcludesConstant;
   chain *leftExcludesLinear, *rightExcludesLinear;
-  exprBoundTheo *leftTheo, *rightTheo, *internalTheo; 
+  exprBoundTheo *leftTheo, *rightTheo, *internalTheo;
   exprBoundTheo *leftTheoConstant, *rightTheoConstant, *leftTheoLinear, *rightTheoLinear;
   int isPolynom;
   int xIsPoint;
@@ -887,14 +887,14 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 
   if (tree->nodeType == MEMREF) {
     if ((theo != NULL) || (!noExcludes)) return evaluateI(result, tree->child1, x, prec, simplifiesA, simplifiesB, hopitalPoint, theo, noExcludes);
-    
+
     if ((tree->arguments != NULL) &&
 	(*((mp_prec_t *) tree->arguments->value) >= prec)) {
       sollya_mpfi_set(result, *((sollya_mpfi_t *) tree->arguments->next->value));
       if (!(sollya_mpfi_has_nan(result) || sollya_mpfi_has_infinity(result))) return NULL;
     }
-    
-    excludes = evaluateI(result, tree->child1, x, prec, simplifiesA, simplifiesB, hopitalPoint, theo, noExcludes);    
+
+    excludes = evaluateI(result, tree->child1, x, prec, simplifiesA, simplifiesB, hopitalPoint, theo, noExcludes);
 
     if ((excludes == NULL) && (!(sollya_mpfi_has_nan(result) || sollya_mpfi_has_infinity(result)))) {
       if (tree->arguments != NULL) {
@@ -916,8 +916,8 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	  tree->arguments = addElement(addElement(NULL, intervalPtr), precPtr);
 	}
       }
-    } 
-    
+    }
+
     return excludes;
   }
 
@@ -929,7 +929,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
   internalTheo = NULL;
   if (theo != NULL) {
     isPolynom = isPolynomial(tree);
-    
+
     if (isPolynom) {
       theo->functionType = POLYNOMIAL;
       leftTheo = NULL;
@@ -1068,7 +1068,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	if (!noExcludes) {
 	  excludes = concatChains(leftExcludes,rightExcludes);
 	  excludes = concatChains(excludes,leftExcludesConstant);
-	  excludes = concatChains(excludes,rightExcludesConstant);	
+	  excludes = concatChains(excludes,rightExcludesConstant);
 	  excludes = concatChains(excludes,leftExcludesLinear);
 	  excludes = concatChains(excludes,rightExcludesLinear);
 	}
@@ -1108,10 +1108,10 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	  internalTheo->theoRightLinear = NULL;
 	}
 	excludes = concatChains(leftExcludes,rightExcludes);
-	freeChain(leftExcludesLinear,freeMpfiPtr); 	
-	freeChain(rightExcludesLinear,freeMpfiPtr); 	
-	freeChain(leftExcludesConstant,freeMpfiPtr); 	
-	freeChain(rightExcludesConstant,freeMpfiPtr); 	
+	freeChain(leftExcludesLinear,freeMpfiPtr);
+	freeChain(rightExcludesLinear,freeMpfiPtr);
+	freeChain(leftExcludesConstant,freeMpfiPtr);
+	freeChain(rightExcludesConstant,freeMpfiPtr);
       }
 
       free_memory(derivLeft);
@@ -1208,7 +1208,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	if (!noExcludes) {
 	  excludes = concatChains(leftExcludes,rightExcludes);
 	  excludes = concatChains(excludes,leftExcludesConstant);
-	  excludes = concatChains(excludes,rightExcludesConstant);	
+	  excludes = concatChains(excludes,rightExcludesConstant);
 	  excludes = concatChains(excludes,leftExcludesLinear);
 	  excludes = concatChains(excludes,rightExcludesLinear);
 	}
@@ -1248,10 +1248,10 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	  internalTheo->theoRightLinear = NULL;
 	}
 	excludes = concatChains(leftExcludes,rightExcludes);
-	freeChain(leftExcludesLinear,freeMpfiPtr); 	
-	freeChain(rightExcludesLinear,freeMpfiPtr); 	
-	freeChain(leftExcludesConstant,freeMpfiPtr); 	
-	freeChain(rightExcludesConstant,freeMpfiPtr); 	
+	freeChain(leftExcludesLinear,freeMpfiPtr);
+	freeChain(rightExcludesLinear,freeMpfiPtr);
+	freeChain(leftExcludesConstant,freeMpfiPtr);
+	freeChain(rightExcludesConstant,freeMpfiPtr);
       }
 
       free_memory(derivLeft);
@@ -1304,7 +1304,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	printMessage(12,SOLLYA_MSG_DIFFERENTIATING_FOR_HOPITALS_RULE,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	derivNumerator = differentiate(tree->child1);
 	derivDenominator = differentiate(tree->child2);
-	
+
 	freeChain(leftExcludes,freeMpfiPtr);
 	freeChain(rightExcludes,freeMpfiPtr);
 
@@ -1325,7 +1325,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 
 	leftExcludes = evaluateI(stack1, derivNumerator, x, prec, simplifiesA, simplifiesB-1, NULL, leftTheoLinear,noExcludes);
 	rightExcludes = evaluateI(stack2, derivDenominator, x, prec, simplifiesA, simplifiesB-1, NULL, rightTheoLinear,noExcludes);
-	
+
 	free_memory(derivNumerator);
 	free_memory(derivDenominator);
 	sollya_mpfi_div(stack3, stack1, stack2);
@@ -1352,7 +1352,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	}
       }
     } else {
-      if (sollya_mpfi_has_zero(stack2) && 
+      if (sollya_mpfi_has_zero(stack2) &&
 	  (simplifiesB > 0)) {
 	mpfr_init2(xl,prec);
 	mpfr_init2(xr,prec);
@@ -1361,10 +1361,10 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	sollya_mpfi_get_right(xr,x);
 
 	if (mpfr_cmp(xl,xr) != 0) {
-	  
+
 	  printMessage(12,SOLLYA_MSG_DIFFERENTIATING_FOR_HOPITALS_RULE,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	  derivDenominator = differentiate(tree->child2);
-	  
+
 	  if ((simplifiesB == (hopitalrecursions + 1)) || (hopitalPoint == NULL)){
 	    mpfr_init2(z,prec);
 	    newtonMPFR(z,tree->child2,derivDenominator,xl,xr,prec);
@@ -1374,13 +1374,13 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	    mpfr_set(z,*hopitalPoint,GMP_RNDN);
 	    newHopitalPoint = hopitalPoint;
 	  }
-	  
+
 	  if (mpfr_number_p(z)) {
 	    sollya_mpfi_init2(zI,prec);
 	    sollya_mpfi_set_fr(zI,z);
 	    sollya_mpfi_init2(numeratorInZI,prec);
 	    sollya_mpfi_init2(denominatorInZI,prec);
-	    
+
 	    if (internalTheo != NULL) {
               leftTheoConstant = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
               rightTheoConstant = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
@@ -1391,7 +1391,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 
 	    t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifiesA, simplifiesB-1, newHopitalPoint, leftTheoConstant,1);
 	    t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifiesA, simplifiesB-1, newHopitalPoint, rightTheoConstant,1);
-	  
+
 	    freeChain(t1,freeMpfiPtr);
 	    freeChain(t2,freeMpfiPtr);
 
@@ -1399,24 +1399,24 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	    sollya_mpfi_get_right(ar,numeratorInZI);
 	    sollya_mpfi_get_left(bl,denominatorInZI);
 	    sollya_mpfi_get_right(br,denominatorInZI);
-	    
+
 	    if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
 	      /* Hopital's rule can be applied */
 
 	      printMessage(12,SOLLYA_MSG_DIFFERENTIATING_FOR_HOPITALS_RULE,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	      derivNumerator = differentiate(tree->child1);
-	      
+
 	      tempNode = (node *) safeMalloc(sizeof(node));
 	      tempNode->nodeType = DIV;
 	      tempNode->child1 = derivNumerator;
 	      tempNode->child2 = copyTree(derivDenominator);
-	      
+
 	      freeChain(leftExcludes,freeMpfiPtr);
 	      freeChain(rightExcludes,freeMpfiPtr);
-	      
+
 	      if (internalTheo != NULL) {
 		leftTheoLinear = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
-		nullifyExprBoundTheo(leftTheoLinear); 
+		nullifyExprBoundTheo(leftTheoLinear);
 		internalTheo->simplificationUsed = HOPITAL;
 		internalTheo->leftDerivative = copyTree(tempNode->child1);
 		internalTheo->rightDerivative = copyTree(tempNode->child2);
@@ -1445,18 +1445,18 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 	      if (simplifiesB != (hopitalrecursions + 1)) {
 		printMessage(8,SOLLYA_MSG_RECURSION_ON_USE_OF_HOPITALS_RULE,"Information: recursion on use of Hopital's rule\n");
 	      }
-	      
+
 	      excludes = evaluateI(stack3, tempNode, x, prec, simplifiesA, simplifiesB-1, newHopitalPoint, leftTheoLinear,noExcludes);
-	      
+
 	      if (internalTheo != NULL) sollya_mpfi_set(*(internalTheo->boundLeftLinear),stack3);
-	      
+
 	      free_memory(tempNode);
 	    } else {
 	      if (internalTheo != NULL) {
 		freeExprBoundTheo(leftTheoConstant);
 		freeExprBoundTheo(rightTheoConstant);
 	      }
-  
+
 	      printMessage(12,SOLLYA_MSG_DIFFERENTIATING_FOR_HOPITALS_RULE,"Information: Differentiating while evaluating for Hopital's rule.\n");
 	      derivNumerator = differentiate(tree->child1);
 
@@ -1480,7 +1480,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 		  leftTheoConstant = NULL;
 		  rightTheoConstant = NULL;
 		}
-	    
+
 		t1 = evaluateI(numeratorInZI, tree->child1, zI, prec, simplifiesA, simplifiesB-1, newHopitalPoint, leftTheoConstant,1);
 		t2 = evaluateI(denominatorInZI, tree->child2, zI, prec, simplifiesA, simplifiesB-1, newHopitalPoint, rightTheoConstant,1);
 
@@ -1491,7 +1491,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 		sollya_mpfi_get_right(ar,numeratorInZI);
 		sollya_mpfi_get_left(bl,denominatorInZI);
 		sollya_mpfi_get_right(br,denominatorInZI);
-		
+
 		if (mpfr_zero_p(al) && mpfr_zero_p(ar) && mpfr_zero_p(bl) && mpfr_zero_p(br)) {
 
 		  tempNode = (node *) safeMalloc(sizeof(node));
@@ -1504,7 +1504,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 
 		  if (internalTheo != NULL) {
 		    leftTheoLinear = (exprBoundTheo *) safeCalloc(1,sizeof(exprBoundTheo));
-		    nullifyExprBoundTheo(leftTheoLinear); 
+		    nullifyExprBoundTheo(leftTheoLinear);
 		    internalTheo->simplificationUsed = HOPITAL;
 		    internalTheo->leftDerivative = copyTree(tempNode->child1);
 		    internalTheo->rightDerivative = copyTree(tempNode->child2);
@@ -1533,11 +1533,11 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 		  if (simplifiesB != (hopitalrecursions + 1)) {
 		    printMessage(8,SOLLYA_MSG_RECURSION_ON_USE_OF_HOPITALS_RULE,"Information: recursion on use of Hopital's rule\n");
 		  }
-		  
+
 		  excludes = evaluateI(stack3, tempNode, x, prec, simplifiesA, simplifiesB-1, newHopitalPoint, leftTheoLinear,noExcludes);
 
 		  if (internalTheo != NULL) sollya_mpfi_set(*(internalTheo->boundLeftLinear),stack3);
-	      
+
 		  free_memory(tempNode);
 		} else {
 
@@ -1554,7 +1554,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
 		    makeMpfiAroundMpfr(newExcludeTemp,z2,16777216);
 		    sollya_mpfi_union(*newExclude,*newExclude,newExcludeTemp);
 		    sollya_mpfi_clear(newExcludeTemp);
-		    
+
 		    excludes = concatChains(leftExcludes,rightExcludes);
 		    excludes = addElement(excludes,newExclude);
 		  }
@@ -1645,13 +1645,13 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
       sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
     }
 
-#if DEBUGMPFI 
+#if DEBUGMPFI
     sollyaPrintf("sollya_mpfi_sin(");
     printInterval(stack1);
     sollyaPrintf(") = ");
     printInterval(stack3);
     sollyaPrintf("\n");
-#endif    
+#endif
 
     break;
   case COS:
@@ -1664,13 +1664,13 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
       sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
     }
 
-#if DEBUGMPFI 
+#if DEBUGMPFI
     sollyaPrintf("sollya_mpfi_cos(");
     printInterval(stack1);
     sollyaPrintf(") = ");
     printInterval(stack3);
     sollyaPrintf("\n");
-#endif    
+#endif
 
     break;
   case TAN:
@@ -1762,7 +1762,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
     break;
   case ABS:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
-    sollya_mpfi_abs(stack3, stack1);  
+    sollya_mpfi_abs(stack3, stack1);
     if (internalTheo != NULL) {
       sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
     }
@@ -1832,7 +1832,7 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
     break;
   case EXP_M1:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
-    sollya_mpfi_expm1(stack3, stack1);  
+    sollya_mpfi_expm1(stack3, stack1);
     if (internalTheo != NULL) {
       sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
     }
@@ -1904,12 +1904,12 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
     sollya_mpfi_init2(*(theo->y),sollya_mpfi_get_prec(result));
     sollya_mpfi_set(*(theo->y),result);
   }
-  sollya_mpfi_clear(stack1); 
-  sollya_mpfi_clear(stack2); 
+  sollya_mpfi_clear(stack1);
+  sollya_mpfi_clear(stack2);
   sollya_mpfi_clear(stack3);
-  mpfr_clear(al); 
-  mpfr_clear(ar); 
-  mpfr_clear(bl); 
+  mpfr_clear(al);
+  mpfr_clear(ar);
+  mpfr_clear(bl);
   mpfr_clear(br);
   return excludes;
 }
@@ -1941,10 +1941,10 @@ chain* evaluateITaylorOnDiv(sollya_mpfi_t result, node *func, sollya_mpfi_t x, m
       numeratorTheo = NULL;
       denominatorTheo = NULL;
     }
-    
+
     numeratorExcludes = evaluateITaylor(resultNumerator, numerator, derivNumerator, x, prec, recurse, numeratorTheo,noExcludes);
     denominatorExcludes = evaluateITaylor(resultDenominator, denominator, derivDenominator, x, prec, recurse, denominatorTheo,noExcludes);
-    excludes = concatChains(numeratorExcludes,denominatorExcludes);    
+    excludes = concatChains(numeratorExcludes,denominatorExcludes);
     sollya_mpfi_div(resultIndirect, resultNumerator, resultDenominator);
     if (sollya_mpfi_bounded_p(resultIndirect)) {
       sollya_mpfi_set(result, resultIndirect);
@@ -1967,7 +1967,7 @@ chain* evaluateITaylorOnDiv(sollya_mpfi_t result, node *func, sollya_mpfi_t x, m
 	sollya_mpfi_set(*(theo->y),result);
       }
     } else {
-      freeChain(excludes,freeMpfiPtr); 
+      freeChain(excludes,freeMpfiPtr);
       if (theo != NULL) {
 	freeExprBoundTheo(numeratorTheo);
 	freeExprBoundTheo(denominatorTheo);
@@ -1975,10 +1975,10 @@ chain* evaluateITaylorOnDiv(sollya_mpfi_t result, node *func, sollya_mpfi_t x, m
       excludes = evaluateI(result, func, x, prec, 0, hopitalrecursions+1, NULL, theo,noExcludes);
       sollya_mpfi_nan_normalize(result);
     }
-    
+
     sollya_mpfi_clear(resultNumerator);
     sollya_mpfi_clear(resultDenominator);
-    sollya_mpfi_clear(resultIndirect);     
+    sollya_mpfi_clear(resultIndirect);
     free_memory(derivNumerator);
     free_memory(derivDenominator);
     mpfr_clear(tempNaN);
@@ -2002,13 +2002,13 @@ chain* evaluateITaylor(sollya_mpfi_t result, node *func, node *deriv, sollya_mpf
 
   if ((theo != NULL) || (!noExcludes)) return evaluateITaylorInner(result, func, deriv, x, prec, recurse, theo, noExcludes);
 
-  if ((func->nodeType == MEMREF) && 
+  if ((func->nodeType == MEMREF) &&
       (func->arguments != NULL) &&
       (*((mp_prec_t *) func->arguments->value) >= prec)) {
     sollya_mpfi_set(result, *((sollya_mpfi_t *) func->arguments->next->value));
     if (!(sollya_mpfi_has_nan(result) || sollya_mpfi_has_infinity(result))) return NULL;
   }
-  
+
   excludes = evaluateITaylorInner(result, func, deriv, x, prec, recurse, theo, noExcludes);
 
   if ((excludes == NULL) && (func->nodeType == MEMREF) && (!(sollya_mpfi_has_nan(result) || sollya_mpfi_has_infinity(result)))) {
@@ -2031,7 +2031,7 @@ chain* evaluateITaylor(sollya_mpfi_t result, node *func, node *deriv, sollya_mpf
 	func->arguments = addElement(addElement(NULL, intervalPtr), precPtr);
       }
     }
-  } 
+  }
 
   return excludes;
 }
@@ -2046,22 +2046,22 @@ chain* evaluateITaylorInner(sollya_mpfi_t result, node *func, node *deriv, solly
 
   mpfr_init2(leftX,sollya_mpfi_get_prec(x));
   mpfr_init2(rightX,sollya_mpfi_get_prec(x));
-  
+
   sollya_mpfi_get_left(leftX,x);
   sollya_mpfi_get_right(rightX,x);
 
   if ((mpfr_cmp(leftX,rightX) == 0) || (deriv == NULL)) {
-    if (deriv != NULL) 
+    if (deriv != NULL)
       printMessage(25,SOLLYA_MSG_AVOIDING_TAYLOR_EVALUATION_ON_POINT_INTERVAL,"Information: avoiding using Taylor's formula on a point interval.\n");
-    else 
+    else
       printMessage(25,SOLLYA_MSG_NO_TAYLOR_EVALUATION_AS_NO_DERIVATIVE_GIVEN,"Warning: no Taylor evaluation is possible because no derivative has been given.\n");
-    
+
     excludes = evaluateI(result, func, x, prec, 1, hopitalrecursions+1, NULL, theo,noExcludes);
     sollya_mpfi_nan_normalize(result);
 
     mpfr_clear(leftX);
     mpfr_clear(rightX);
-    
+
     return excludes;
   }
 
@@ -2126,7 +2126,7 @@ chain* evaluateITaylorInner(sollya_mpfi_t result, node *func, node *deriv, solly
     } else {
       taylorExcludesLinear = evaluateITaylor(linearTerm, deriv, nextderiv, x, prec, recurse - 1, linearTheo,noExcludes);
     }
-    
+
     free_memory(nextderiv);
   } else {
     taylorExcludesLinear = evaluateI(linearTerm, deriv, x, prec, 1, hopitalrecursions+1, NULL, linearTheo,noExcludes);
@@ -2137,9 +2137,9 @@ chain* evaluateITaylorInner(sollya_mpfi_t result, node *func, node *deriv, solly
     printMessage(12,SOLLYA_MSG_DERIVATIVE_DOES_NOT_CHANGE_SIGN_ON_TAYLOR_EVAL,"Information: the linear term during Taylor evaluation does not change its sign.\n");
     printMessage(12,SOLLYA_MSG_CONTINUATION,"Simplifying by taking the convex hull of the evaluations on the endpoints.\n");
 
- 
+
     sollya_mpfi_init2(xZI2,prec);
-    
+
     sollya_mpfi_set_fr(xZI,leftX);
     sollya_mpfi_set_fr(xZI2,rightX);
 
@@ -2147,7 +2147,7 @@ chain* evaluateITaylorInner(sollya_mpfi_t result, node *func, node *deriv, solly
     taylorExcludesConstant = evaluateI(constantTerm, func, xZI2, prec, 1, hopitalrecursions+1, NULL, constantTheo,noExcludes);
 
     sollya_mpfi_union(result,resultDirect,constantTerm);
-    
+
     if (theo != NULL) {
       if (theo->functionType != POLYNOMIAL) {
 	theo->simplificationUsed = MONOTONOCITY;
@@ -2176,20 +2176,20 @@ chain* evaluateITaylorInner(sollya_mpfi_t result, node *func, node *deriv, solly
   } else {
 
     taylorExcludesConstant = evaluateI(constantTerm, func, xZI, prec, 1, hopitalrecursions+1, NULL, constantTheo,noExcludes);
-    
+
     sollya_mpfi_sub(temp, x, xZI);
     sollya_mpfi_mul(temp2, temp, linearTerm);
     sollya_mpfi_add(resultTaylor, constantTerm, temp2);
     taylorExcludes = concatChains(taylorExcludesConstant, taylorExcludesLinear);
-  
-    if (deriv != NULL) 
+
+    if (deriv != NULL)
       directExcludes = evaluateITaylorOnDiv(resultDirect, func, x, prec, recurse, directTheo,noExcludes);
-    else 
+    else
       directExcludes = evaluateI(resultDirect, func, x, prec, 0, hopitalrecursions+1, NULL, directTheo,noExcludes);
 
     sollya_mpfi_get_left(rTl,resultTaylor);
     sollya_mpfi_get_right(rTr,resultTaylor);
-    
+
     if (mpfr_number_p(rTl) && mpfr_number_p(rTr)) {
       sollya_mpfi_intersect(result,resultTaylor,resultDirect);
       excludes = concatChains(directExcludes,taylorExcludes);
@@ -2321,7 +2321,7 @@ chain *findZerosUnsimplified(node *func, node *deriv, sollya_mpfi_t range, mp_pr
       else sollya_mpfi_interv_fr(rI,r,m);
 
       if (theo != NULL) freeExprBoundTheo(theo);
-   
+
       leftchain = findZerosUnsimplified(func,deriv,lI,prec,diam,leftProofsPtr);
       rightchain = findZerosUnsimplified(func,deriv,rI,prec,diam,rightProofsPtr);
 
@@ -2332,7 +2332,7 @@ chain *findZerosUnsimplified(node *func, node *deriv, sollya_mpfi_t range, mp_pr
       }
 
 
-      mpfr_clear(m);    
+      mpfr_clear(m);
       sollya_mpfi_clear(lI);
       sollya_mpfi_clear(rI);
     } else {
@@ -2372,7 +2372,7 @@ chain *findZeros(node *func, node *deriv, sollya_mpfi_t range, mp_prec_t prec, m
   printMessage(3,SOLLYA_MSG_INVOKING_RECURSIVE_INTERVAL_ZERO_SEARCH,"Information: invoking the recursive interval zero search.\n");
   temp = findZerosUnsimplified(funcSimplified,derivSimplified,range,prec,diam,noZeroProofs);
   printMessage(3,SOLLYA_MSG_RECURSIVE_INTERVAL_ZERO_SEARCH_HAS_FINISHED,"Information: the recursive interval zero search has finished.\n");
-  
+
   free_memory(funcSimplified);
   free_memory(derivSimplified);
 
@@ -2464,7 +2464,7 @@ void fprintInterval(FILE *fd, sollya_mpfi_t interval) {
   mpfr_t l,r;
   mp_prec_t prec;
 
-  
+
   prec = sollya_mpfi_get_prec(interval);
   mpfr_init2(l,prec);
   mpfr_init2(r,prec);
@@ -2689,7 +2689,7 @@ chain *excludeIntervals(chain *mainIntervals, chain *excludeIntervals) {
 		  curr = mainIntervals;
 		} else {
 		  /* We are the first and the last element in the chain, which will be empty */
-		  
+
 		  sollya_mpfi_clear(*interval);
 		  safeFree(interval);
 		  safeFree(curr);
@@ -2719,9 +2719,9 @@ chain *excludeIntervals(chain *mainIntervals, chain *excludeIntervals) {
 }
 
 
-void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv, 
+void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv,
 	      node *numeratorDeriv, node *derivNumeratorDeriv,
-	      sollya_mpfi_t range, mp_prec_t prec, mpfr_t diam, 
+	      sollya_mpfi_t range, mp_prec_t prec, mpfr_t diam,
 	      chain *intervalsToExclude,
 	      chain **mightExcludes,
 	      infnormTheo *theo) {
@@ -2732,7 +2732,7 @@ void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv,
   mpfr_t diamJoin;
   mp_prec_t rangePrec;
   chain *excludes, *excludesTemp;
-  int i; 
+  int i;
   noZeroTheo *noZeros;
   exprBoundTheo *evalLeftBound, *evalRightBound, *currZeroTheo;
 
@@ -2762,7 +2762,7 @@ void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv,
     evalLeftBound = NULL;
     evalRightBound = NULL;
   }
-  
+
   mpfr_init2(innerLeft, prec);
   mpfr_init2(innerRight, prec);
   mpfr_init2(outerLeft, prec);
@@ -2781,22 +2781,22 @@ void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv,
   sollya_mpfi_set_fr(rInterv,r);
   sollya_mpfi_set_fr(lInterv,l);
 
-  excludes = evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec, taylorrecursions, evalLeftBound,0); 
+  excludes = evaluateITaylor(evalFuncOnInterval, func, deriv, lInterv, prec, taylorrecursions, evalLeftBound,0);
   sollya_mpfi_get_left(outerLeft,evalFuncOnInterval);
   sollya_mpfi_get_right(outerRight,evalFuncOnInterval);
   mpfr_set(innerLeft,outerRight,GMP_RNDU);
   mpfr_set(innerRight,outerLeft,GMP_RNDD);
-  excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec, taylorrecursions, evalRightBound,0); 
+  excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, rInterv, prec, taylorrecursions, evalRightBound,0);
   excludes = concatChains(excludes,excludesTemp);
   sollya_mpfi_get_left(tl,evalFuncOnInterval);
   sollya_mpfi_get_right(tr,evalFuncOnInterval);
   sollya_mpfr_min(outerLeft,outerLeft,tl,GMP_RNDD);
   sollya_mpfr_max(outerRight,outerRight,tr,GMP_RNDU);
   sollya_mpfr_min(innerLeft,innerLeft,tr,GMP_RNDU);
-  sollya_mpfr_max(innerRight,innerRight,tl,GMP_RNDD); 
- 
+  sollya_mpfr_max(innerRight,innerRight,tl,GMP_RNDD);
+
   printMessage(3,SOLLYA_MSG_INVOKING_RECURSIVE_INTERVAL_ZERO_SEARCH,"Information: invoking interval zero search.\n");
-  tempChain = findZeros(numeratorDeriv,derivNumeratorDeriv,range,prec,diam,noZeros); 
+  tempChain = findZeros(numeratorDeriv,derivNumeratorDeriv,range,prec,diam,noZeros);
 
   printMessage(3,SOLLYA_MSG_RECURSIVE_INTERVAL_ZERO_SEARCH_HAS_FINISHED,"Information: interval zero search is done.\n");
   mpfr_init2(diamJoin,prec);
@@ -2824,7 +2824,7 @@ void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv,
       currZeroTheo = NULL;
     }
     currInterval = ((sollya_mpfi_t *) (curr->value));
-    excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec, taylorrecursions, currZeroTheo,0); 
+    excludesTemp = evaluateITaylor(evalFuncOnInterval, func, deriv, *currInterval, prec, taylorrecursions, currZeroTheo,0);
 
     excludes = concatChains(excludes,excludesTemp);
     sollya_mpfi_get_left(tl,evalFuncOnInterval);
@@ -2840,8 +2840,8 @@ void infnormI(sollya_mpfi_t infnormval, node *func, node *deriv,
 
     sollya_mpfr_min(outerLeft,outerLeft,tl,GMP_RNDD);
     sollya_mpfr_max(outerRight,outerRight,tr,GMP_RNDU);
-    sollya_mpfr_min(innerLeft,innerLeft,tr,GMP_RNDU); 
-    sollya_mpfr_max(innerRight,innerRight,tl,GMP_RNDD); 
+    sollya_mpfr_min(innerLeft,innerLeft,tr,GMP_RNDU);
+    sollya_mpfr_max(innerRight,innerRight,tl,GMP_RNDD);
     curr = curr->next;
   }
 
@@ -2924,7 +2924,7 @@ int isTrivialInfnormCase(rangetype result, node *func) {
 	  }
 	}
 	free_memory(denominator);
-      } 
+      }
       free_memory(numerator);
     }
   }
@@ -3014,7 +3014,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
   f_diff = differentiate(f);
   f_diff2 = NULL;
 
-  
+
   /* Initial value of x1 */
   mpfr_set(x1, a, GMP_RNDN); /* exact */
   mpfr_set(current_x, a, GMP_RNDN);
@@ -3056,10 +3056,10 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
       mpfr_set(x2, b, GMP_RNDN); /* exact */
       stop_algo = 1;
     }
-    
+
     r = evaluateFaithfulWithCutOffFast(y2, f, f_diff, x2, cutoff, INIT_PREC);
     if (r==2) mpfr_set_d(y2, 0. , GMP_RNDN); /* under the cutoff */
-    
+
     if (!mpfr_number_p(y2)) {
       printMessage(1,SOLLYA_MSG_EVALUATION_AT_POINT_GIVES_NAN_EXCLUDING_POINT,"Warning: the evaluation of the given function %b in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",f,x2);
     }
@@ -3069,7 +3069,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 	    );
 
   if (mpfr_cmpabs(y2, max) > 0) { /* evaluates to false when y2=NaN */
-    mpfr_abs(max, y2, GMP_RNDU); 
+    mpfr_abs(max, y2, GMP_RNDU);
     printMessage(3,SOLLYA_MSG_THE_CURRENT_MAXIMUM_IS_A_CERTAIN_VALUE,"Information: current max is %v and is reached at %v\n",max,x2);
     mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
   }
@@ -3096,10 +3096,10 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 	mpfr_set(x3, b, GMP_RNDN); /* exact */
 	stop_algo = 1;
       }
-      
+
       r = evaluateFaithfulWithCutOffFast(y3, f, f_diff, x3, cutoff, INIT_PREC);
       if (r==2) mpfr_set_d(y3, 0. , GMP_RNDN); /* under the cutoff */
-      
+
       if (!mpfr_number_p(y3)) {
 	printMessage(1,SOLLYA_MSG_EVALUATION_AT_POINT_GIVES_NAN_EXCLUDING_POINT,"Warning: the evaluation of the given function %b in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",f,x3);
       }
@@ -3107,13 +3107,13 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 	      &&
 	      (!stop_algo)
 	      );
-    
+
     if (mpfr_cmpabs(y3, max) > 0) { /* evaluates to false when y3=NaN */
-      mpfr_abs(max, y3, GMP_RNDU); 
+      mpfr_abs(max, y3, GMP_RNDU);
       printMessage(3,SOLLYA_MSG_THE_CURRENT_MAXIMUM_IS_A_CERTAIN_VALUE,"Information: current max is %v and is reached at %v\n",max,x3);
       mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
     }
-    
+
     /* Call to Newton's algorithm if necessary */
     if ( (mpfr_cmpabs(y2,y1)>=0) && (mpfr_cmpabs(y2,y3)>=0) && (mpfr_cmp_d(y2,0.)!=0) ) {
       if (f_diff2 == NULL) f_diff2 = differentiate(f_diff);
@@ -3123,7 +3123,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 
       r = evaluateFaithfulWithCutOffFast(y3diff, f_diff, f_diff2, x3, zero_mpfr, prec+10);
       if (r==0) mpfr_set_d(y3diff, 0. , GMP_RNDN);
-      
+
       if ( (!mpfr_number_p(y1diff)) || (!mpfr_number_p(y3diff)) ) {
 	printMessage(1,SOLLYA_MSG_EVALUATION_OF_DERIVATIVE_GIVES_NAN_NO_NEWTON,"Warning: the evaluation of the derivative %b of the given function in %v or %v gives NaN.\nNewton's algorithm will not be used on this interval.\n",f_diff,x1,x3);
       }
@@ -3132,25 +3132,25 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
                                                      /* the zero. Moreover, note that y1 and y3 have */
                                                      /* already been taken into account in max.      */
 	findZero(xstar, f_diff, f_diff2, x1, x3, mpfr_sgn(y1diff), NULL, 0, prec_bound);
-	
+
 	/* If xstar = NaN, a warning has already been produced by Newton's algorithm. */
 	/* There is no need to print a warning again here.                            */
-	if(mpfr_number_p(xstar)) { 
+	if(mpfr_number_p(xstar)) {
 	  r = evaluateFaithfulWithCutOffFast(ystar, f, f_diff, xstar, cutoff, prec+10);
 	  if (r==2) mpfr_set_d(ystar, 0. , GMP_RNDN); /* under the cutoff */
-	  
+
 	  if (!mpfr_number_p(ystar)) {
 	    printMessage(1,SOLLYA_MSG_EVALUATION_AT_POINT_GIVES_NAN_EXCLUDING_POINT,"Warning: the evaluation of the given function %b in %v gives NaN.\nThis (possibly maximum) point will be excluded from the infnorm result.\n",f,xstar);
 	  }
 	  if (mpfr_cmpabs(ystar, max) > 0) { /* evaluates to false when ystar=NaN */
-	    mpfr_abs(max, ystar, GMP_RNDU); 
+	    mpfr_abs(max, ystar, GMP_RNDU);
 	    printMessage(3,SOLLYA_MSG_THE_CURRENT_MAXIMUM_IS_A_CERTAIN_VALUE,"Information: current max is %v and is reached at %v\n",max,xstar);
 	    mpfr_div_2ui(cutoff, max, 1, GMP_RNDU);
 	  }
 	}
-      }    
+      }
     }
-    
+
     mpfr_set(x1,x2,GMP_RNDN); /* exact */
     mpfr_set(y1,y2,GMP_RNDN); /* exact */
     mpfr_set(x2,x3,GMP_RNDN); /* exact */
@@ -3183,7 +3183,7 @@ void uncertifiedInfnorm(mpfr_t result, node *f, mpfr_t a, mpfr_t b, unsigned lon
 
 
 
-rangetype infnorm(node *func, rangetype range, chain *excludes, 
+rangetype infnorm(node *func, rangetype range, chain *excludes,
 		  mp_prec_t prec, mpfr_t diam, FILE *proof) {
   rangetype res;
   sollya_mpfi_t rangeI, resI;
@@ -3213,7 +3213,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
     mpfr_set_inf(*(res.b),1);
     return res;
   }
-  
+
   if ((mpfr_cmp(*(range.a),*(range.b)) == 0) && (proof == NULL)) {
     evaluateRangeFunctionFast(res, func, NULL, range, prec);
     mpfr_abs(*(res.a),*(res.a),GMP_RNDN);
@@ -3331,7 +3331,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
     } else {
       theo = NULL;
     }
-    
+
     printMessage(3,SOLLYA_MSG_INVOKING_INFNORM_SUBFUNCTION,"Information: invoking the interval infnorm subfunction on additional excludes.\n");
 
     infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,
@@ -3346,7 +3346,7 @@ rangetype infnorm(node *func, rangetype range, chain *excludes,
     fprintInfnormTheo(proof,theo,1);
     printMessage(2,SOLLYA_MSG_THE_PROOF_HAS_BEEN_WRITTEN,"Information: proof written.\n");
   }
-  
+
   if (theo != NULL) freeInfnormTheo(theo);
   freeChain(mightExcludes,freeMpfiPtr);
   freeChain(secondMightExcludes,freeMpfiPtr);
@@ -3397,7 +3397,7 @@ void evaluateInterval(sollya_mpfi_t y, node *func, node *deriv, sollya_mpfi_t x)
   prec <<= 1;
 
   /* Let's use at least the precision of the tool, that gives us
-     additional 10% on the check examples 
+     additional 10% on the check examples
   */
   if (prec < tools_precision) prec = tools_precision;
 
@@ -3470,7 +3470,7 @@ void evaluateRangeFunction(rangetype yrange, node *func, rangetype xrange, mp_pr
   temp = differentiate(func);
   deriv = horner(temp);
 
-  if ((accessThruMemRef(func)->nodeType == POW) && 
+  if ((accessThruMemRef(func)->nodeType == POW) &&
       (accessThruMemRef(accessThruMemRef(func)->child1)->nodeType == VARIABLE) &&
       (accessThruMemRef(accessThruMemRef(func)->child2)->nodeType == CONSTANT) &&
       mpfr_zero_p(*(accessThruMemRef(accessThruMemRef(func)->child2)->value))) {
@@ -3657,16 +3657,16 @@ int checkInfnormI(node *func, node *deriv, sollya_mpfi_t infnormval, sollya_mpfi
   mpfr_init2(r,prec);
   sollya_mpfi_init2(rangeLeft,prec);
   sollya_mpfi_init2(rangeRight,prec);
-  
+
   sollya_mpfi_get_left(l,range);
   sollya_mpfi_mid(m,range);
   sollya_mpfi_get_right(r,range);
-  
+
   sollya_mpfi_interv_fr(rangeLeft,l,m);
   sollya_mpfi_interv_fr(rangeRight,m,r);
 
   /* Recurse on half the range */
-  
+
   resultLeft = 0;
   resultRight = 0;
 
@@ -3732,10 +3732,10 @@ void evaluateConstantWithErrorEstimate(mpfr_t res, mpfr_t err, node *func, mpfr_
   mpfr_init2(*(yrange.a), prec);
   mpfr_init2(*(yrange.b), prec);
   mpfr_init2(temp,prec + 10);
-  
+
   mpfr_set(*(xrange.a),x,GMP_RNDD);
   mpfr_set(*(xrange.b),x,GMP_RNDU);
-  
+
   evaluateRangeFunction(yrange, func, xrange, prec);
 
   mpfr_add(temp,*(yrange.a),*(yrange.b),GMP_RNDN);
@@ -3788,7 +3788,7 @@ chain* findZerosByNewton(node *func, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   mpfr_init2(step,prec);
   mpfr_init2(yAp,prec);
   mpfr_init2(yBp,prec);
-  
+
   mpfr_sub(step,b,a,GMP_RNDU);
   if (mpfr_zero_p(step)) {
     evaluate(resNewtonStep,func,a,prec);
@@ -3797,14 +3797,14 @@ chain* findZerosByNewton(node *func, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     mpfr_set(*newZero,resNewtonStep,GMP_RNDN);
     fpZeros = addElement(fpZeros,newZero);
   } else {
-    mpfr_div_ui(step,step,defaultpoints,GMP_RNDU);    
+    mpfr_div_ui(step,step,defaultpoints,GMP_RNDU);
     mpfr_set(ap,a,GMP_RNDD);
     while (mpfr_cmp(ap,b) < 0) {
       mpfr_add(bp,ap,step,GMP_RNDN);
       sollya_mpfr_min(bp,bp,b,GMP_RNDU);
-      
+
       newtonOkay = newtonMPFR(resNewtonStep, func, deriv, ap, bp, prec);
-      
+
       if (newtonOkay) {
 	newZero = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*newZero,prec);
@@ -3823,7 +3823,7 @@ chain* findZerosByNewton(node *func, mpfr_t a, mpfr_t b, mp_prec_t prec) {
 	  fpZeros = addElement(fpZeros,newZero);
 	}
       }
-      
+
       mpfr_set(ap,bp,GMP_RNDN);
     }
   }
@@ -3847,7 +3847,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
   int addToList, removedFromList;
   unsigned int oldDefaultPoints;
 
-  
+
   oldDefaultPoints = defaultpoints;
   defaultpoints = defaultpoints >> 4;
 
@@ -3855,15 +3855,15 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
   mpfr_set_d(diam,DEFAULTDIAM2,GMP_RNDN);
 
   intervalZeros = findZerosFunction(func, range, prec, diam);
-  
+
   mpfr_clear(diam);
 
   fpZeros = NULL;
 
   while (intervalZeros != NULL) {
-    fpZerosOnInterval = findZerosByNewton(func, 
-					  *(((rangetype *) (intervalZeros->value))->a), 
-					  *(((rangetype *) (intervalZeros->value))->b), 
+    fpZerosOnInterval = findZerosByNewton(func,
+					  *(((rangetype *) (intervalZeros->value))->a),
+					  *(((rangetype *) (intervalZeros->value))->b),
 					  4*prec);
     fpZeros = concatChains(fpZeros, fpZerosOnInterval);
     mpfr_clear(*(((rangetype *) (intervalZeros->value))->a));
@@ -3875,7 +3875,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
     safeFree(intervalZeros);
     intervalZeros = temp;
   }
-  
+
 
   mpfr_init2(compare,prec);
   mpfr_set_d(compare,1.0,GMP_RNDN);
@@ -3916,7 +3916,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
   removedFromList = 0;
   fpZeros = NULL;
   while (fpZeros2 != NULL) {
-    
+
     addToList = 0;
 
     evaluateFaithful(y, func, *((mpfr_t *) (fpZeros2->value)), prec);
@@ -3932,7 +3932,7 @@ chain* fpFindZerosFunction(node *func, rangetype range, mp_prec_t prec) {
 
       evaluateFaithful(yAfter, func, after, prec);
       evaluateFaithful(yBefore, func, before, prec);
-      
+
       if ((!mpfr_number_p(yAfter)) || (!mpfr_number_p(yBefore))) {
 	addToList = 1;
       } else {
@@ -4222,7 +4222,7 @@ int isEvaluable(node *func, mpfr_t x, mpfr_t *y, mp_prec_t prec) {
     safeFree(yrange.a);
     safeFree(yrange.b);
     return ISHOPITALEVALUABLE;
-  } 
+  }
 
   mpfr_clear(val);
   mpfr_clear(*(xrange.a));
@@ -4282,7 +4282,7 @@ int determineHeuristicTaylorRecursions(node *func) {
     i++;
     highestDegree--;
   }
-  
+
   free_memory(temp);
 
   return i < 0 ? 0 : i;
@@ -4302,7 +4302,7 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
   mpfr_t startDiam, currDiameter, resultUp, resultDown, stopDiameter;
   int okay, oldtaylorrecursions, t;
 
-  
+
   prec = startPrec;
   p = mpfr_get_prec(result);
 
@@ -4359,7 +4359,7 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
   mpfr_set_d(startDiam,DEFAULTDIAM,GMP_RNDD);
 
   mpfr_mul(rangeDiameter,rangeDiameter,startDiam,GMP_RNDD);
-  
+
   mpfr_clear(startDiam);
 
   sollya_mpfi_interv_fr(rangeI,*(range.a),*(range.b));
@@ -4427,7 +4427,7 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
 
       infnormI(resI,func,deriv,numeratorDeriv,derivNumeratorDeriv,rangeI,
 	       prec,currDiameter,initialExcludes,NULL,NULL);
-    
+
       sollya_mpfi_get_left(resultDown,resI);
       sollya_mpfi_get_right(resultUp,resI);
 
@@ -4442,7 +4442,7 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
 	okay = 1;
 	break;
       }
-    
+
       mpfr_div_2ui(currDiameter,currDiameter,2,GMP_RNDD);
 
       printMessage(4,SOLLYA_MSG_ABS_DIAM_AND_PREC_SET_TO_CERTAIN_VALUES,"Information: the absolute diameter is now %v.\nThe current intermediate precision is %d bits.\n",currDiameter,(int) prec);
@@ -4498,11 +4498,11 @@ int accurateInfnorm(mpfr_t result, node *func, rangetype range, chain *excludes,
    and we know that it is exact
 
    5 -> evaluation gave a faithful result and we know that it is
-   inexact 
+   inexact
 
    6 -> evaluation gave a correctly rounded result, we do not know if
    it is inexact
-	
+
    7 -> evaluation gave a correctly rounded result and we know that it
    is inexact
 
@@ -4516,9 +4516,9 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
   mpfr_t yILeft, yIRight, yILeftCheck, yIRightCheck;
   int testCutOff;
   int correctlyRounded;
-  
+
   /* Check if we have a constant expression to evaluate at and if so,
-     check if it is constant 
+     check if it is constant
   */
   if ((altX != NULL) && (!isConstant(altX))) {
     /* Here the alternate abscissa expression is not constant */
@@ -4541,7 +4541,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 
   /* We test the cutoff only if it is not zero */
   mpfr_set_si(cutoffLeft,0,GMP_RNDN);
-  if (mpfr_cmp(cutoffRight,cutoffLeft) == 0) testCutOff = 0; 
+  if (mpfr_cmp(cutoffRight,cutoffLeft) == 0) testCutOff = 0;
 
   mpfr_neg(cutoffLeft,cutoffRight,GMP_RNDD);
   sollya_mpfi_interv_fr(cutoffI,cutoffLeft,cutoffRight);
@@ -4566,7 +4566,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
   */
   startprec = startprec + (startprec >> 2);
 
-  /* Use up a little more memory with the first malloc 
+  /* Use up a little more memory with the first malloc
      The starting subsequent mpf*_set_prec will not malloc
   */
   sollya_mpfi_init2(yI,startprec*16);
@@ -4576,7 +4576,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
   /* Initialize an interval for the abscissa point we evaluate at */
   if (altX == NULL) {
     /* If we have no alternate abscissa point, copy x into an interval
-       with its own precision 
+       with its own precision
     */
     p = mpfr_get_prec(x);
     sollya_mpfi_init2(xI,p);
@@ -4598,7 +4598,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
     correctlyRounded = 0;
 
     sollya_mpfi_set_prec(yI,p);
-    
+
     /* If we evaluate at a constant expression instead of a point,
        evaluate the constant expression to the current (loop)
        precision.
@@ -4628,23 +4628,23 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
       /* Check if correct rounding is already possible */
       if (mpfr_cmp(resDown,resUp) == 0) {
 	/* Correct rounding is possible, resDown = resUp is that
-	   correct rounding 
+	   correct rounding
 	*/
 	okay = 1;
 	correctlyRounded = 1;
       } else {
 	/* Check if faithful rounding is already possible because the
            proof interval is between two consecutive floating-point
-           numbers in the target format. 
+           numbers in the target format.
 	*/
 	sollya_mpfi_get_left(resDownFaith,yI);
 	sollya_mpfi_get_right(resUpFaith,yI);
 	mpfr_set(resDownTemp, resDownFaith, GMP_RNDN); /* exact, same precision */
 	mpfr_nextabove(resDownTemp);
-	if (mpfr_number_p(resDownFaith) && 
-	    mpfr_number_p(resUpFaith) && 
+	if (mpfr_number_p(resDownFaith) &&
+	    mpfr_number_p(resUpFaith) &&
 	    (mpfr_cmp(resDownTemp,resUpFaith) == 0)) {
-	  /* A faithful rounding is already possible because the 
+	  /* A faithful rounding is already possible because the
 	     proof interval is between two consecutive floating-point
 	     numbers in the target format.
 
@@ -4660,13 +4660,13 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	     anyway, we are hence going to try to recompute the proof
 	     interval at a slightly higher precision to see if we
 	     can't get correct rounding "for just one dollar more."
-	     
+
           */
 	  pTemp = p + (p >> 2); /* That is 25% more of precision */
-	  
+
 	  /* Recompute at that slightly higher precision */
 	  sollya_mpfi_set_prec(yI,pTemp);
-	  
+
 	  /* If we evaluate at a constant expression instead of a point,
 	     evaluate the constant expression to the current (loop)
 	     precision.
@@ -4675,7 +4675,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	    sollya_mpfi_set_prec(xI,pTemp);
 	    evaluateInterval(xI, altX, NULL, dummyI);
 	  }
-	  
+
 	  mpfr_set_prec(yILeft,pTemp);
 	  mpfr_set_prec(yIRight,pTemp);
 	  evaluateInterval(yI, func, deriv, xI);
@@ -4687,17 +4687,17 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	  /* Check if we have a correct rounding now. */
 	  if (mpfr_number_p(resDown) &&
 	      mpfr_number_p(resUp) &&
-	      sollya_mpfi_bounded_p(yI) && 
+	      sollya_mpfi_bounded_p(yI) &&
 	      (mpfr_cmp(resDown,resUp) == 0)) {
 	    /* We did find a correct rounding now, which we're gonna
-	       use. 
+	       use.
 	    */
 	    okay = 1;
 	    correctlyRounded = 1;
 	  } else {
 	    /* We couldn't find a correct rounding with a
 	       recomputation at a slightly higher precision. So we'll
-	       go for our faithful rounding. 
+	       go for our faithful rounding.
 	    */
 	    okay = 1;
 	    mpfr_set(resDown, resDownFaith, GMP_RNDN); /* exact, same precision */
@@ -4710,8 +4710,8 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	  */
 	  mpfr_set(resDownFaith,yILeft,GMP_RNDU);
 	  mpfr_set(resUpFaith,yIRight,GMP_RNDD);
-	  if (mpfr_number_p(resDownFaith) && 
-	      mpfr_number_p(resUpFaith) && 
+	  if (mpfr_number_p(resDownFaith) &&
+	      mpfr_number_p(resUpFaith) &&
 	      (mpfr_cmp(resDownFaith,resUpFaith) == 0)) {
 	    /* A faithful rounding is already possible because the
 	       proof interval contains a single floating-point number
@@ -4729,13 +4729,13 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	       anyway, we are hence going to try to recompute the proof
 	       interval at a slightly higher precision to see if we
 	       can't get correct rounding "for just one dollar more."
-	     
+
 	    */
 	    pTemp = p + (p >> 2); /* That is 25% more of precision */
-	  
+
 	    /* Recompute at that slightly higher precision */
 	    sollya_mpfi_set_prec(yI,pTemp);
-	  
+
 	    /* If we evaluate at a constant expression instead of a point,
 	       evaluate the constant expression to the current (loop)
 	       precision.
@@ -4744,7 +4744,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	      sollya_mpfi_set_prec(xI,pTemp);
 	      evaluateInterval(xI, altX, NULL, dummyI);
 	    }
-	  
+
 	    mpfr_set_prec(yILeft,pTemp);
 	    mpfr_set_prec(yIRight,pTemp);
 	    evaluateInterval(yI, func, deriv, xI);
@@ -4756,17 +4756,17 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	    /* Check if we have a correct rounding now. */
 	    if (mpfr_number_p(resDown) &&
 		mpfr_number_p(resUp) &&
-		sollya_mpfi_bounded_p(yI) && 
+		sollya_mpfi_bounded_p(yI) &&
 		(mpfr_cmp(resDown,resUp) == 0)) {
 	      /* We did find a correct rounding now, which we're gonna
-		 use. 
+		 use.
 	      */
 	      okay = 1;
 	      correctlyRounded = 1;
 	    } else {
 	      /* We couldn't find a correct rounding with a
 		 recomputation at a slightly higher precision. So we'll
-		 go for our faithful rounding. 
+		 go for our faithful rounding.
 	      */
 	      okay = 1;
 	      mpfr_set(resDown, resDownFaith, GMP_RNDN); /* exact, same precision */
@@ -4774,14 +4774,14 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	    }
 	  } else {
 	    /* Check if the proof interval is already contained in the
-	       cutoff interval 
+	       cutoff interval
 	    */
 	    if (testCutOff && (okay == 0)) {
 	      if (sollya_mpfi_is_inside(yI,cutoffI)) {
 		sollya_mpfi_mid(resUp,yI);
 		mpfr_set(resDown, resUp, GMP_RNDN); /* exact, same precision */
 		okay = 2;
-	      } 
+	      }
 	    }
 	  }
 	}
@@ -4797,32 +4797,32 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
   if (okay > 0) {
     /* Now compute the correct rounding wherever possible and the
        correct rounding of the midpoint of both possible answers
-       otherwise 
+       otherwise
 
        To do so, compute the midpoint of resUp and resDown and round
        it to the target precision.
 
        There are 3 possible cases:
 
-       a) The loop above has been left because both endpoints of the 
+       a) The loop above has been left because both endpoints of the
        proof interval rounded to the same value, resUp = resDown.
-       In this case, the midpoint of resUp and resDown is 
+       In this case, the midpoint of resUp and resDown is
        resUp = resDown, which is also the correct rounding.
 
-       b) The loop above has been left because resUp was the 
+       b) The loop above has been left because resUp was the
        next floating-point number above resDown. resDown
        and resUp are the two possible answers for a faithful
-       rounding. Their midpoint is the point where the rounding 
+       rounding. Their midpoint is the point where the rounding
        changes. The proof interval contained that midpoint.
-       Returning the correct rounding of the midpoint to the 
-       nearest floating-point value hence chooses the even of 
+       Returning the correct rounding of the midpoint to the
+       nearest floating-point value hence chooses the even of
        both possible faithful roundings.
 
        c) The loop above has been left because the proof interval
-       was contained in [-cutoff,cutoff]. In this case, resUp and 
-       resDown have both been set to the midpoint of the proof 
+       was contained in [-cutoff,cutoff]. In this case, resUp and
+       resDown have both been set to the midpoint of the proof
        interval, which is certainly less than cutoff in magnitude.
-       Computing the midpoint of resUp and resDown and rounding 
+       Computing the midpoint of resUp and resDown and rounding
        to target precision does not change anything to that value.
     */
     mpfr_div_2ui(resDown, resDown, 1, GMP_RNDN); /* exact, power of 2 */
@@ -4831,12 +4831,12 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 
     /* Now check if we are in a case when we can tell if the result is
        an exact or inexact one. We do this check only if we had a
-       correct or faithful result; we do nothing for the case when 
+       correct or faithful result; we do nothing for the case when
        the proof interval was below the threshold.
     */
     if (okay == 1) {
-      /* We have a correctly or faithfully rounded result in result and we 
-	 want to check if the proof interval we had, yI allows anything 
+      /* We have a correctly or faithfully rounded result in result and we
+	 want to check if the proof interval we had, yI allows anything
 	 else to be said than just "it's a faithful rounding".
 
 	 We won't do the additional check if there are quantities
@@ -4847,7 +4847,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
       mpfr_init2(yIRightCheck, p);
       sollya_mpfi_get_left(yILeftCheck,yI);
       sollya_mpfi_get_right(yIRightCheck,yI);
-      if (mpfr_number_p(result) && 
+      if (mpfr_number_p(result) &&
 	  mpfr_number_p(yILeftCheck) &&
 	  mpfr_number_p(yIRightCheck)) {
 	/* Here, we have real numbers to work on */
@@ -4855,7 +4855,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	  /* Here, the proof interval is reduced to a point */
 	  if (mpfr_equal_p(result, yILeftCheck)) {
 	    /* The result is exact as it is equal to both bounds of
-	       the proof interval. 
+	       the proof interval.
 	    */
 	    okay = 4;
 	  } else {
@@ -4873,7 +4873,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
 	  */
 	  if (!((mpfr_cmp(yILeftCheck, result) <= 0) && (mpfr_cmp(result, yIRightCheck) <= 0))) {
 	    /* Here, the result is not in the proof interval and
-	       therefore it is necessarily inexact. 
+	       therefore it is necessarily inexact.
 	    */
 	    okay = 5;
 	  }
@@ -4884,7 +4884,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
     }
 
     /* If we got a correctly rounded result, we can express this fact
-       with the return code 
+       with the return code
     */
     if (correctlyRounded) {
       if (okay == 1) {
@@ -4899,7 +4899,7 @@ int evaluateFaithfulWithCutOffFastInternalImplementation(mpfr_t result, node *fu
     mpfr_set_nan(result);
     if( (!mpfr_number_p(resUp)) || (!mpfr_number_p(resDown))) okay=3;
   }
- 
+
   sollya_mpfi_clear(yI);
   mpfr_clear(resUp);
   mpfr_clear(resDown);
@@ -4931,7 +4931,7 @@ int evaluateFaithfulWithCutOff(mpfr_t result, node *func, mpfr_t x, mpfr_t cutof
   if ((2*startprec) < (mpfr_get_prec(result) + 10)) {
     printMessage(12,SOLLYA_MSG_DIFFERENTIATING_FOR_EVAL_AS_START_PREC_LOW,"Information: Differentiating while evaluating because start precision (%d bits) too low.\n",
 		 (int)startprec);
-    deriv = differentiate(func); 
+    deriv = differentiate(func);
   }else deriv = NULL;
   res = evaluateFaithfulWithCutOffFast(result, func, deriv, x, cutoff, startprec);
   if (res==3) res=0;
@@ -4948,7 +4948,7 @@ node *makeDoubleConstant(double d) {
   tempNode->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*(tempNode->value),64);
   mpfr_set_d(*(tempNode->value),d,GMP_RNDN);
-  
+
   return tempNode;
 }
 
@@ -4964,7 +4964,7 @@ node *convertConstantToFunctionInPiInner(node *tree) {
     res = (node *) safeMalloc(sizeof(node));
     res->nodeType = VARIABLE;
     return res;
-  } 
+  }
 
   a = arity(tree);
   switch (a) {
@@ -5008,9 +5008,9 @@ int containsPi(node *tree) {
   int a;
 
   if (tree->nodeType == MEMREF) return containsPi(tree->child1);
-  
+
   if (tree->nodeType == PI_CONST) return 1;
-  
+
   a = arity(tree);
   switch (a) {
   case 0:
@@ -5055,14 +5055,14 @@ int compareConstant(int *cmp, node *func1, node *func2, node *difference, int do
   mpfr_init2(value,12);
   mpfr_init2(dummyX,12);
   mpfr_set_ui(dummyX,1,GMP_RNDN);
-  if ((!doNotEval) && 
+  if ((!doNotEval) &&
       evaluateFaithful(value, diff, dummyX, defaultprecision) &&
-      mpfr_number_p(value)) { 
+      mpfr_number_p(value)) {
     res = mpfr_sgn(value);
     okay = 1;
   } else {
-    if ((accessThruMemRef(func1)->nodeType == DIV) && 
-	evaluateSign(&signA,accessThruMemRef(func1)->child2) && 
+    if ((accessThruMemRef(func1)->nodeType == DIV) &&
+	evaluateSign(&signA,accessThruMemRef(func1)->child2) &&
 	(signA != 0)) {
       tempNode = makeMul(copyTree(accessThruMemRef(func1)->child2),copyTree(func2));
       okayB = compareConstant(&signB, accessThruMemRef(func1)->child1, tempNode, NULL, 1);
@@ -5071,10 +5071,10 @@ int compareConstant(int *cmp, node *func1, node *func2, node *difference, int do
 	res = signB;
       }
       free_memory(tempNode);
-    } 
+    }
     if (!okay) {
-      if ((accessThruMemRef(func2)->nodeType == DIV) && 
-	  evaluateSign(&signA,accessThruMemRef(func2)->child2) && 
+      if ((accessThruMemRef(func2)->nodeType == DIV) &&
+	  evaluateSign(&signA,accessThruMemRef(func2)->child2) &&
 	  (signA != 0)) {
 	tempNode = makeMul(copyTree(accessThruMemRef(func2)->child2),copyTree(func1));
 	okayB = compareConstant(&signB, tempNode, accessThruMemRef(func2)->child1, NULL, 1);
@@ -5083,13 +5083,13 @@ int compareConstant(int *cmp, node *func1, node *func2, node *difference, int do
 	  res = signB;
 	}
 	free_memory(tempNode);
-      } 
+      }
       if (!okay) {
 	if (((accessThruMemRef(func1)->nodeType == EXP) && (accessThruMemRef(func2)->nodeType == EXP)) ||
-	    ((accessThruMemRef(func1)->nodeType == SINH) && (accessThruMemRef(func2)->nodeType == SINH)) || 
-	    ((accessThruMemRef(func1)->nodeType == TANH) && (accessThruMemRef(func2)->nodeType == TANH)) || 
-	    ((accessThruMemRef(func1)->nodeType == ASINH) && (accessThruMemRef(func2)->nodeType == ASINH)) || 
-	    ((accessThruMemRef(func1)->nodeType == ERF) && (accessThruMemRef(func2)->nodeType == ERF)) || 
+	    ((accessThruMemRef(func1)->nodeType == SINH) && (accessThruMemRef(func2)->nodeType == SINH)) ||
+	    ((accessThruMemRef(func1)->nodeType == TANH) && (accessThruMemRef(func2)->nodeType == TANH)) ||
+	    ((accessThruMemRef(func1)->nodeType == ASINH) && (accessThruMemRef(func2)->nodeType == ASINH)) ||
+	    ((accessThruMemRef(func1)->nodeType == ERF) && (accessThruMemRef(func2)->nodeType == ERF)) ||
 	    ((accessThruMemRef(func1)->nodeType == EXP_M1) && (accessThruMemRef(func2)->nodeType == EXP_M1))) {
 	  okayA = compareConstant(&signA, accessThruMemRef(func1)->child1, accessThruMemRef(func2)->child1, NULL, 0);
 	  if (okayA) {
@@ -5131,7 +5131,7 @@ int compareConstant(int *cmp, node *func1, node *func2, node *difference, int do
 		      okay = 1;
 		      res = 0;
 		    }
-		    for (i=0;i<=degree;i++) 
+		    for (i=0;i<=degree;i++)
 		      if (coefficients[i] != NULL) free_memory(coefficients[i]);
 		    safeFree(coefficients);
 		  }
@@ -5169,7 +5169,7 @@ int evaluateSignTrigoUnsafe(int *s, node *child, int nodeType) {
   mpfr_init2(dummyX,12);
   mpfr_set_ui(dummyX,1,GMP_RNDN);
   if (evaluateFaithful(value, child, dummyX, defaultprecision) &&
-      mpfr_number_p(value)) { 
+      mpfr_number_p(value)) {
     mpfr_const_pi(piHalf,GMP_RNDN);
     mpfr_div_2ui(piHalf,piHalf,1,GMP_RNDN);
     mpfr_div(value,value,piHalf,GMP_RNDN);
@@ -5237,7 +5237,7 @@ int evaluateSign(int *s, node *rawFunc) {
   int signA, signB, signC;
   node *tempNode, *tempNode2;
   node *func, *rawFunc2;
-  
+
   okay = 0;
   if (!isConstant(rawFunc)) return 0;
 
@@ -5248,7 +5248,7 @@ int evaluateSign(int *s, node *rawFunc) {
   mpfr_init2(dummyX,12);
   mpfr_set_ui(dummyX,1,GMP_RNDN);
   if (evaluateFaithful(value, rawFunc, dummyX, defaultprecision) &&
-      mpfr_number_p(value)) { 
+      mpfr_number_p(value)) {
     sign = mpfr_sgn(value);
     okay = 1;
   } else {
@@ -5428,7 +5428,7 @@ int evaluateSign(int *s, node *rawFunc) {
       case TRIPLEDOUBLE:
 	break;
       case ERF:
-	okay = evaluateSign(&sign, accessThruMemRef(func)->child1); 
+	okay = evaluateSign(&sign, accessThruMemRef(func)->child1);
 	break;
       case ERFC:
 	okay = 1;
@@ -5456,7 +5456,7 @@ int evaluateSign(int *s, node *rawFunc) {
       case CEIL:
 	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	tempNode = makeDoubleConstant(-1.0);
-	if (okayA) 
+	if (okayA)
 	  okayB = compareConstant(&signB, accessThruMemRef(func)->child1, tempNode, NULL, 0);
 	else
 	  okayB = 0;
@@ -5477,7 +5477,7 @@ int evaluateSign(int *s, node *rawFunc) {
       case FLOOR:
 	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	tempNode = makeDoubleConstant(1.0);
-	if (okayA) 
+	if (okayA)
 	  okayB = compareConstant(&signB, accessThruMemRef(func)->child1, tempNode, NULL, 0);
 	else
 	  okayB = 0;
@@ -5498,7 +5498,7 @@ int evaluateSign(int *s, node *rawFunc) {
       case NEARESTINT:
 	okayA = evaluateSign(&signA, accessThruMemRef(func)->child1);
 	tempNode = makeDoubleConstant(1.0);
-	if (okayA) 
+	if (okayA)
 	  okayB = compareConstant(&signB, accessThruMemRef(func)->child1, tempNode, NULL, 0);
 	else
 	  okayB = 0;
@@ -5524,7 +5524,7 @@ int evaluateSign(int *s, node *rawFunc) {
         /* By definition, a library constant is known with a relative error
            smaller that ~ 2^(-prec). So we can decide the sign, based on low
            approximation of the constant. */
-        sollya_mpfi_init2(valueI, 12); 
+        sollya_mpfi_init2(valueI, 12);
         libraryConstantToInterval(valueI, accessThruMemRef(func));
         if (sollya_mpfi_is_zero(valueI)) {
           okay = 1;

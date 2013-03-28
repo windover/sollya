@@ -242,7 +242,7 @@ void *sollya_lib_calloc(size_t nmemb, size_t size) {
 }
 
 void *sollya_lib_realloc(void *ptr, size_t size) {
-  return safeRealloc(ptr, size);  
+  return safeRealloc(ptr, size);
 }
 
 sollya_obj_t sollya_lib_copy_obj(sollya_obj_t obj1) {
@@ -689,7 +689,7 @@ void sollya_lib_set_roundingwarnings(sollya_obj_t obj1) {
   thingToExecute = makeSuppressWarningsStillAssign(copyThing(obj1));
   executeCommand(thingToExecute);
   freeThing(thingToExecute);
-} 
+}
 
 void sollya_lib_set_hopitalrecursions(sollya_obj_t obj1) {
   node *thingToExecute;
@@ -2207,7 +2207,7 @@ int sollya_lib_helper_mpfr_from_int64(mpfr_t rop, int64_t value, mp_rnd_t rnd) {
 
   mpfr_clear(tempMpfr);
   mpfr_clear(valueMpfr);
-  
+
   return res;
 }
 
@@ -2246,7 +2246,7 @@ int sollya_lib_helper_mpfr_from_uint64(mpfr_t rop, uint64_t value, mp_rnd_t rnd)
 
   mpfr_clear(valueMpfr);
   mpfr_clear(tempMpfr);
-  
+
   return res;
 }
 
@@ -2376,7 +2376,7 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
 	prec = mpfr_get_prec(*(accessThruMemRef(simplifiedRoundedObj)->value));
 	if (prec < 200) prec = 200;
 	mpfr_set_prec(value, prec);
-	if ((mpfr_cmp(*(accessThruMemRef(simplifiedRoundedObj)->value), *(accessThruMemRef(simplifiedObj)->value)) != 0) && 
+	if ((mpfr_cmp(*(accessThruMemRef(simplifiedRoundedObj)->value), *(accessThruMemRef(simplifiedObj)->value)) != 0) &&
 	    mpfr_number_p(*(accessThruMemRef(simplifiedObj)->value))) {
 	  if (!noRoundingWarnings) {
 	    if (*warning) {
@@ -2405,11 +2405,11 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
   } else {
     mpfr_set_nan(value);
     evalRes = sollya_lib_evaluate_function_at_constant_expression(value, roundOp, simplifiedObj, NULL);
-    if ((!mpfr_number_p(value)) || 
-	((evalRes != SOLLYA_FP_FAITHFUL) && 
-	 (evalRes != SOLLYA_FP_PROVEN_EXACT) && 
-	 (evalRes != SOLLYA_FP_FAITHFUL_PROVEN_INEXACT) && 
-	 (evalRes != SOLLYA_FP_CORRECTLY_ROUNDED) && 
+    if ((!mpfr_number_p(value)) ||
+	((evalRes != SOLLYA_FP_FAITHFUL) &&
+	 (evalRes != SOLLYA_FP_PROVEN_EXACT) &&
+	 (evalRes != SOLLYA_FP_FAITHFUL_PROVEN_INEXACT) &&
+	 (evalRes != SOLLYA_FP_CORRECTLY_ROUNDED) &&
 	 (evalRes != SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT))) {
       mpfr_init2(dummyX, 12);
       mpfr_set_si(dummyX, 1, GMP_RNDN);
@@ -2420,7 +2420,7 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
       }
     }
   }
-    
+
   switch (evalRes) {
   case SOLLYA_FP_FAITHFUL:
   case SOLLYA_FP_CORRECTLY_ROUNDED:
@@ -2435,11 +2435,11 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
 	  printMessage(1,SOLLYA_MSG_FAITHFUL_ROUNDING_FOR_EXPR_THAT_SHOULD_BE_CONST,"Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation will be used.\n");
 	}
 	*warning = 0;
-      } 
+      }
     }
     freeThing(evaluatedObj);
     freeThing(simplifiedObj);
-    return 1;      
+    return 1;
     break;
   case SOLLYA_FP_BELOW_CUTOFF:
     if ((!noRoundingWarnings) && (roundOp != NULL)) {
@@ -2464,7 +2464,7 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
 	printMessage(1,SOLLYA_MSG_EXPR_SHOULD_BE_CONSTANT_AND_IS_NOT_FAITHFUL,"Warning: the given expression is not a constant but an expression to evaluate\n");
 	printMessage(1,SOLLYA_MSG_CONTINUATION,"and a faithful evaluation is *NOT* possible.\n");
 	*warning = 0;
-      } 
+      }
     }
     freeThing(evaluatedObj);
     freeThing(simplifiedObj);
@@ -2490,7 +2490,7 @@ int sollya_lib_get_constant_inner(mpfr_t value, sollya_obj_t obj1, sollya_obj_t 
     freeThing(simplifiedObj);
     return 0;
   }
-  
+
   freeThing(evaluatedObj);
   freeThing(simplifiedObj);
   return 0;
@@ -2553,7 +2553,7 @@ int sollya_lib_get_constant_as_double(double *value, sollya_obj_t obj1) {
     *value = sollya_mpfr_get_d(temp, GMP_RNDN);
     mpfr_init2(reconvert,64);
     mpfr_set_d(reconvert, *value, GMP_RNDN); /* Exact as precision enough for a double */
-    if ((mpfr_cmp(temp, reconvert) != 0) && 
+    if ((mpfr_cmp(temp, reconvert) != 0) &&
 	(mpfr_number_p(temp) || mpfr_inf_p(temp)) &&
 	(mpfr_number_p(reconvert) || mpfr_inf_p(reconvert))) {
       if ((!noRoundingWarnings) && warning) {
@@ -2573,7 +2573,7 @@ int sollya_lib_get_constant_as_double(double *value, sollya_obj_t obj1) {
 
 
 /* In some versions of MPFR, mpfr_get_si seems to contain a couple of
-   bugs. 
+   bugs.
 */
 int mpfr_get_si_wrapper(mpfr_t op, mp_rnd_t rnd) {
   mpfr_t opAsInteger, intMaxAsMpfr, intMinAsMpfr;
@@ -2594,7 +2594,7 @@ int mpfr_get_si_wrapper(mpfr_t op, mp_rnd_t rnd) {
       } else {
 	res = mpfr_get_si(opAsInteger, rnd);
       }
-    } 
+    }
     mpfr_clear(opAsInteger);
     mpfr_clear(intMaxAsMpfr);
     mpfr_clear(intMinAsMpfr);
@@ -2762,7 +2762,7 @@ int sollya_lib_get_constant_as_int64(int64_t *value, sollya_obj_t obj1) {
     *value = sollya_lib_helper_mpfr_to_int64(temp);
     mpfr_init2(reconvert,8 * sizeof(int64_t) + 10);
     sollya_lib_helper_mpfr_from_int64(reconvert, *value, GMP_RNDN); /* Exact as precision enough for an int64 */
-    if ((mpfr_cmp(temp, reconvert) != 0) || mpfr_nan_p(temp) || mpfr_nan_p(reconvert)) { 
+    if ((mpfr_cmp(temp, reconvert) != 0) || mpfr_nan_p(temp) || mpfr_nan_p(reconvert)) {
       if (mpfr_number_p(temp) || mpfr_inf_p(temp)) {
 	if ((!noRoundingWarnings) && warning) {
 	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
@@ -2793,7 +2793,7 @@ int sollya_lib_get_constant_as_uint64(uint64_t *value, sollya_obj_t obj1) {
     *value = sollya_lib_helper_mpfr_to_uint64(temp);
     mpfr_init2(reconvert,8 * sizeof(uint64_t) + 10);
     sollya_lib_helper_mpfr_from_uint64(reconvert, *value, GMP_RNDN); /* Exact as precision enough for an uint64 */
-    if ((mpfr_cmp(temp, reconvert) != 0) || mpfr_nan_p(temp) || mpfr_nan_p(reconvert)) { 
+    if ((mpfr_cmp(temp, reconvert) != 0) || mpfr_nan_p(temp) || mpfr_nan_p(reconvert)) {
       if (mpfr_number_p(temp) || mpfr_inf_p(temp)) {
 	if ((!noRoundingWarnings) && warning) {
 	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
@@ -2905,7 +2905,7 @@ int sollya_lib_get_element_in_list(sollya_obj_t *res, sollya_obj_t obj1, int n) 
 
     protoObj = makeIndex(evaluatedObj, indexObj);
     *res = evaluateThing(protoObj);
-    
+
     freeThing(protoObj);
     return 1;
   }
@@ -3103,7 +3103,7 @@ int sollya_lib_v_decompose_function(sollya_obj_t obj1, sollya_base_function_t *b
     break;
   case PROCEDUREFUNCTION:
     funcArity = 2;
-    break;    
+    break;
   }
   i = 1;
   while ((elem = va_arg(varlist,sollya_obj_t *)) != NULL) {
@@ -3134,7 +3134,7 @@ int sollya_lib_v_decompose_function(sollya_obj_t obj1, sollya_base_function_t *b
 	  *elem = (node *) safeMalloc(sizeof(node));
 	  (*elem)->nodeType = PROCEDUREFUNCTION;
 	  (*elem)->libFunDeriv = obj1->libFunDeriv;
-	  (*elem)->child1 = makeVariable();	
+	  (*elem)->child1 = makeVariable();
 	  (*elem)->child2 = copyThing(obj1->child2);
 	  break;
 	default:
@@ -3196,7 +3196,7 @@ int sollya_lib_decompose_libraryfunction(int (**func)(mpfi_t, mpfi_t, int), int 
   *func = obj->libFun->code;
   *deriv = obj->libFunDeriv;
   *sub_func = copyThing(obj->child1);
-  
+
   return 1;
 }
 
@@ -3207,7 +3207,7 @@ int sollya_lib_decompose_libraryconstant(void (**func)(mpfr_t, mp_prec_t), solly
   if (obj->nodeType != LIBRARYCONSTANT) return 0;
 
   *func = obj->libFun->constant_code;
-  
+
   return 1;
 }
 
@@ -3220,7 +3220,7 @@ int sollya_lib_decompose_procedurefunction(sollya_obj_t *proc, int *deriv, solly
   *proc = copyThing(obj->child2);
   *deriv = obj->libFunDeriv;
   *sub_func = copyThing(obj->child1);
-  
+
   return 1;
 }
 
@@ -3359,7 +3359,7 @@ int sollya_lib_obj_is_structure(sollya_obj_t obj1) {
 int sollya_lib_get_structure_elements(char ***identifiers, sollya_obj_t **objects, int *num, sollya_obj_t obj1) {
   chain *curr;
   int i;
-  
+
   if (obj1->nodeType == MEMREF) return sollya_lib_get_structure_elements(identifiers, objects, num, obj1->child1);
 
   if (!isStructure(obj1)) return 0;
@@ -3496,7 +3496,7 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t 
   case 7:
     /* Correct rounding was possible and the result was inexact */
     return SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT;
-    break;    
+    break;
   case 2:
     /* Result was shown to be smaller than cutoff */
     mpfr_set_ui(y,0,GMP_RNDN); /* Set to zero because we are below the cutoff */
@@ -3552,12 +3552,12 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t 
 
   /* Check if we have an infinity left over */
   if ((!mpfr_number_p(yLeft)) || (!mpfr_number_p(yRight))) {
-    /* Here we have [-Inf;Inf] or [4;Inf] or [-Inf;4] 
+    /* Here we have [-Inf;Inf] or [4;Inf] or [-Inf;4]
 
        We return the floating-point evaluation of (inf(I) + sup(I))/2.
        This means we will produce NaN for [-Inf;Inf].
     */
-    mpfr_add(yLeft, yLeft, yRight, GMP_RNDN); 
+    mpfr_add(yLeft, yLeft, yRight, GMP_RNDN);
     mpfr_div_2ui(y, yLeft, 1, GMP_RNDN);
     mpfr_clear(yLeft);
     mpfr_clear(yRight);
@@ -3570,7 +3570,7 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t 
 
   */
   if (mpfr_sgn(yLeft) * mpfr_sgn(yRight) < 0) {
-    /* Zero is in the proof interval. 
+    /* Zero is in the proof interval.
 
        Separate the case if max(abs(yLeft),abs(yRight)) is less than
        2^(-p/2) or not. Here, p is the computing precision we used for
@@ -3582,16 +3582,16 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t 
     mpfr_div_2ui(threshold,threshold,(p >> 1),GMP_RNDN); /* exact: power of 2 */
     if ((mpfr_cmp_abs(yLeft, threshold) < 0) && (mpfr_cmp_abs(yRight, threshold) < 0)) {
       mpfr_clear(threshold);
-      /* Here both bounds are in magnitude less than the threshold = 2^(-p/2) 
+      /* Here both bounds are in magnitude less than the threshold = 2^(-p/2)
 
 	 We return 0.
-	 
+
       */
       mpfr_set_ui(y,0,GMP_RNDN);
       mpfr_clear(yLeft);
       mpfr_clear(yRight);
       return SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD;
-    } 
+    }
     mpfr_clear(threshold);
 
     /* Here, at least one of the bounds is not below the threshold.
@@ -3603,7 +3603,7 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_point(mpfr_t y, sollya_obj_t 
     mpfr_div_2ui(y, yLeft, 1, GMP_RNDN);
     mpfr_clear(yLeft);
     mpfr_clear(yRight);
-    return SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD; 
+    return SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD;
   }
 
   /* Here, zero is not in the proof interval. Take the approximate
@@ -3631,7 +3631,7 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y,
     mpfr_set_nan(y);
     return SOLLYA_FP_OBJ_NO_FUNCTION;
   }
-  
+
   /* Check if abscissa expression is constant */
   if (!isConstant(x)) {
     mpfr_set_nan(y);
@@ -3681,7 +3681,7 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y,
   case 7:
     /* Correct rounding was possible and the result was inexact */
     return SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT;
-    break;    
+    break;
   case 2:
     /* Result was shown to be smaller than cutoff */
     mpfr_set_ui(y,0,GMP_RNDN); /* Set to zero because we are below the cutoff */
@@ -3741,12 +3741,12 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y,
 
   /* Check if we have an infinity left over */
   if ((!mpfr_number_p(yLeft)) || (!mpfr_number_p(yRight))) {
-    /* Here we have [-Inf;Inf] or [4;Inf] or [-Inf;4] 
+    /* Here we have [-Inf;Inf] or [4;Inf] or [-Inf;4]
 
        We return the floating-point evaluation of (inf(I) + sup(I))/2.
        This means we will produce NaN for [-Inf;Inf].
     */
-    mpfr_add(yLeft, yLeft, yRight, GMP_RNDN); 
+    mpfr_add(yLeft, yLeft, yRight, GMP_RNDN);
     mpfr_div_2ui(y, yLeft, 1, GMP_RNDN);
     mpfr_clear(yLeft);
     mpfr_clear(yRight);
@@ -3759,7 +3759,7 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y,
 
   */
   if (mpfr_sgn(yLeft) * mpfr_sgn(yRight) < 0) {
-    /* Zero is in the proof interval. 
+    /* Zero is in the proof interval.
 
        Separate the case if max(abs(yLeft),abs(yRight)) is less than
        2^(-p/2) or not. Here, p is the computing precision we used for
@@ -3771,16 +3771,16 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y,
     mpfr_div_2ui(threshold,threshold,(p >> 1),GMP_RNDN); /* exact: power of 2 */
     if ((mpfr_cmp_abs(yLeft, threshold) < 0) && (mpfr_cmp_abs(yRight, threshold) < 0)) {
       mpfr_clear(threshold);
-      /* Here both bounds are in magnitude less than the threshold = 2^(-p/2) 
+      /* Here both bounds are in magnitude less than the threshold = 2^(-p/2)
 
 	 We return 0.
-	 
+
       */
       mpfr_set_ui(y,0,GMP_RNDN);
       mpfr_clear(yLeft);
       mpfr_clear(yRight);
       return SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD;
-    } 
+    }
     mpfr_clear(threshold);
 
     /* Here, at least one of the bounds is not below the threshold.
@@ -3792,7 +3792,7 @@ sollya_fp_result_t sollya_lib_evaluate_function_at_constant_expression(mpfr_t y,
     mpfr_div_2ui(y, yLeft, 1, GMP_RNDN);
     mpfr_clear(yLeft);
     mpfr_clear(yRight);
-    return SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD; 
+    return SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_NOT_BELOW_THRESHOLD;
   }
 
   /* Here, zero is not in the proof interval. Take the approximate
@@ -4048,10 +4048,10 @@ sollya_obj_t sollya_lib_build_list(sollya_obj_t obj1, ...) {
   node *elem, *unevaluatedList, *evaluatedList;
   chain *thinglist, *curr;
   va_list varlist;
-  
+
   if (obj1 == NULL) {
     return makeEmptyList();
-  } 
+  }
 
   va_start(varlist,obj1);
   thinglist = (chain *) safeMalloc(sizeof(chain));
@@ -4065,7 +4065,7 @@ sollya_obj_t sollya_lib_build_list(sollya_obj_t obj1, ...) {
     curr->next = NULL;
   }
   va_end(varlist);
-  
+
   unevaluatedList = makeList(thinglist);
   evaluatedList = evaluateThing(unevaluatedList);
   freeThing(unevaluatedList);
@@ -4076,10 +4076,10 @@ sollya_obj_t sollya_lib_build_end_elliptic_list(sollya_obj_t obj1, ...) {
   node *elem, *unevaluatedList, *evaluatedList;
   chain *thinglist, *curr;
   va_list varlist;
-  
+
   if (obj1 == NULL) {
     return makeError();
-  } 
+  }
 
   va_start(varlist,obj1);
   thinglist = (chain *) safeMalloc(sizeof(chain));
@@ -4093,21 +4093,21 @@ sollya_obj_t sollya_lib_build_end_elliptic_list(sollya_obj_t obj1, ...) {
     curr->next = NULL;
   }
   va_end(varlist);
-  
+
   unevaluatedList = makeFinalEllipticList(thinglist);
   evaluatedList = evaluateThing(unevaluatedList);
   freeThing(unevaluatedList);
   return evaluatedList;
-} 
+}
 
 sollya_obj_t sollya_lib_v_build_list(va_list varlist) {
   node *elem, *unevaluatedList, *evaluatedList;
   chain *thinglist, *curr;
-  
+
   elem = va_arg(varlist,node *);
   if (elem == NULL) {
     return makeEmptyList();
-  } 
+  }
 
   thinglist = (chain *) safeMalloc(sizeof(chain));
   thinglist->value = elem;
@@ -4119,7 +4119,7 @@ sollya_obj_t sollya_lib_v_build_list(va_list varlist) {
     curr->value = elem;
     curr->next = NULL;
   }
-  
+
   unevaluatedList = makeList(thinglist);
   evaluatedList = evaluateThing(unevaluatedList);
   freeThing(unevaluatedList);
@@ -4129,11 +4129,11 @@ sollya_obj_t sollya_lib_v_build_list(va_list varlist) {
 sollya_obj_t sollya_lib_v_build_end_elliptic_list(va_list varlist) {
   node *elem, *unevaluatedList, *evaluatedList;
   chain *thinglist, *curr;
-  
+
   elem = va_arg(varlist,node *);
   if (elem == NULL) {
     return makeError();
-  } 
+  }
 
   thinglist = (chain *) safeMalloc(sizeof(chain));
   thinglist->value = elem;
@@ -4145,7 +4145,7 @@ sollya_obj_t sollya_lib_v_build_end_elliptic_list(va_list varlist) {
     curr->value = elem;
     curr->next = NULL;
   }
-  
+
   unevaluatedList = makeFinalEllipticList(thinglist);
   evaluatedList = evaluateThing(unevaluatedList);
   freeThing(unevaluatedList);
@@ -4357,7 +4357,7 @@ sollya_obj_t sollya_lib_build_function(sollya_base_function_t func, ...) {
   int (*libFunc)(mpfi_t, mpfi_t, int);
   char *str;
 
-  va_start(varlist,func);  
+  va_start(varlist,func);
 
   switch (func) {
   case SOLLYA_BASE_FUNC_ABS:
@@ -4548,4 +4548,4 @@ sollya_obj_t sollya_lib_build_function(sollya_base_function_t func, ...) {
 
   return res;
 }
- 
+

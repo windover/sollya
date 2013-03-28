@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2006-2012 by 
+  Copyright 2006-2012 by
 
-  Laboratoire de l'Informatique du Parallelisme, 
+  Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
   LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2),
@@ -26,16 +26,16 @@
   implementer and a fast Remez algorithm.
 
   This software is governed by the CeCILL-C license under French law and
-  abiding by the rules of distribution of free software.  You can  use, 
+  abiding by the rules of distribution of free software.  You can  use,
   modify and/ or redistribute the software under the terms of the CeCILL-C
   license as circulated by CEA, CNRS and INRIA at the following URL
-  "http://www.cecill.info". 
+  "http://www.cecill.info".
 
   As a counterpart to the access to the source code and  rights to copy,
   modify and redistribute granted by the license, users are provided only
   with a limited warranty  and the software's author,  the holder of the
   economic rights,  and the successive licensors  have only  limited
-  liability. 
+  liability.
 
   In this respect, the user's attention is drawn to the risks associated
   with loading,  using,  modifying and/or developing or reproducing the
@@ -44,9 +44,9 @@
   therefore means  that it is reserved for developers  and  experienced
   professionals having in-depth computer knowledge. Users are therefore
   encouraged to load and test the software's suitability as regards their
-  requirements in conditions enabling the security of their systems and/or 
-  data to be ensured and,  more generally, to use and operate it in the 
-  same conditions as regards security. 
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
   The fact that you are presently reading this means that you have had
   knowledge of the CeCILL-C license and that you accept its terms.
@@ -180,7 +180,7 @@ int exprBoundTheoIsTrivial(exprBoundTheo *theo) {
 void fprintDerivativeLemma(FILE *fd, node *func, node *deriv, int theoNumber, int subNumber) {
   if (func == NULL) return;
   if (deriv == NULL) return;
-  
+
   sollyaFprintf(fd,"Lemma %d.%d:\n",theoNumber,subNumber);
   sollyaFprintf(fd,"The first derivative of\nf(%s) = ",((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,func);
@@ -194,7 +194,7 @@ void fprintDerivativeLemma(FILE *fd, node *func, node *deriv, int theoNumber, in
 int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
   int nextnumber;
   char *fx, *gx;
-  
+
   if (theo == NULL) return start;
 
   if (exprBoundTheoIsTrivial(theo)) return start;
@@ -206,17 +206,17 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
   if (theo->theoRightConstant != NULL) nextnumber = fprintExprBoundTheo(fd,theo->theoRightConstant,nextnumber);
   if (theo->theoLeftLinear != NULL) nextnumber = fprintExprBoundTheo(fd,theo->theoLeftLinear, nextnumber);
   if (theo->theoRightLinear != NULL) nextnumber = fprintExprBoundTheo(fd,theo->theoRightLinear,nextnumber);
-  theo->number = nextnumber; nextnumber++; 
+  theo->number = nextnumber; nextnumber++;
   if ((theo->simplificationUsed == TAYLORPROOF) || (theo->simplificationUsed == MONOTONOCITY)) {
     fprintDerivativeLemma(fd, theo->function, theo->leftDerivative, theo->number, 1);
   }
-  if ((theo->simplificationUsed == DECORRELATE) || 
+  if ((theo->simplificationUsed == DECORRELATE) ||
       (theo->simplificationUsed == HOPITAL) ||
       (theo->simplificationUsed == HOPITAL_ON_POINT)) {
     fprintDerivativeLemma(fd, theo->theoLeft->function, theo->leftDerivative, theo->number, 1);
     fprintDerivativeLemma(fd, theo->theoRight->function, theo->rightDerivative, theo->number, 2);
   }
-  
+
   sollyaFprintf(fd,"Theorem %d:\nFor all %s in ",theo->number,((variablename == NULL) ? "_x_" : variablename));
   if (theo->x != NULL) fprintInterval(fd,*(theo->x));
   sollyaFprintf(fd,". ");
@@ -540,7 +540,7 @@ int fprintExprBoundTheo(FILE *fd, exprBoundTheo *theo, int start) {
 	fprintInterval(fd,*(theo->boundRight));
 	sollyaFprintf(fd,"\nUsing these bounds for the arguments f(%s) and g(%s) of ",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
 	break;
-      case MONOTONOCITY: 
+      case MONOTONOCITY:
 	sollyaFprintf(fd,"Lemma %d.%d shows that the derivative of the given expression is ",
                       theo->number,1);
 	fprintTree(fd,theo->leftDerivative);
@@ -595,7 +595,7 @@ int equalityTheoIsTrivial(equalityTheo *theo) {
 int fprintEqualityTheo(FILE *fd, equalityTheo *theo, int start) {
 
   if (theo == NULL) return start;
-  
+
   if (equalityTheoIsTrivial(theo)) return start;
 
   theo->number = start;
@@ -615,12 +615,12 @@ void freeEqualityTheo(equalityTheo *theo) {
 }
 
 
-  
+
 void fprintNumeratorSufficesLemma(FILE *fd, node *func, node *numerator, int theoNumber, int subNumber) {
-  
+
   if (func == NULL) return;
   if (numerator == NULL) return;
-  
+
   sollyaFprintf(fd,"Lemma %d.%d:\n",theoNumber,subNumber);
   sollyaFprintf(fd,"The set of the zeros of the function\nf(%s) = ",((variablename == NULL) ? "_x_" : variablename));
   fprintTree(fd,func);
@@ -632,9 +632,9 @@ void fprintNumeratorSufficesLemma(FILE *fd, node *func, node *numerator, int the
     sollyaFprintf(fd,"The function f(%s) is a fraction. The function g(%s) is the numerator of this fraction.\n",
                   ((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   } else {
-    if (isSyntacticallyEqual(func,numerator)) 
+    if (isSyntacticallyEqual(func,numerator))
       sollyaFprintf(fd,"The functions f(%s) and g(%s) are equal.\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
-    else 
+    else
       sollyaFprintf(fd,"The functions f(%s) and g(%s) can be shown to be equal.\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename));
   }
   sollyaFprintf(fd,"\n");
@@ -845,7 +845,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   sollyaFprintf(fd,".\nTheorems %d and %d show that the absolute value of f(%s) on the bounds of the given domain a = ",
                 theo->evalLeftBound->number, theo->evalRightBound->number, ((variablename == NULL) ? "_x_" : variablename));
   mpfr_init2(a,sollya_mpfi_get_prec(*(theo->domain)));
-  mpfr_init2(b,sollya_mpfi_get_prec(*(theo->domain)));  
+  mpfr_init2(b,sollya_mpfi_get_prec(*(theo->domain)));
   sollya_mpfi_get_left(a,*(theo->domain));
   sollya_mpfi_get_right(b,*(theo->domain));
   fprintValue(fd,a);
@@ -853,7 +853,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
   fprintValue(fd,b);
   sollyaFprintf(fd,"\nis less than or equal to the upper bound u = ");
   mpfr_init2(u,sollya_mpfi_get_prec(*(theo->infnorm)));
-  mpfr_init2(l,sollya_mpfi_get_prec(*(theo->infnorm)));  
+  mpfr_init2(l,sollya_mpfi_get_prec(*(theo->infnorm)));
   sollya_mpfi_get_left(l,*(theo->infnorm));
   sollya_mpfi_get_right(u,*(theo->infnorm));
   fprintValue(fd,u);
@@ -911,7 +911,7 @@ int fprintInfnormTheo(FILE *fd, infnormTheo *theo, int start) {
     if (mpfr_greater_p(tl,fr)) {
       mpfr_set(fr,tl,GMP_RNDN);
       innerRightNumber = ((exprBoundTheo *) curr->value)->number;
-    } 
+    }
     curr = curr->next;
   }
   if (mpfr_greater_p(fl,fr)) {
@@ -971,14 +971,14 @@ void freeInfnormTheo(infnormTheo *theo) {
 }
 
 
-gappaAssignment *newGappaOperation(int opType, int relErrBits, 
+gappaAssignment *newGappaOperation(int opType, int relErrBits,
 				   int resultType, int resultOverlap, char *resultVariable,
 				   int operand1UsedType, int operand1ComingType, char *operand1Variable,
 				   int operand2UsedType, int operand2ComingType, char *operand2Variable) {
   gappaAssignment *newAssignment;
 
   newAssignment = (gappaAssignment *) safeCalloc(1,sizeof(gappaAssignment));
-  
+
   newAssignment->opType = opType;
   newAssignment->relErrBits = relErrBits;
   newAssignment->resultType = resultType;
@@ -1014,7 +1014,7 @@ gappaAssignment *newGappaConstant(int resultType, char *resultVariable, double c
   gappaAssignment *newAssignment;
 
   newAssignment = (gappaAssignment *) safeCalloc(1,sizeof(gappaAssignment));
-  
+
   newAssignment->opType = GAPPA_CONST;
   newAssignment->resultType = resultType;
   newAssignment->resultOverlap = 53;
@@ -1059,7 +1059,7 @@ void freeGappaProof(gappaProof *proof) {
 
 void fprintGappaAssignmentAsMaths(FILE *fd, gappaAssignment *assign) {
   switch (assign->opType) {
-  case GAPPA_CONST:   
+  case GAPPA_CONST:
     switch (assign->resultType) {
     case 3:
       sollyaFprintf(fd,"M%s = %shml;\n",assign->resultVariable,assign->resultVariable);
@@ -1075,32 +1075,32 @@ void fprintGappaAssignmentAsMaths(FILE *fd, gappaAssignment *assign) {
       exit(1);
     }
     break;
-  case GAPPA_ADD_EXACT: 
+  case GAPPA_ADD_EXACT:
     sollyaFprintf(fd,"M%s = M%s + M%s;\n",assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
     break;
-  case GAPPA_MUL_EXACT: 
+  case GAPPA_MUL_EXACT:
     sollyaFprintf(fd,"M%s = M%s * M%s;\n",assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
     break;
-  case GAPPA_ADD_DOUBLE: 
+  case GAPPA_ADD_DOUBLE:
     sollyaFprintf(fd,"M%s = M%s + M%s;\n",assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
     break;
-  case GAPPA_MUL_DOUBLE: 
+  case GAPPA_MUL_DOUBLE:
     sollyaFprintf(fd,"M%s = M%s * M%s;\n",assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
     break;
-  case GAPPA_RENORMALIZE: 
+  case GAPPA_RENORMALIZE:
     sollyaFprintf(fd,"M%s = M%s;\n",assign->resultVariable,assign->operand1Variable);
     break;
-  case GAPPA_ADD_REL: 
+  case GAPPA_ADD_REL:
     sollyaFprintf(fd,"M%s = M%s + M%s;\n",assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
     break;
-  case GAPPA_MUL_REL: 
+  case GAPPA_MUL_REL:
     sollyaFprintf(fd,"M%s = M%s * M%s;\n",assign->resultVariable,assign->operand1Variable,assign->operand2Variable);
     break;
-  case GAPPA_FMA_REL: 
+  case GAPPA_FMA_REL:
     sollyaFprintf(fd,"M%s = (M%s * M%s) + M%s;\n",
                   assign->resultVariable,assign->operand3Variable,assign->operand2Variable,assign->operand1Variable);
     break;
-  case GAPPA_COPY: 
+  case GAPPA_COPY:
     sollyaFprintf(fd,"M%s = M%s;\n",assign->resultVariable,assign->operand1Variable);
     break;
   default:
@@ -1128,7 +1128,7 @@ void fprintExpansionSuffix(FILE *fd, int type) {
 
 void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
   switch (assign->opType) {
-  case GAPPA_CONST:   
+  case GAPPA_CONST:
     switch (assign->resultType) {
     case 3:
       sollyaFprintf(fd,"%sh = double(%1.80e);\n",assign->resultVariable,assign->constHi);
@@ -1151,7 +1151,7 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
       exit(1);
     }
     break;
-  case GAPPA_ADD_EXACT: 
+  case GAPPA_ADD_EXACT:
     sollyaFprintf(fd,"%shm = %s",assign->resultVariable,assign->operand1Variable);
     fprintExpansionSuffix(fd,assign->operand1UsedType);
     sollyaFprintf(fd," + %s",assign->operand2Variable);
@@ -1160,7 +1160,7 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
     sollyaFprintf(fd,"%sh = double(%shm);\n",assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"%sm = %shm - %sh;\n\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
     break;
-  case GAPPA_MUL_EXACT: 
+  case GAPPA_MUL_EXACT:
     sollyaFprintf(fd,"%shm = %s",assign->resultVariable,assign->operand1Variable);
     fprintExpansionSuffix(fd,assign->operand1UsedType);
     sollyaFprintf(fd," * %s",assign->operand2Variable);
@@ -1169,7 +1169,7 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
     sollyaFprintf(fd,"%sh = double(%shm);\n",assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"%sm = %shm - %sh;\n\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
     break;
-  case GAPPA_ADD_DOUBLE: 
+  case GAPPA_ADD_DOUBLE:
     if ((assign->operand1UsedType == 2) && (assign->operand2UsedType == 2)) {
       sollyaFprintf(fd,"%sh double= (%sh + %sm) + (%sh + %sm);\n",
                     assign->resultVariable,
@@ -1190,7 +1190,7 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
       }
     }
     break;
-  case GAPPA_MUL_DOUBLE: 
+  case GAPPA_MUL_DOUBLE:
     if ((assign->operand1UsedType == 2) && (assign->operand2UsedType == 2)) {
       sollyaFprintf(fd,"%sh double= (%sh + %sm) * (%sh + %sm);\n",
                     assign->resultVariable,
@@ -1211,7 +1211,7 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
       }
     }
     break;
-  case GAPPA_RENORMALIZE: 
+  case GAPPA_RENORMALIZE:
     sollyaFprintf(fd,"%shml = %shml;\n",assign->resultVariable,assign->operand1Variable);
     sollyaFprintf(fd,"%sml = %shml - %sh;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"%sm = double(%sml);\n",assign->resultVariable,assign->resultVariable);
@@ -1219,7 +1219,7 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
     sollyaFprintf(fd,"%shm = %sh + %sm;\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"overlap_%s = %sm / %sh;\n\n",assign->resultVariable,assign->resultVariable,assign->resultVariable);
     break;
-  case GAPPA_ADD_REL: 
+  case GAPPA_ADD_REL:
     sollyaFprintf(fd,"%s",assign->resultVariable);
     fprintExpansionSuffix(fd,assign->resultType);
     sollyaFprintf(fd," = add_rel<%d>(%s",assign->relErrBits,assign->operand1Variable);
@@ -1244,7 +1244,7 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
       exit(1);
     }
     break;
-  case GAPPA_MUL_REL: 
+  case GAPPA_MUL_REL:
     sollyaFprintf(fd,"%s",assign->resultVariable);
     fprintExpansionSuffix(fd,assign->resultType);
     sollyaFprintf(fd," = mul_rel<%d>(%s",assign->relErrBits,assign->operand1Variable);
@@ -1269,7 +1269,7 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
       exit(1);
     }
     break;
-  case GAPPA_FMA_REL: 
+  case GAPPA_FMA_REL:
     sollyaFprintf(fd,"%s",assign->resultVariable);
     fprintExpansionSuffix(fd,assign->resultType);
     sollyaFprintf(fd," = fma_rel<%d>(%s",assign->relErrBits,assign->operand3Variable);
@@ -1296,7 +1296,7 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
       exit(1);
     }
     break;
-  case GAPPA_COPY: 
+  case GAPPA_COPY:
     switch (assign->resultType) {
     case 3:
       sollyaFprintf(fd,"%shml = %shml;\n",assign->resultVariable,assign->operand1Variable);
@@ -1312,8 +1312,8 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
       sollyaFprintf(fd,"%sh = %sh;\n",assign->resultVariable,assign->operand1Variable);
       sollyaFprintf(fd,"%sm = %sm;\n\n",assign->resultVariable,assign->operand1Variable);
       break;
-    case 1: 
-      sollyaFprintf(fd,"%sh = %sh;\n\n",assign->resultVariable,assign->operand1Variable);    
+    case 1:
+      sollyaFprintf(fd,"%sh = %sh;\n\n",assign->resultVariable,assign->operand1Variable);
       break;
     default:
       sollyaFprintf(stderr,"Error: fprintGappaAssignmentAsArith: unknown result type (%d) in the assignment\n",assign->resultType);
@@ -1328,19 +1328,19 @@ void fprintGappaAssignmentAsArith(FILE *fd, gappaAssignment *assign) {
 
 void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
   switch (assign->opType) {
-  case GAPPA_CONST:   
+  case GAPPA_CONST:
     break;
-  case GAPPA_ADD_EXACT: 
+  case GAPPA_ADD_EXACT:
     sollyaFprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
     break;
-  case GAPPA_MUL_EXACT: 
+  case GAPPA_MUL_EXACT:
     sollyaFprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
     break;
-  case GAPPA_ADD_DOUBLE: 
+  case GAPPA_ADD_DOUBLE:
     break;
-  case GAPPA_MUL_DOUBLE: 
+  case GAPPA_MUL_DOUBLE:
     break;
-  case GAPPA_RENORMALIZE: 
+  case GAPPA_RENORMALIZE:
     sollyaFprintf(fd,"%shm ~ %shml;\n",assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"%sh ~ %shm;\n",assign->resultVariable,assign->resultVariable);
     sollyaFprintf(fd,"%sh ~ %shml;\n",assign->resultVariable,assign->resultVariable);
@@ -1360,7 +1360,7 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
                   assign->resultVariable,assign->resultVariable,assign->resultVariable,assign->resultVariable,
                   assign->resultVariable,assign->resultVariable);
     break;
-  case GAPPA_ADD_REL: 
+  case GAPPA_ADD_REL:
     switch (assign->resultType) {
     case 3:
       sollyaFprintf(fd,"%shm ~ %shml;\n",assign->resultVariable,assign->resultVariable);
@@ -1390,7 +1390,7 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
       exit(1);
     }
     break;
-  case GAPPA_MUL_REL: 
+  case GAPPA_MUL_REL:
     switch (assign->resultType) {
     case 3:
       sollyaFprintf(fd,"%shm ~ %shml;\n",assign->resultVariable,assign->resultVariable);
@@ -1420,7 +1420,7 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
       exit(1);
     }
     break;
-  case GAPPA_FMA_REL: 
+  case GAPPA_FMA_REL:
     switch (assign->resultType) {
     case 3:
       sollyaFprintf(fd,"%shm ~ %shml;\n",assign->resultVariable,assign->resultVariable);
@@ -1450,7 +1450,7 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
       exit(1);
     }
     break;
-  case GAPPA_COPY: 
+  case GAPPA_COPY:
     break;
   default:
     sollyaFprintf(stderr,"Error: fprintGappaAssignmentAsHint: unknown operation type (%d) in the assignment\n",assign->opType);
@@ -1460,21 +1460,21 @@ void fprintGappaAssignmentAsHint(FILE *fd, gappaAssignment *assign) {
 
 void fprintGappaAssignmentAsDichotomy(FILE *fd, gappaAssignment *assign) {
   switch (assign->opType) {
-  case GAPPA_CONST:   
+  case GAPPA_CONST:
     break;
-  case GAPPA_ADD_EXACT: 
+  case GAPPA_ADD_EXACT:
     break;
-  case GAPPA_MUL_EXACT: 
+  case GAPPA_MUL_EXACT:
     break;
-  case GAPPA_ADD_DOUBLE: 
+  case GAPPA_ADD_DOUBLE:
     break;
-  case GAPPA_MUL_DOUBLE: 
+  case GAPPA_MUL_DOUBLE:
     break;
-  case GAPPA_RENORMALIZE: 
+  case GAPPA_RENORMALIZE:
     sollyaFprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
     sollyaFprintf(fd,"$ %sml in (0);\n",assign->resultVariable);
     break;
-  case GAPPA_ADD_REL: 
+  case GAPPA_ADD_REL:
     switch (assign->resultType) {
     case 3:
       sollyaFprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
@@ -1487,7 +1487,7 @@ void fprintGappaAssignmentAsDichotomy(FILE *fd, gappaAssignment *assign) {
       exit(1);
     }
     break;
-  case GAPPA_MUL_REL: 
+  case GAPPA_MUL_REL:
     switch (assign->resultType) {
     case 3:
       sollyaFprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
@@ -1500,7 +1500,7 @@ void fprintGappaAssignmentAsDichotomy(FILE *fd, gappaAssignment *assign) {
       exit(1);
     }
     break;
-  case GAPPA_FMA_REL: 
+  case GAPPA_FMA_REL:
     switch (assign->resultType) {
     case 3:
       sollyaFprintf(fd,"$ %shml in (0);\n",assign->resultVariable);
@@ -1513,7 +1513,7 @@ void fprintGappaAssignmentAsDichotomy(FILE *fd, gappaAssignment *assign) {
       exit(1);
     }
     break;
-  case GAPPA_COPY: 
+  case GAPPA_COPY:
     break;
   default:
     sollyaFprintf(stderr,"Error: fprintGappaAssignmentAsDichtomy: unknown operation type (%d) in the assignment\n",assign->opType);
@@ -1525,40 +1525,40 @@ void fprintGappaAssignmentAsDichotomy(FILE *fd, gappaAssignment *assign) {
 
 void fprintGappaAssignmentAsMetaHint(FILE *fd, gappaAssignment *assign) {
   switch (assign->opType) {
-  case GAPPA_CONST:   
+  case GAPPA_CONST:
 
     break;
-  case GAPPA_ADD_EXACT: 
+  case GAPPA_ADD_EXACT:
     sollyaFprintf(fd,"%shm ~ M%s;\n",assign->resultVariable,assign->resultVariable);
     break;
-  case GAPPA_MUL_EXACT: 
+  case GAPPA_MUL_EXACT:
     sollyaFprintf(fd,"%shm ~ M%s;\n",assign->resultVariable,assign->resultVariable);
     break;
-  case GAPPA_ADD_DOUBLE: 
+  case GAPPA_ADD_DOUBLE:
     sollyaFprintf(fd,"%sh ~ M%s;\n",assign->resultVariable,assign->resultVariable);
     break;
-  case GAPPA_MUL_DOUBLE: 
+  case GAPPA_MUL_DOUBLE:
     sollyaFprintf(fd,"%sh ~ M%s;\n",assign->resultVariable,assign->resultVariable);
     break;
-  case GAPPA_RENORMALIZE: 
+  case GAPPA_RENORMALIZE:
     sollyaFprintf(fd,"%shml ~ M%s;\n",assign->resultVariable,assign->resultVariable);
     break;
-  case GAPPA_ADD_REL: 
+  case GAPPA_ADD_REL:
     sollyaFprintf(fd,"%s",assign->resultVariable);
     fprintExpansionSuffix(fd,assign->resultType);
     sollyaFprintf(fd," ~ M%s;\n",assign->resultVariable);
     break;
-  case GAPPA_MUL_REL: 
+  case GAPPA_MUL_REL:
     sollyaFprintf(fd,"%s",assign->resultVariable);
     fprintExpansionSuffix(fd,assign->resultType);
     sollyaFprintf(fd," ~ M%s;\n",assign->resultVariable);
     break;
-  case GAPPA_FMA_REL: 
+  case GAPPA_FMA_REL:
     sollyaFprintf(fd,"%s",assign->resultVariable);
     fprintExpansionSuffix(fd,assign->resultType);
     sollyaFprintf(fd," ~ M%s;\n",assign->resultVariable);
     break;
-  case GAPPA_COPY: 
+  case GAPPA_COPY:
     sollyaFprintf(fd,"%s",assign->resultVariable);
     fprintExpansionSuffix(fd,assign->resultType);
     sollyaFprintf(fd," ~ M%s;\n",assign->resultVariable);
@@ -1573,23 +1573,23 @@ void fprintGappaAssignmentAsMetaHint(FILE *fd, gappaAssignment *assign) {
 
 void fprintGappaAssignmentAsOverlapBound(FILE *fd, gappaAssignment *assign) {
   switch (assign->opType) {
-  case GAPPA_CONST:   
+  case GAPPA_CONST:
     break;
-  case GAPPA_ADD_EXACT: 
+  case GAPPA_ADD_EXACT:
     break;
-  case GAPPA_MUL_EXACT: 
+  case GAPPA_MUL_EXACT:
     break;
-  case GAPPA_ADD_DOUBLE: 
+  case GAPPA_ADD_DOUBLE:
     break;
-  case GAPPA_MUL_DOUBLE: 
+  case GAPPA_MUL_DOUBLE:
     break;
-  case GAPPA_RENORMALIZE: 
+  case GAPPA_RENORMALIZE:
     sollyaFprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
                   assign->resultVariable,assign->resultOverlap);
     sollyaFprintf(fd,"/\\ |%sml| in [1b-1021,1b1023]\n",
                   assign->resultVariable);
     break;
-  case GAPPA_ADD_REL: 
+  case GAPPA_ADD_REL:
     if (assign->resultType == 3) {
       sollyaFprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
                     assign->resultVariable,assign->resultOverlap);
@@ -1597,7 +1597,7 @@ void fprintGappaAssignmentAsOverlapBound(FILE *fd, gappaAssignment *assign) {
                     assign->resultVariable);
     }
     break;
-  case GAPPA_MUL_REL: 
+  case GAPPA_MUL_REL:
     if (assign->resultType == 3) {
       sollyaFprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
                     assign->resultVariable,assign->resultOverlap);
@@ -1605,7 +1605,7 @@ void fprintGappaAssignmentAsOverlapBound(FILE *fd, gappaAssignment *assign) {
                     assign->resultVariable);
     }
     break;
-  case GAPPA_FMA_REL: 
+  case GAPPA_FMA_REL:
     if (assign->resultType == 3) {
       sollyaFprintf(fd,"/\\ |overlap_%s| in [1b-400,1b-%d]    # Verify the lower bound\n",
                     assign->resultVariable,assign->resultOverlap);
@@ -1613,7 +1613,7 @@ void fprintGappaAssignmentAsOverlapBound(FILE *fd, gappaAssignment *assign) {
                     assign->resultVariable);
     }
     break;
-  case GAPPA_COPY: 
+  case GAPPA_COPY:
     break;
   default:
     sollyaFprintf(stderr,"Error: fprintGappaAssignmentAsOverlapBound: unknown operation type (%d) in the assignment\n",assign->opType);
@@ -1698,7 +1698,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
     exit(1);
   }
   sollyaFprintf(fd,"\n");
-  
+
 
   sollyaFprintf(fd,"# Transcription of the C code\n");
   for (i=0;i<proof->assignmentsNumber;i++) {
@@ -1721,7 +1721,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
     sollyaFprintf(stderr,"Error: fprintGappaProof: unknown variable type (%d) in the proof\n",proof->variableType);
     exit(1);
   }
-  
+
   for (i=0;i<proof->assignmentsNumber;i++) {
     fprintGappaAssignmentAsMaths(fd, proof->assignments[i]);
   }
@@ -1748,7 +1748,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
   sollyaFprintf(fd,"# Implication to prove\n");
 
   if ((mpfr_sgn(proof->a) != mpfr_sgn(proof->b)) && (!mpfr_zero_p(proof->a)) && (!mpfr_zero_p(proof->b))) {
-    
+
     sollyaFprintf(fd,"{(\n");
     switch (proof->variableType) {
     case 3:
@@ -1792,7 +1792,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
     mpfr_set(temp, proof->b, GMP_RNDN);
     mpfr_div_2ui(temp,temp,400,GMP_RNDN);
     fprintValue(fd, temp);
-    sollyaFprintf(fd,"]\n");    
+    sollyaFprintf(fd,"]\n");
     if (proof->variableType == 3) {
       sollyaFprintf(fd,"/\\ |overlap_%s| in [1b-400, 1b-52]  # Verify the lower bound for the overlap interval\n",proof->variableName);
       sollyaFprintf(fd,"/\\ |%sml| in [1b-1021, 1b1023]\n",proof->variableName);
@@ -1830,11 +1830,11 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
     for (i=0;i<proof->assignmentsNumber;i++) {
       fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
     }
-    
+
     sollyaFprintf(fd,")\n->\n(\n   epsilon in ?\n)}\n");
   }
   sollyaFprintf(fd,"\n");
-  
+
   sollyaFprintf(fd,"# Hints and Meta-Hints for expansion decomposition\n");
 
 
@@ -1871,7 +1871,7 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
 
   for (i=0;i<proof->assignmentsNumber;i++) {
     fprintGappaAssignmentAsHint(fd, proof->assignments[i]);
-  }  
+  }
   sollyaFprintf(fd,"\n");
 
   sollyaFprintf(fd,"# Meta-Hints for Horner scheme\n");

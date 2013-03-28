@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2006-2012 by 
+  Copyright 2006-2012 by
 
-  Laboratoire de l'Informatique du Parallelisme, 
+  Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
   and by
@@ -23,16 +23,16 @@
   implementer and a fast Remez algorithm.
 
   This software is governed by the CeCILL-C license under French law and
-  abiding by the rules of distribution of free software.  You can  use, 
+  abiding by the rules of distribution of free software.  You can  use,
   modify and/ or redistribute the software under the terms of the CeCILL-C
   license as circulated by CEA, CNRS and INRIA at the following URL
-  "http://www.cecill.info". 
+  "http://www.cecill.info".
 
   As a counterpart to the access to the source code and  rights to copy,
   modify and redistribute granted by the license, users are provided only
   with a limited warranty  and the software's author,  the holder of the
   economic rights,  and the successive licensors  have only  limited
-  liability. 
+  liability.
 
   In this respect, the user's attention is drawn to the risks associated
   with loading,  using,  modifying and/or developing or reproducing the
@@ -41,9 +41,9 @@
   therefore means  that it is reserved for developers  and  experienced
   professionals having in-depth computer knowledge. Users are therefore
   encouraged to load and test the software's suitability as regards their
-  requirements in conditions enabling the security of their systems and/or 
-  data to be ensured and,  more generally, to use and operate it in the 
-  same conditions as regards security. 
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
   The fact that you are presently reading this means that you have had
   knowledge of the CeCILL-C license and that you accept its terms.
@@ -75,7 +75,7 @@ int mpfrToInt(int *res, mpfr_t val) {
   }
 
   *res = mpfr_get_si(val,GMP_RNDN);
-  
+
   mpfr_init2(verg,mpfr_get_prec(val));
 
   if (mpfr_set_si(verg,*res,GMP_RNDN) != 0) {
@@ -97,8 +97,8 @@ int mpfrToInt(int *res, mpfr_t val) {
 }
 
 
-void printWorstCases(node *func, 
-		     mpfr_t inputprec, rangetype inputExponRange, 
+void printWorstCases(node *func,
+		     mpfr_t inputprec, rangetype inputExponRange,
 		     mpfr_t outputprec, mpfr_t epsilon, mp_prec_t prec, FILE *fd) {
   int inputprecision, outputprecision, firstexponent, lastexponent;
   mpfr_t temp, temp2, x, y, yR, xL;
@@ -184,7 +184,7 @@ void printWorstCases(node *func,
     } else {
       mpfr_div(temp2,temp2,y,GMP_RNDN);
     }
-    
+
     if (mpfr_cmp(temp2,epsilon) <= 0) {
       sollyaPrintf("%s = ",((variablename == NULL) ? "_x_" : variablename));
       printValue(&x);
@@ -205,13 +205,13 @@ void printWorstCases(node *func,
 	sollyaFprintf(fd," = 2^(%f) ",eps);
 	if (mpfr_zero_p(y)) {
 	  sollyaFprintf(fd,"ABSOLUTE");
-	} 
+	}
 	sollyaFprintf(fd,"\n");
       }
     }
 
     mpfr_nextabove(x);
-  }  
+  }
 
   mpfr_clear(temp);
   mpfr_clear(temp2);
@@ -222,7 +222,7 @@ void printWorstCases(node *func,
 }
 
 
-int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t searchPrec, int steps, 
+int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t searchPrec, int steps,
                    chain *imageFormats, chain *epsilons, mp_prec_t prec) {
   mpfr_t currLeft, currRight;
   mpfr_t yCurrLeft, yCurrRight;
@@ -260,7 +260,7 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
   }
 
   myFuncs = copyChain(funcs, copyTreeOnVoid);
- 
+
   mpfr_init2(currLeft, searchPrec);
   mpfr_init2(currRight, searchPrec);
   mpfr_init2(yCurrLeft, p);
@@ -329,7 +329,7 @@ int searchGalValue(chain *funcs, mpfr_t foundValue, mpfr_t startValue, mp_prec_t
     mpfr_nextabove(currRight);
     mpfr_sub(t,t,one,GMP_RNDN); /* exact*/
   }
-  
+
   mpfr_clear(currLeft);
   mpfr_clear(currRight);
   mpfr_clear(yCurrLeft);

@@ -1275,9 +1275,9 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   mpfr_add(y[n], x[n-1], b, GMP_RNDN);
   mpfr_div_2ui(y[n], y[n], 1, GMP_RNDN);
 
-  printMessage(6,SOLLYA_MSG_REMEZ_THE_COMPUTED_YI_ARE_CERTAIN_VALUES,"The computed yi are: "); 
+  printMessage(6,SOLLYA_MSG_REMEZ_THE_COMPUTED_YI_ARE_CERTAIN_VALUES,"The computed yi are: ");
   for (i=0;i<=n;i++) printMessage(6,SOLLYA_MSG_CONTINUATION,"%v ",y[i]);
-  printMessage(6,SOLLYA_MSG_CONTINUATION,"\n"); 
+  printMessage(6,SOLLYA_MSG_CONTINUATION,"\n");
 
   /* We call *case 1* the case where x1=a and xn=b
      We call *case 2* the case where x1<>a and xn=b
@@ -1346,7 +1346,7 @@ int qualityOfError(mpfr_t computedQuality, mpfr_t infinityNorm, mpfr_t *x,
   } else {
     printMessage(6,SOLLYA_MSG_REMEZ_SIGNS_COULD_NOT_BE_EVALUATED,"Test is false because signs could not be evaluated\n");
   }
-  
+
   if(test) {
     i = 1;
     while(test && (i<=n-2)) {

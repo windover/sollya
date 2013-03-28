@@ -53,7 +53,7 @@
 
 */
 
-#define _BSD_SOURCE 
+#define _BSD_SOURCE
 
 #include <unistd.h> /* execve, fork, daemon */
 #include <stdio.h>
@@ -110,7 +110,7 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
   res = NULL;
   okay = 0;
   fflush(NULL);
-  
+
   /* Create two unnamed pipes */
   if ((input != NULL) && (pipe(pipesToBash) == -1)) {
     /* Error creating the pipe */
@@ -137,7 +137,7 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 	  */
 	  if (input != NULL) close(pipesToBash[1]);
 	  close(pipesFromBash[0]);
-	  
+
 	  /* Connect my input and output to the pipe
 	   */
 	  if (input != NULL) {
@@ -148,7 +148,7 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 	  if (dup2(pipesFromBash[1],1) == -1) {
 	    _exit(1);
 	  }
-	  
+
 	  /* Execute bash
 	   */
 	  fflush(NULL);
@@ -163,7 +163,7 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 	  */
 	  if (input != NULL) close(pipesToBash[0]);
 	  close(pipesFromBash[1]);
-	  
+
 	  /* Do my job
 	   */
 	  errorOnInput = 0;
@@ -202,8 +202,8 @@ char *evaluateStringAsBashCommand(char *command, char *input) {
 
 	    /* Wait for my child to exit */
 	    wait(&childStatus);
-	    
-	    /* Read the rest of the pipe if it filled up again after 
+
+	    /* Read the rest of the pipe if it filled up again after
 	       having been emptied already.
 	    */
 	    do {
@@ -347,10 +347,10 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   mpfr_div_2ui(min_value, min_value, 12, GMP_RNDN);
 
   mpfr_set(x_h,a,GMP_RNDD);
-  
+
   while(mpfr_less_p(x_h,b)) {
     mpfr_set(x, x_h, GMP_RNDN); /* exact */
-    
+
     if (mpfr_zero_p(x_h)) {
       mpfr_set(x_h, min_value, GMP_RNDU);
     }
@@ -384,7 +384,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
   }
 
   fclose(file);
- 
+
   /* End of the interesting part.... */
 
   dlclose(descr);
@@ -419,7 +419,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
       }
     }
   }
-  
+
   safeFree(gplotname);
   safeFree(dataname);
   safeFree(outputname);

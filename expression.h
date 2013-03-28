@@ -118,7 +118,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 typedef struct nodeStruct node;
 
-struct nodeStruct 
+struct nodeStruct
 {
   int nodeType;
   mpfr_t *value;
@@ -136,7 +136,7 @@ struct nodeStruct
 
 /* HELPER TYPE FOR THE PARSER */
 typedef struct doubleNodeStruct doubleNode;
-struct doubleNodeStruct 
+struct doubleNodeStruct
 {
   node *a;
   node *b;
@@ -174,7 +174,7 @@ static inline node* addMemRef(node *tree) {
 
   if (tree == NULL) return NULL;
   if (tree->nodeType == MEMREF) return tree;
-  
+
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = MEMREF;
   res->child1 = tree;
@@ -203,7 +203,7 @@ static inline node* accessThruMemRef(node *tree) {
 
 void printTree(node *tree);
 node* differentiate(node *tree);
-node* simplifyTree(node *tree); 
+node* simplifyTree(node *tree);
 void free_memory(node *tree);
 int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec);
 void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec);

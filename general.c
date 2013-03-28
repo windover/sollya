@@ -272,10 +272,10 @@ void blueMode() {
 
 void setDisplayColor(int i) {
   switch (i) {
-  case 2: 
+  case 2:
     blueMode();
     break;
-  case 1: 
+  case 1:
     redMode();
     break;
   default:
@@ -338,7 +338,7 @@ void *safeCalloc (size_t nmemb, size_t size) {
   if (myNmemb == 0) myNmemb = 1;
   mySize = size;
   if (mySize == 0) mySize = 1;
- 
+
   ptr = actualCalloc(myNmemb,mySize);
   if (ptr == NULL) {
     sollyaFprintf(stderr,"Error: calloc could not succeed. No more memory left.\n");
@@ -349,7 +349,7 @@ void *safeCalloc (size_t nmemb, size_t size) {
 
 void *safeMalloc (size_t size) {
   void *ptr;
-  if (size == 0) 
+  if (size == 0)
     ptr = actualMalloc(1);
   else
     ptr = actualMalloc(size);
@@ -404,7 +404,7 @@ void wrap_mp_set_memory_functions(void *(*alloc_func_ptr) (size_t),
   mp_set_memory_functions(alloc_func_ptr, realloc_func_ptr, free_func_ptr);
 }
 
-/* Provide memory management functions for the parsers 
+/* Provide memory management functions for the parsers
 
    These functions are wrappers that are currently provided to cope
    with special behavior of memory allocation in the future.
@@ -493,7 +493,7 @@ char *maskString(char *src) {
       break;
     }
   }
-  
+
   res = (char *) safeCalloc(strlen(buf)+1,sizeof(char));
   strcpy(res,buf);
   safeFree(buf);
@@ -505,7 +505,7 @@ void demaskString(char *dest, char *src) {
   char *curr, *curr2;
   char internalBuf[4];
   int i;
-  
+
   for (i=0;i<4;i++) internalBuf[i] = '\0';
   curr2 = dest;
   for (curr=src;*curr != '\0';curr++) {
@@ -515,43 +515,43 @@ void demaskString(char *dest, char *src) {
       curr++;
       if (*curr == '\0') break;
       switch (*curr) {
-      case '\\': 
+      case '\\':
 	*curr2++ = '\\';
 	break;
-      case '"': 
+      case '"':
 	*curr2++ = '"';
 	break;
-      case '?': 
+      case '?':
 	*curr2++ = '?';
 	break;
-      case '\'': 
+      case '\'':
 	*curr2++ = '\'';
 	break;
-      case 'n': 
+      case 'n':
 	*curr2++ = '\n';
 	break;
-      case 't': 
+      case 't':
 	*curr2++ = '\t';
 	break;
-      case 'a': 
+      case 'a':
 	*curr2++ = '\a';
 	break;
-      case 'b': 
+      case 'b':
 	*curr2++ = '\b';
 	break;
-      case 'f': 
+      case 'f':
 	*curr2++ = '\f';
 	break;
-      case 'r': 
+      case 'r':
 	*curr2++ = '\r';
 	break;
-      case 'v': 
+      case 'v':
 	*curr2++ = '\v';
 	break;
       case 'x':
 	curr++;
         i = 0;
-	while ((i < 2) && (*curr != '\0') && 
+	while ((i < 2) && (*curr != '\0') &&
 	       (((*curr >= '0') && (*curr <= '9')) ||
 		((*curr >= 'A') && (*curr <= 'F')) ||
 		((*curr >= 'a') && (*curr <= 'f')))) {
@@ -683,13 +683,13 @@ int sollyaVfprintfSpecial(FILE *fd, const char *format, va_list varlist) {
 
   if (printMode == PRINT_MODE_LEGACY) return sollyaInternalVfprintf(fd,format,varlist);
 
-  if ((printMode == PRINT_MODE_WARNING_TO_STDERR) && 
-      (displayColor == 1)) 
+  if ((printMode == PRINT_MODE_WARNING_TO_STDERR) &&
+      (displayColor == 1))
     return sollyaInternalVfprintf(stderr,format,varlist);
 
-  if ((printMode == PRINT_MODE_WARNING_TO_FILE) && 
-      (displayColor == 1) && 
-      (warnFile != NULL)) { 
+  if ((printMode == PRINT_MODE_WARNING_TO_FILE) &&
+      (displayColor == 1) &&
+      (warnFile != NULL)) {
     res = sollyaInternalVfprintf(warnFile,format,varlist);
     return res;
   }
@@ -699,7 +699,7 @@ int sollyaVfprintfSpecial(FILE *fd, const char *format, va_list varlist) {
 
 int sollyaVfprintf(FILE *fd, const char *format, va_list varlist) {
 
-  if ((fd == stdout) || (fd == stderr)) 
+  if ((fd == stdout) || (fd == stderr))
     return sollyaVfprintfSpecial(fd,format,varlist);
 
   return sollyaInternalVfprintf(fd,format,varlist);
@@ -719,7 +719,7 @@ int (*getMessageCallback())(sollya_msg_t, void *) {
 int uninstallMessageCallback() {
   messageCallback = NULL;
   messageCallbackData = NULL;
-  lastMessageCallbackResult = 1;  
+  lastMessageCallbackResult = 1;
   return 1;
 }
 
@@ -735,8 +735,8 @@ int printMessage(int verb, int msgNum, const char *format, ...) {
 
   /* Check if message suppression is activated for that message */
   suppressed = 0;
-  if ((suppressedMessages != NULL) && 
-      (verb >= 0) && 
+  if ((suppressedMessages != NULL) &&
+      (verb >= 0) &&
       (msgNum != SOLLYA_MSG_NO_MSG)) {
     if (msgNum != SOLLYA_MSG_CONTINUATION) {
       suppressed = getBitInBitfield(suppressedMessages, msgNum);
@@ -756,20 +756,20 @@ int printMessage(int verb, int msgNum, const char *format, ...) {
 
      Do call the message callback handler for no messages and
      continuation messages. In the case of a continuation message,
-     take the last "display/don't display" value instead of what the 
+     take the last "display/don't display" value instead of what the
      handler would return.
   */
   if ((msgNum != SOLLYA_MSG_CONTINUATION) || (messageCallback == NULL)) lastMessageCallbackResult = 1;
-  if ((msgNum != SOLLYA_MSG_NO_MSG) && 
-      (msgNum != SOLLYA_MSG_CONTINUATION) && 
+  if ((msgNum != SOLLYA_MSG_NO_MSG) &&
+      (msgNum != SOLLYA_MSG_CONTINUATION) &&
       (messageCallback != NULL)) {
     myMsg.msg_id = msgNum;
     lastMessageCallbackResult = messageCallback(&myMsg, messageCallbackData);
-  } 
+  }
   if (!lastMessageCallbackResult) return 0;
 
   oldColor = displayColor;
-  
+
   if ((verb >= 1) || (verb < 0)) warningMode(); else outputMode();
 
   va_start(varlist,format);
@@ -876,13 +876,13 @@ char *mpfr_to_binary_str(mpfr_t x) {
     s[3] = '0';
     return s;
   }
-    
+
   /* The documentation of mpfr_get_str explains that it needs
      max ( mpfr_get_prec(x)+2, 7 ). This is achieved by
      mpfr_get_prec(x)+7. We must add 4 chars for "0." and "p+".
-     Finally, 20 extra bits are sufficient to write a 64-bit 
+     Finally, 20 extra bits are sufficient to write a 64-bit
      exponent in base 10 */
-  s = (char *)calloc(prec+7+4+20, sizeof(char)); 
+  s = (char *)calloc(prec+7+4+20, sizeof(char));
   mpfr_get_str(s+2, &e, 2, 0, x, GMP_RNDN);
   if ( s[2] == '-' ) {
     s[0] = '-';
@@ -953,7 +953,7 @@ void popTimeCounter(char *s) {
 	minutes = minutes % 60;
 	days = hours / 24;
 	hours = hours % 24;
-	
+
 	if(days!=0) sollyaPrintf("%ld days, ", days);
 	if(hours!=0) sollyaPrintf("%ld hours, ", hours);
 	if(minutes!=0) sollyaPrintf("%ld minutes, ", minutes);
@@ -1022,7 +1022,7 @@ void freeTool() {
 }
 
 void initToolDefaults() {
-  if(variablename != NULL) safeFree(variablename); 
+  if(variablename != NULL) safeFree(variablename);
   variablename = NULL;
   if(suppressedMessages != NULL) freeBitfield(suppressedMessages);
   suppressedMessages = NULL;
@@ -1087,7 +1087,7 @@ void initTool() {
   if (tcgetattr(0,&termAttr) == -1) {
     eliminatePromptBackup = 1;
   }
-  
+
   initSignalHandler();
   blockSignals();
   wrap_mp_set_memory_functions(safeMalloc,actualReallocWithSize,actualFreeWithSize);
@@ -1130,12 +1130,12 @@ char *initTempDir() {
 	staticRes = "/tmp";
 	len = strlen(staticRes);
 	res = safeCalloc(len + 1, sizeof(char));
-	strcpy(res, staticRes);	
+	strcpy(res, staticRes);
       }
     }
   }
 
-  return res; 
+  return res;
 }
 
 char *initUniqueId() {
@@ -1149,7 +1149,7 @@ char *initUniqueId() {
 
   str = safeCalloc(size + 1, sizeof(char));
   sollya_snprintf(str, size, "%lld", (signed long long int) pid);
-  
+
   res = safeCalloc(strlen(str) + 1, sizeof(char));
   strcpy(res, str);
   safeFree(str);
@@ -1407,7 +1407,7 @@ int finalizeLibraryMode() {
 
 double sollya_mpfr_get_d(mpfr_t op, mpfr_rnd_t rnd) {
   union {
-    uint64_t i; 
+    uint64_t i;
     double d;
   } xdb;
 
@@ -1450,7 +1450,7 @@ int general(int argc, char *argv[]) {
   for (i=1;i<argc;i++) {
     if (strcmp(argv[i],"--help") == 0) {
       sollyaPrintf("This is %s connected to ",PACKAGE_STRING);
-      if (eliminatePromptBackup) 
+      if (eliminatePromptBackup)
 	sollyaPrintf("a regular file");
       else
 	sollyaPrintf("a terminal");
@@ -1472,21 +1472,21 @@ int general(int argc, char *argv[]) {
 #endif
       sollyaPrintf("\n");
       return 1;
-    } else 
+    } else
       if (strcmp(argv[i],"--nocolor") == 0) noColor = 1; else
 	if (strcmp(argv[i],"--noprompt") == 0) eliminatePromptBackup = 1; else
 	  if (strcmp(argv[i],"--oldrlwrapcompatible") == 0) oldrlwrapcompatible = 1; else
-            if (strcmp(argv[i],"--flush") == 0) flushOutput = 1; else 
+            if (strcmp(argv[i],"--flush") == 0) flushOutput = 1; else
               if (strcmp(argv[i],"--oldautoprint") == 0) oldAutoPrint = 1; else
                 if (strcmp(argv[i],"--warnonstderr") == 0) {
                   if (printMode != PRINT_MODE_WARNING_TO_FILE) {
-                    printMode = PRINT_MODE_WARNING_TO_STDERR; 
+                    printMode = PRINT_MODE_WARNING_TO_STDERR;
                   } else {
                     sollyaPrintf("Error: only one of the --warnonstderr or --warninfile options can be given.\n");
                     return 1;
                   }
                 } else
-                  if ((strcmp(argv[i],"--warninfile") == 0) || 
+                  if ((strcmp(argv[i],"--warninfile") == 0) ||
                       (strcmp(argv[i],"--warninfileappend") == 0)){
                     if (printMode != PRINT_MODE_WARNING_TO_STDERR) {
                       if (i+1<argc) {
@@ -1512,7 +1512,7 @@ int general(int argc, char *argv[]) {
                       sollyaPrintf("Error: only one of the --warnonstderr or --warninfile options can be given.\n");
                       return 1;
                     }
-                  } else { 
+                  } else {
                     if (strcmp(argv[i],"--donotmodifystacksize") == 0) doNotModifyStackSize = 1; else {
                       if (!inputFileOpened) {
                         fd = fopen(argv[i],"r");
@@ -1529,12 +1529,12 @@ int general(int argc, char *argv[]) {
                         sollyaPrintf("Error: another input file besides \"%s\" has been indicated and opened.\n",argv[i]);
                         return 1;
                       }
-                    } 
+                    }
                   }
   }
 
   yylex_init(&scanner);
-  if (inputFileOpened) { 
+  if (inputFileOpened) {
     yyset_in(inputFile, scanner);
   }
 
@@ -1557,7 +1557,7 @@ int general(int argc, char *argv[]) {
           } else {
             printMessage(1,SOLLYA_MSG_ERROR_ON_INITIAL_SETUP,"Warning: during initial setup, an unknown error occurred.\nTry using --donotmodifystacksize when invoking the tool.\n");
           }
-        } 
+        }
       }
 #endif
     } else {
@@ -1567,7 +1567,7 @@ int general(int argc, char *argv[]) {
 	printMessage(1,SOLLYA_MSG_ERROR_ON_INITIAL_SETUP,"Warning: during initial setup, an unknown error occurred.\nTry using --donotmodifystacksize when invoking the tool.\n");
       }
     }
-#endif 
+#endif
   }
   initSignalHandler();
   blockSignals();
@@ -1609,7 +1609,7 @@ int general(int argc, char *argv[]) {
     parseAbort = yyparse(scanner);
     lastWasError = 0;
     if (parsedThing != NULL) {
-      
+
       handlingCtrlC = 0;
       lastHandledSignal = 0;
       if (!setjmp(recoverEnvironment)) {
@@ -1626,7 +1626,7 @@ int general(int argc, char *argv[]) {
 	  freeCounter();
 	}
         if (flushOutput) {
-          fflush(stdout); 
+          fflush(stdout);
           fflush(stderr);
         }
 	libraryMode = 0;
@@ -1638,7 +1638,7 @@ int general(int argc, char *argv[]) {
 	  freeCounter();
 	}
         if (flushOutput) {
-          fflush(stdout); 
+          fflush(stdout);
           fflush(stderr);
         }
 	blockSignals();
@@ -1668,16 +1668,16 @@ int general(int argc, char *argv[]) {
 	  }
 	  lastHandledSignal = 0;
 	}
-	if (handlingCtrlC) 
+	if (handlingCtrlC)
 	  printMessage(1,SOLLYA_MSG_LAST_COMMAND_INTERRUPTED,"Warning: the last command has been interrupted. May leak memory.\n");
-	else { 
+	else {
 	  printMessage(1,SOLLYA_MSG_COMMAND_NOT_EXECUTABLE,"Warning: the last command could not be executed. May leak memory.\n");
           considerDyingOnError();
         }
 	if (declaredSymbolTable != NULL) {
-	  if (!handlingCtrlC) 
+	  if (!handlingCtrlC)
 	    printMessage(1,SOLLYA_MSG_RELEASING_FRAME_STACK,"Warning: releasing the variable frame stack.\n");
-	  else 
+	  else
 	    printMessage(2,SOLLYA_MSG_RELEASING_FRAME_STACK,"Information: releasing the variable frame stack.\n");
 	  freeDeclaredSymbolTable(declaredSymbolTable, freeThingOnVoid);
 	}
@@ -1691,12 +1691,12 @@ int general(int argc, char *argv[]) {
       freeThing(parsedThing);
     } else {
       lastWasError = 1;
-    } 
+    }
     if (parseAbort || executeAbort) break;
     promptToBePrinted = 1;
     helpNotFinished = 0;
   }
-  
+
   freeTool();
 
   if (!eliminatePromptBackup) sollyaPrintf("\n");

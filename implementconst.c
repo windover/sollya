@@ -67,7 +67,7 @@
 /* A program is given by a list of instructions, the index number of the first
    unused temporary variable in the program, the number of temporary variables
    used by the program and a list giving, for each temporary variable, the
-   maximum of the precision that it takes.      
+   maximum of the precision that it takes.
 */
 struct implementCsteProgram {
   chain *instructions;
@@ -155,7 +155,7 @@ void incrementProgramCounter(struct implementCsteProgram *program) {
 /* Good practice: an instruction should always be created with a
    function appendSomeInstructionProg. Moreover strval, prog1.instructions,
    prog1.precisions, prog2.instructions and prog2.precisions must
-   be initialized with NULL: hence this value can be tested 
+   be initialized with NULL: hence this value can be tested
    when freeing memory, in order to know if the char * has been
    malloced or not.
    This implies modifying all the append*Prog, when a new kind of
@@ -308,7 +308,7 @@ void fprintInstruction(FILE *output, struct implementCsteInstruction instr, int 
     }
     sollyaFprintf(output, "%s}\n", indent);
     break;
-  default: 
+  default:
     sollyaFprintf(stderr, "Unknown instruction %d\n", instr.type);
   }
 
@@ -482,7 +482,7 @@ void appendUipowui(int var1, unsigned long int val1, unsigned long int val2, str
   instr->prog2.instructions = NULL;
   instr->prog2.precisions = NULL;
   program->instructions = addElement(program->instructions, instr);
-  return;  
+  return;
 }
 
 void appendPowuiProg(int var1, int var2, unsigned long int val, struct implementCsteProgram *program) {
@@ -500,7 +500,7 @@ void appendPowuiProg(int var1, int var2, unsigned long int val, struct implement
   instr->prog2.instructions = NULL;
   instr->prog2.precisions = NULL;
   program->instructions = addElement(program->instructions, instr);
-  return;  
+  return;
 }
 
 void appendRootProg(int var1, int var2, unsigned long int val, struct implementCsteProgram *program) {
@@ -518,7 +518,7 @@ void appendRootProg(int var1, int var2, unsigned long int val, struct implementC
   instr->prog2.instructions = NULL;
   instr->prog2.precisions = NULL;
   program->instructions = addElement(program->instructions, instr);
-  return;  
+  return;
 }
 
 void appendLibraryConstantProg(node *c, int gamma0, struct implementCsteProgram *program) {
@@ -538,7 +538,7 @@ void appendLibraryConstantProg(node *c, int gamma0, struct implementCsteProgram 
   instr->prog2.precisions = NULL;
 
   program->instructions = addElement(program->instructions, instr);
-  return;  
+  return;
 }
 
 void appendIfThenElseProg(char *cond, struct implementCsteProgram prog1, struct implementCsteProgram prog2, struct implementCsteProgram *program) {
@@ -563,7 +563,7 @@ void appendIfThenElseProg(char *cond, struct implementCsteProgram prog1, struct 
   strcpy(instr->strval, cond);
 
   program->counter = (prog1.counter > prog2.counter)?prog1.counter:prog2.counter;
-  program->maxcounter = (prog1.maxcounter > prog2.maxcounter)?prog1.maxcounter:prog2.maxcounter; 
+  program->maxcounter = (prog1.maxcounter > prog2.maxcounter)?prog1.maxcounter:prog2.maxcounter;
   if(prog1.precisions != prog2.precisions) {
     sollyaFprintf(stderr, "Unexpected error: in an if-then-else statement, both branches must share the same pointer of precisions\n");
     exit(1);
@@ -622,7 +622,7 @@ int implementconst(node *c, FILE *fd, char *name) {
   test = 1;
   curr=program.instructions;
   while(curr!=NULL) {
-    if (test 
+    if (test
         && ( ((struct implementCsteInstruction *)(curr->value))->type != INIT2 )
         ) {
       sollyaFprintf(output, "\n");
@@ -651,7 +651,7 @@ int ceil_log2n(int p) {
   log2p = 0;
   test = 1;
   /* Compute log2p such that 2^(log2p-1) <= p < 2^(log2p) */
-  while (n>=1) { log2p++; if ((n%2)!=0) test=0; n = n/2;} 
+  while (n>=1) { log2p++; if ((n%2)!=0) test=0; n = n/2;}
   /* Adjust log2p in order to have 2^(log2p-1) < n <= 2^(log2p) */
   if(test) log2p--;
 
@@ -670,7 +670,7 @@ mp_exp_t sollya_mpfi_max_exp(sollya_mpfi_t x) {
 
   sollya_mpfi_get_left(u, x);
   sollya_mpfi_get_right(v, x);
-  
+
   if (mpfr_zero_p(u)) E = mpfr_get_exp(v);
   else {
     if (mpfr_zero_p(v)) E = mpfr_get_exp(u);
@@ -700,7 +700,7 @@ mp_exp_t *sollya_mpfi_min_exp(sollya_mpfi_t x) {
 
   sollya_mpfi_get_left(u, x);
   sollya_mpfi_get_right(v, x);
-  
+
   if (mpfr_sgn(u)*mpfr_sgn(v)>0) {
     E = safeMalloc(sizeof(mp_exp_t));
     Eu = mpfr_get_exp(u);
@@ -712,7 +712,7 @@ mp_exp_t *sollya_mpfi_min_exp(sollya_mpfi_t x) {
   mpfr_clear(v);
   return E;
 }
- 
+
 /* Let a be the constant given by the expression cste and f the function with */
 /* node type nodeType. This functions generates code for the implementation   */
 /* of f(a) in precision prec+gamma0, the result being stored in resName.      */
@@ -735,7 +735,7 @@ int unaryFunctionCase(int nodeType, node *cste, char *functionName, int gamma0, 
 
   func = makeUnary(makeVariable(), nodeType);
   deriv = differentiate(func);
-  
+
   evaluateInterval(a, cste, NULL, a);
   evaluateInterval(b, func, deriv, a);
   if (sollya_mpfi_has_zero(b)) {
@@ -752,7 +752,7 @@ int unaryFunctionCase(int nodeType, node *cste, char *functionName, int gamma0, 
   }
 
   sollya_mpfi_div(u, a, b);
-  evaluateInterval(tmp, deriv, NULL, a); 
+  evaluateInterval(tmp, deriv, NULL, a);
   sollya_mpfi_mul(v, u, tmp);
 
   gamma = 2+sollya_mpfi_max_exp(v)-1;
@@ -768,7 +768,7 @@ int unaryFunctionCase(int nodeType, node *cste, char *functionName, int gamma0, 
     evaluateInterval(tmp, deriv, NULL, tmp);
     sollya_mpfi_mul(v, u, tmp);
   } while (gamma < 2+sollya_mpfi_max_exp(v));
-  
+
   counter = program->counter;
   incrementProgramCounter(program);
   res = constantImplementer(cste, gamma0+gamma, program);
@@ -838,7 +838,7 @@ int implementDivMul(node *c, int gamma0, struct implementCsteProgram *program) {
   if (res) { /* Something went wrong */
     freeChain(bufferNum, freeIntPtr);
     freeChain(numerator, (void (*)(void *))free_memory);
-    freeChain(denominator, (void (*)(void *))free_memory);  
+    freeChain(denominator, (void (*)(void *))free_memory);
     return res;
   }
 
@@ -855,7 +855,7 @@ int implementDivMul(node *c, int gamma0, struct implementCsteProgram *program) {
     freeChain(bufferNum, freeIntPtr);
     freeChain(bufferDenom, freeIntPtr);
     freeChain(numerator, (void (*)(void *))free_memory);
-    freeChain(denominator, (void (*)(void *))free_memory);  
+    freeChain(denominator, (void (*)(void *))free_memory);
     return res;
   }
 
@@ -904,12 +904,12 @@ int implementDivMul(node *c, int gamma0, struct implementCsteProgram *program) {
     }
     appendBinaryfuncProg("mpfr_div", counter, counter, program->counter, program);
   }
- 
+
   program->counter = counter;
   freeChain(bufferNum, freeIntPtr);
   freeChain(bufferDenom, freeIntPtr);
   freeChain(numerator, (void (*)(void *))free_memory);
-  freeChain(denominator, (void (*)(void *))free_memory);  
+  freeChain(denominator, (void (*)(void *))free_memory);
   return res;
 }
 
@@ -1023,7 +1023,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
     return res;
   }
 
-  if( gamma0+1-*Eb>=0 ) { /* No need to perform a test inside 
+  if( gamma0+1-*Eb>=0 ) { /* No need to perform a test inside
                              the generated code */
     tmpb = program->counter;
     res = constantImplementer(accessThruMemRef(c)->child2, gamma0+1-*Eb, program);
@@ -1033,7 +1033,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
     prog1.counter = program->counter;
     prog1.maxcounter = program->maxcounter;
     prog1.precisions = program->precisions;
- 
+
     prog2.instructions = NULL;
     prog2.counter = program->counter;
     prog2.maxcounter = program->maxcounter;
@@ -1050,7 +1050,7 @@ int implementAddSub(node *c, int gamma0, struct implementCsteProgram *program) {
     sprintf(str, "prec <= %d", (int)(*Eb-gamma0));
     appendIfThenElseProg(str, prog1, prog2, program);
     safeFree(str);
-    
+
     /* No need to free progi.precisions: program.precisions now on it. */
     freeChain(prog1.instructions, free_implementCsteInstruction);
     freeChain(prog2.instructions, free_implementCsteInstruction);
@@ -1092,10 +1092,10 @@ int implementPow(node *c, int gamma0, struct implementCsteProgram *program) {
   int res;
 
   counter = program->counter;
-  if ( (accessThruMemRef(accessThruMemRef(c)->child1)->nodeType==CONSTANT) 
+  if ( (accessThruMemRef(accessThruMemRef(c)->child1)->nodeType==CONSTANT)
        && mpfr_integer_p(*(accessThruMemRef(accessThruMemRef(c)->child1)->value))
        && mpfr_fits_ulong_p(*(accessThruMemRef(accessThruMemRef(c)->child1)->value), GMP_RNDN)
-       && (accessThruMemRef(accessThruMemRef(c)->child2)->nodeType==CONSTANT) 
+       && (accessThruMemRef(accessThruMemRef(c)->child2)->nodeType==CONSTANT)
        && mpfr_integer_p(*(accessThruMemRef(accessThruMemRef(c)->child2)->value))
        && mpfr_fits_ulong_p(*(accessThruMemRef(accessThruMemRef(c)->child2)->value), GMP_RNDN)) { /* Case n^p */
     appendSetprecProg(counter, gamma0, program);
@@ -1104,7 +1104,7 @@ int implementPow(node *c, int gamma0, struct implementCsteProgram *program) {
     return 0;
   }
 
-  if ( (accessThruMemRef(accessThruMemRef(c)->child2)->nodeType==CONSTANT) 
+  if ( (accessThruMemRef(accessThruMemRef(c)->child2)->nodeType==CONSTANT)
        && mpfr_integer_p(*(accessThruMemRef(accessThruMemRef(c)->child2)->value))
        && mpfr_fits_ulong_p(*(accessThruMemRef(accessThruMemRef(c)->child2)->value), GMP_RNDN) ) { /* Case x^p */
     p = mpfr_get_ui(*(accessThruMemRef(accessThruMemRef(c)->child2)->value), GMP_RNDN);
@@ -1131,7 +1131,7 @@ int implementPow(node *c, int gamma0, struct implementCsteProgram *program) {
     appendSetprecProg(counter, gamma0+2, program);
     appendRootProg(counter, counter+1, p, program);
     program->counter = counter;
-    return res; 
+    return res;
   }
 
   if (accessThruMemRef(accessThruMemRef(c)->child2)->nodeType==CONSTANT) {
@@ -1148,7 +1148,7 @@ int implementPow(node *c, int gamma0, struct implementCsteProgram *program) {
       appendRootProg(counter, counter+1, p, program);
       program->counter = counter;
       mpfr_clear(tmp);
-      return res; 
+      return res;
     }
     mpfr_clear(tmp);
   }

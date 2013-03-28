@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2006-2013 by 
+  Copyright 2006-2013 by
 
-  Laboratoire de l'Informatique du Parallelisme, 
+  Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
   Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
@@ -29,16 +29,16 @@
   implementer and a fast Remez algorithm.
 
   This software is governed by the CeCILL-C license under French law and
-  abiding by the rules of distribution of free software.  You can  use, 
+  abiding by the rules of distribution of free software.  You can  use,
   modify and/ or redistribute the software under the terms of the CeCILL-C
   license as circulated by CEA, CNRS and INRIA at the following URL
-  "http://www.cecill.info". 
+  "http://www.cecill.info".
 
   As a counterpart to the access to the source code and  rights to copy,
   modify and redistribute granted by the license, users are provided only
   with a limited warranty  and the software's author,  the holder of the
   economic rights,  and the successive licensors  have only  limited
-  liability. 
+  liability.
 
   In this respect, the user's attention is drawn to the risks associated
   with loading,  using,  modifying and/or developing or reproducing the
@@ -47,9 +47,9 @@
   therefore means  that it is reserved for developers  and  experienced
   professionals having in-depth computer knowledge. Users are therefore
   encouraged to load and test the software's suitability as regards their
-  requirements in conditions enabling the security of their systems and/or 
-  data to be ensured and,  more generally, to use and operate it in the 
-  same conditions as regards security. 
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
   The fact that you are presently reading this means that you have had
   knowledge of the CeCILL-C license and that you accept its terms.
@@ -59,7 +59,7 @@
 
 */
 
-#define _BSD_SOURCE 
+#define _BSD_SOURCE
 
 #include <gmp.h>
 #include <mpfr.h>
@@ -118,10 +118,10 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
   mpfr_init2(x, pp);
   mpfr_init2(step, pp);
   mpfr_init2(y, 64);
- 
+
   mpfr_sub(step, b, a, GMP_RNDN);
   mpfr_div_ui(step, step, points, GMP_RNDN);
- 
+
   if (mpfr_sgn(step) == 0) {
     list = treeList;
     mpfr_set_prec(y,prec);
@@ -130,7 +130,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       evaluateFaithful(y,tree,a,prec);
       if (!mpfr_number_p(y)) {
 	printMessage(1,SOLLYA_MSG_CONSTANT_EXPR_CANNOT_BE_EVALUATED_AT_ALL,"Warning: this constant function is not evaluable by this tool.\n");
-      } 
+      }
       outputMode();
       printValue(&y);
       sollyaPrintf("\n");
@@ -153,7 +153,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
     if(!isConstant(tree)) test=0;
     list = list->next;
   }
- 
+
   if (test) {
     mpfr_set_prec(y,prec);
     mpfr_set_d(x,1.0,GMP_RNDN);
@@ -163,7 +163,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       evaluateFaithful(y,tree,x,prec);
       if (!mpfr_number_p(y)) {
 	printMessage(1,SOLLYA_MSG_CONSTANT_EXPR_CANNOT_BE_EVALUATED_AT_ALL,"Warning: this constant function is not evaluable by this tool.\n");
-      } 
+      }
       outputMode();
       printValue(&y);
       sollyaPrintf("\n");
@@ -207,7 +207,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
     sollyaFprintf(file, "set format x \"%%g\"\n");
     sollyaFprintf(file, "set format y \"%%g\"\n");
     sollyaFprintf(file, "set xrange [%1.50e:%1.50e]\n",  ad, bd);
-    
+
     sollyaFprintf(file, "plot ");
     i=2;
     list = treeList;
@@ -229,7 +229,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       p = prec;
       if (p < 64) p = 64;
       mpfr_div_2ui(cutoff,cutoff,4*p,GMP_RNDN);
-      
+
       overflow = 0;
       flush = 0;
 
@@ -237,7 +237,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       gmp_randinit_default(random_state);
       gmp_randseed_ui(random_state, 65845285);
       mpfr_init2(perturb, pp);
-  
+
       mpfr_set(current_x,a,GMP_RNDN);
       mpfr_set(x, current_x, GMP_RNDN);
       while(mpfr_lessequal_p(x,b)) {
@@ -245,7 +245,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 	if (xd >= MAX_VALUE_GNUPLOT) xd = MAX_VALUE_GNUPLOT;
 	if (xd <= -MAX_VALUE_GNUPLOT) xd = -MAX_VALUE_GNUPLOT;
 	sollyaFprintf(file, "%1.50e",xd);
-	
+
 	list = treeList;
 	while(list != NULL) {
 	  tree = (node *)(list->value);
@@ -268,7 +268,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 	    overflow = 1;
 	  }
 	  sollyaFprintf(file, "\t%1.50e", yd);
-	  
+
 	  list = list->next;
 	}
 	sollyaFprintf(file,"\n");
@@ -284,9 +284,9 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       mpfr_clear(perturb);
       mpfr_clear(current_x);
       gmp_randclear(random_state);
- 
+
       fclose(file);
-    
+
       if (overflow)
 	printMessage(1, SOLLYA_MSG_PLOT_OVERFLOW_OCCURRED_ON_CONVERSION_TO_DOUBLE, "Warning: an overflow occurred in a conversion mpfr to double while plotting.\n");
 
@@ -298,7 +298,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
 
   mpfr_clear(x); mpfr_clear(y); mpfr_clear(step);
 
-  
+
   if (plotPossible) {
     if ((name==NULL) || (type==PLOTFILE)) {
       if (fork()==0) {
@@ -361,7 +361,7 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     unsigned short  ws_xpixel;  /* horizontal size in pixels (not used) */
     unsigned short  ws_ypixel;  /* vertical size in pixels (not used) */
   } size;
-#else 
+#else
   struct winsize size;
 #endif
   mpfr_t *values;
@@ -374,7 +374,7 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     evaluateFaithful(y,tree,a,prec);
     if (!mpfr_number_p(y)) {
       printMessage(1,SOLLYA_MSG_CONSTANT_EXPR_CANNOT_BE_EVALUATED_AT_ALL,"Warning: this constant function is not evaluable by this tool.\n");
-    } 
+    }
     printValue(&y);
     sollyaPrintf("\n");
     mpfr_clear(y);
@@ -471,17 +471,17 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
   lines = (char **) safeCalloc(sizeY,sizeof(char *));
   for (k=0;k<sizeY-1;k++) {
     lines[k] = (char *) safeCalloc(sizeX,sizeof(char));
-    for (i=0;i<sizeX-1;i++) 
+    for (i=0;i<sizeX-1;i++)
       lines[k][i] = ' ';
   }
 
   if (drawXAxis) {
-    for (i=0;i<sizeX-1;i++) 
+    for (i=0;i<sizeX-1;i++)
       lines[(sizeY - 2) - xAxis][i] = '-';
   }
 
   if (drawYAxis) {
-    for (k=0;k<sizeY-1;k++) 
+    for (k=0;k<sizeY-1;k++)
       lines[k][yAxis] = '|';
   }
 
@@ -493,11 +493,11 @@ void asciiPlotTree(node *tree, mpfr_t a, mpfr_t b, mp_prec_t prec) {
     k = mpfr_get_si(values[i],GMP_RNDN);
     if (k < 0) k = 0;
     if (k > (sizeY - 2)) k = sizeY - 2;
-    lines[(sizeY - 2) - k][i] = 'x'; 
+    lines[(sizeY - 2) - k][i] = 'x';
   }
 
   saveMode();
-  for (k=0;k<sizeY-1;k++) { 
+  for (k=0;k<sizeY-1;k++) {
     curr = lines[k];
     while (*curr != '\0') {
       if (*curr != 'x')

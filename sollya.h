@@ -59,9 +59,9 @@
 #ifndef SOLLYA_H
 #define SOLLYA_H
 
-/* The following #include should be first ! 
+/* The following #include should be first !
 
-   IT MUST BE PROTECTED BY THE #if THAT IS USED! 
+   IT MUST BE PROTECTED BY THE #if THAT IS USED!
 
    This is because this header file is used both internally when
    compiling the Sollya library and when using the library.
@@ -71,7 +71,7 @@
 #include <sollya-messages.h>
 #endif
 
-/* Now some other #includes we need to get the different types defined. 
+/* Now some other #includes we need to get the different types defined.
 
    For some reason we can't really understand, some systems need the
    inclusions to be done in the order they are given.
@@ -91,15 +91,15 @@ extern "C" {
   /* Define a type for all Sollya objects and for lists
      of Sollya objects, constants, intervals, integers, strings and booleans.
 
-     This header file is used both internally when compiling 
+     This header file is used both internally when compiling
      the Sollya library and when using the library.
 
-     This is why the typedef logic below is pretty ackward. 
+     This is why the typedef logic below is pretty ackward.
      Please be very careful when messing with it.
 
      If you are a Sollya library user, the only thing you have
      to know that in the end of the following #if block, a
-     type 
+     type
 
      sollya_obj_t,
 
@@ -221,7 +221,7 @@ extern "C" {
     SOLLYA_BASE_FUNC_TANH,
     SOLLYA_BASE_FUNC_TRIPLEDOUBLE
   };
-  typedef enum sollya_base_function_enum_t sollya_base_function_t;  
+  typedef enum sollya_base_function_enum_t sollya_base_function_t;
 
   /* Initialization and finalization functions */
   int sollya_lib_init();
@@ -234,14 +234,14 @@ extern "C" {
   int sollya_lib_close();
 
   /* Functions to install and uninstall a call-back for the messages
-     emitted by the Sollya core.  
+     emitted by the Sollya core.
   */
   int sollya_lib_install_msg_callback(int (*) (sollya_msg_t, void *), void *);
   int sollya_lib_uninstall_msg_callback();
   int (*sollya_lib_get_msg_callback())(sollya_msg_t, void *);
 
   /* A function to get a numerical message id out of the opaque
-     sollya_msg_t object 
+     sollya_msg_t object
   */
   int sollya_lib_get_msg_id(sollya_msg_t);
 
@@ -258,11 +258,11 @@ extern "C" {
   int sollya_lib_v_printf(const char *, va_list);
   int sollya_lib_fprintf(FILE *, const char *, ...);
   int sollya_lib_v_fprintf(FILE *, const char *, va_list);
-  int sollya_lib_sprintf(char *, const char *, ...);  
-  int sollya_lib_v_sprintf(char *, const char *, va_list);  
-  int sollya_lib_snprintf(char *, size_t, const char *, ...);  
-  int sollya_lib_v_snprintf(char *, size_t, const char *, va_list);  
-  
+  int sollya_lib_sprintf(char *, const char *, ...);
+  int sollya_lib_v_sprintf(char *, const char *, va_list);
+  int sollya_lib_snprintf(char *, size_t, const char *, ...);
+  int sollya_lib_v_snprintf(char *, size_t, const char *, va_list);
+
 
   /* A function to clear Sollya_objects */
   void sollya_lib_clear_obj(sollya_obj_t);
@@ -279,7 +279,7 @@ extern "C" {
   void sollya_lib_free(void *);
 
   /* The same way, the user might want to allocate memory through
-     Sollya library's memory function call chain 
+     Sollya library's memory function call chain
   */
   void *sollya_lib_malloc(size_t);
   void *sollya_lib_calloc(size_t, size_t);
@@ -364,7 +364,7 @@ extern "C" {
   void sollya_lib_set_dieonerrormode(sollya_obj_t);
   void sollya_lib_set_rationalmode(sollya_obj_t);
   void sollya_lib_set_roundingwarnings(sollya_obj_t);
-  void sollya_lib_set_hopitalrecursions(sollya_obj_t); 
+  void sollya_lib_set_hopitalrecursions(sollya_obj_t);
 
   /* Functions corresponding to Sollya built-in procedures */
   sollya_obj_t sollya_lib_free_variable();
@@ -569,8 +569,8 @@ extern "C" {
   int sollya_lib_get_prec_of_constant(mp_prec_t *, sollya_obj_t);
   int sollya_lib_get_prec_of_range(mp_prec_t *, sollya_obj_t);
 
-  /* Functions to build up Sollya lists from arrays of objects and 
-     to get arrays of Sollya objects out of Sollya lists 
+  /* Functions to build up Sollya lists from arrays of objects and
+     to get arrays of Sollya objects out of Sollya lists
   */
   /* Please notice that the list is created from copies of the elements
      given in the argument array. There exist sollya_lib_build_*list to
@@ -609,7 +609,7 @@ extern "C" {
   */
   int sollya_lib_get_function_arity(int *, sollya_obj_t);
   int sollya_lib_get_head_function(sollya_base_function_t *, sollya_obj_t);
-  
+
   /* The first object is the function to get the subfunctions from.
 
      The second object is a pointer to an integer to store the number
@@ -634,11 +634,11 @@ extern "C" {
   int sollya_lib_decompose_libraryconstant(void (**)(mpfr_t, mp_prec_t), sollya_obj_t);
   int sollya_lib_decompose_procedurefunction(sollya_obj_t *, int *, sollya_obj_t *, sollya_obj_t);
 
-  /* Functions that work on Sollya objects that are structures 
+  /* Functions that work on Sollya objects that are structures
 
      The int return value indicates success (zero -> failure, non-zero -> success).
 
-     Attention: 
+     Attention:
 
      Upon success, memory is allocated by the functions for the
      returned objects.
@@ -702,8 +702,8 @@ extern "C" {
 
   /* Functions to manipulate lists
 
-     These functions are not necessarily needed when using the Sollya library in 
-     free-standing applications. They are needed when the Sollya library is used 
+     These functions are not necessarily needed when using the Sollya library in
+     free-standing applications. They are needed when the Sollya library is used
      in external procedures that are to be dynamically loaded into interactive
      Sollya sessions.
 
@@ -761,7 +761,7 @@ extern "C" {
   void sollya_lib_clear_string_list(sollya_string_list_t);
   int sollya_lib_is_empty_string_list(sollya_obj_list_t);
 
-  /* Functions for building Sollya objects representing 
+  /* Functions for building Sollya objects representing
      mathematical functions or Sollya objects representing lists.
 
      Attention: in contrast to all other functions in

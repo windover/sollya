@@ -69,7 +69,7 @@ int sollyaFprintf(FILE *fd, const char *format, ...);
 void signalHandler(int i) {
 
   switch (i) {
-  case SIGINT: 
+  case SIGINT:
     handlingCtrlC = 1;
     lastHandledSignal = HANDLING_SIGINT;
     break;
@@ -95,7 +95,7 @@ void signalHandler(int i) {
       exit(1);
     }
     longjmp(recoverEnvironment,1);
-  } 
+  }
 }
 
 void initSignalHandler() {

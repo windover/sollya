@@ -1,16 +1,16 @@
 /*
-  Copyright 2011-2012 by 
-  
+  Copyright 2011-2012 by
+
   Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
   Sophia Antipolis, France.
-  
-  Laboratoire de l'Informatique du Parallelisme, 
+
+  Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
   Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
   UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,
 
-  Contributors S. Chevillard, M. Joldes, Ch. Lauter 
+  Contributors S. Chevillard, M. Joldes, Ch. Lauter
 
   mioara.joldes@ens-lyon.fr
   christoph.lauter@ens-lyon.org
@@ -24,16 +24,16 @@
   implementer and a fast Remez algorithm.
 
   This software is governed by the CeCILL-C license under French law and
-  abiding by the rules of distribution of free software.  You can  use, 
+  abiding by the rules of distribution of free software.  You can  use,
   modify and/ or redistribute the software under the terms of the CeCILL-C
   license as circulated by CEA, CNRS and INRIA at the following URL
-  "http://www.cecill.info". 
+  "http://www.cecill.info".
 
   As a counterpart to the access to the source code and  rights to copy,
   modify and redistribute granted by the license, users are provided only
   with a limited warranty  and the software's author,  the holder of the
   economic rights,  and the successive licensors  have only  limited
-  liability. 
+  liability.
 
   In this respect, the user's attention is drawn to the risks associated
   with loading,  using,  modifying and/or developing or reproducing the
@@ -42,9 +42,9 @@
   therefore means  that it is reserved for developers  and  experienced
   professionals having in-depth computer knowledge. Users are therefore
   encouraged to load and test the software's suitability as regards their
-  requirements in conditions enabling the security of their systems and/or 
-  data to be ensured and,  more generally, to use and operate it in the 
-  same conditions as regards security. 
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
   The fact that you are presently reading this means that you have had
   knowledge of the CeCILL-C license and that you accept its terms.
@@ -82,7 +82,7 @@ void getChebyshevPoints(sollya_mpfi_t *chebPoints, int n, sollya_mpfi_t x);
 void getChebyshevExtrema(sollya_mpfi_t *chebPoints, int n, sollya_mpfi_t x);
 
 /* Returns a matrix chebMatrix of dimension nxn,
-s.t. chebMatrix[i,j]=T_i(x_j), for  i=0..n-1, j=0..n-1, and 
+s.t. chebMatrix[i,j]=T_i(x_j), for  i=0..n-1, j=0..n-1, and
 x_j \in [-1,1] the chebyshev points of first kind in [-1,1].
 */
 void getChebMatrix(sollya_mpfi_t**chebMatrix, int n, mp_prec_t prec);
@@ -110,13 +110,13 @@ void getTranslatedPolyCoeffs(sollya_mpfi_t *c, sollya_mpfi_t *p, int n, sollya_m
 /*evaluate a function in n chebPoints*/
 void getFunctionValues(sollya_mpfi_t* fValues, sollya_mpfi_t * chebPoints,node* f,int n);
 
-/*Compute the cheb coeffs for the interpolation polynomial 
+/*Compute the cheb coeffs for the interpolation polynomial
   of degree n-1 at chebpoints of first kind, we are given:
   n chebpoints x_i and a n*n chebMatrix T_i(x_j))
 */
 void getChebCoeffs(sollya_mpfi_t* coeffs, sollya_mpfi_t *chebMatrix, sollya_mpfi_t *fValues,int n);
 
-/*Wrapper that returns the coeffs 
+/*Wrapper that returns the coeffs
 of the interpolation polynomial of f at chebpoints
 */
 void getChebCoeffsFromFunction(sollya_mpfi_t* coeffs, sollya_mpfi_t * chebPoints, sollya_mpfi_t * chebMatrix,node *f,int n);
@@ -126,16 +126,16 @@ void getChebCoeffsFromFunction(sollya_mpfi_t* coeffs, sollya_mpfi_t * chebPoints
 */
 void getChebCoeffsFromPolynomial(sollya_mpfi_t**coeffs, int *n, node *f, sollya_mpfi_t x, mp_prec_t prec);
 
-/*Wrapper to get directly the coeffs in the monomial basis 
+/*Wrapper to get directly the coeffs in the monomial basis
   from a polynomial in the Chebyshev basis given by a list of coeffs*/
 void getCoeffsFromChebPolynomial(sollya_mpfi_t**coeffs, sollya_mpfi_t *chebCoeffs, int n, sollya_mpfi_t x);
 
-/*Wrapper to get directly the coeffs in the monomial basis 
+/*Wrapper to get directly the coeffs in the monomial basis
   from a polynomial in the Chebyshev basis, over a given interval x*/
 void getCoeffsFromChebPolynomial(sollya_mpfi_t**coeffs, sollya_mpfi_t *chebCoeffs, int n, sollya_mpfi_t x);
 
 /*wrapper to get directly the coeffs in the chebyshev basis up to degree n-1 (first n coeffs)
- and a bound for the remaining polynomial,from a polynomial in the monomial basis(given by a pointer to node), 
+ and a bound for the remaining polynomial,from a polynomial in the monomial basis(given by a pointer to node),
  over a given interval x*/
 void getNChebCoeffsFromPolynomial(sollya_mpfi_t *coeffs, sollya_mpfi_t bound, node *f, sollya_mpfi_t x, int n, int boundLevel);
 

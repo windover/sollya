@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2006-2013 by 
+  Copyright 2006-2013 by
 
-  Laboratoire de l'Informatique du Parallelisme, 
+  Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
   and by
@@ -23,16 +23,16 @@
   implementer and a fast Remez algorithm.
 
   This software is governed by the CeCILL-C license under French law and
-  abiding by the rules of distribution of free software.  You can  use, 
+  abiding by the rules of distribution of free software.  You can  use,
   modify and/ or redistribute the software under the terms of the CeCILL-C
   license as circulated by CEA, CNRS and INRIA at the following URL
-  "http://www.cecill.info". 
+  "http://www.cecill.info".
 
   As a counterpart to the access to the source code and  rights to copy,
   modify and redistribute granted by the license, users are provided only
   with a limited warranty  and the software's author,  the holder of the
   economic rights,  and the successive licensors  have only  limited
-  liability. 
+  liability.
 
   In this respect, the user's attention is drawn to the risks associated
   with loading,  using,  modifying and/or developing or reproducing the
@@ -41,9 +41,9 @@
   therefore means  that it is reserved for developers  and  experienced
   professionals having in-depth computer knowledge. Users are therefore
   encouraged to load and test the software's suitability as regards their
-  requirements in conditions enabling the security of their systems and/or 
-  data to be ensured and,  more generally, to use and operate it in the 
-  same conditions as regards security. 
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
   The fact that you are presently reading this means that you have had
   knowledge of the CeCILL-C license and that you accept its terms.
@@ -72,7 +72,7 @@ chain *addEntry(chain *symTbl, char *name, void *value, void * (*copyValue) (voi
   newEntry->name = (char *) safeCalloc(strlen(name)+1,sizeof(char));
   strcpy(newEntry->name,name);
   newEntry->value = copyValue(value);
-  symTbl = addElement(symTbl,newEntry);   
+  symTbl = addElement(symTbl,newEntry);
   return symTbl;
 }
 
@@ -217,7 +217,7 @@ chain *replaceDeclaredEntry(chain *declSymTbl, char *name, void *value, void * (
     }
     curr = curr->next;
   }
-  
+
   return declSymTbl;
 }
 
@@ -250,12 +250,12 @@ void *getDeclaredEntry(chain *declSymTbl, char *name, void * (*copyValue) (void 
 chain *assignDeclaredEntry(chain *declSymTbl, char *name, void *value, void * (*copyValue) (void *), void (*freeValue) (void *)) {
   chain *newDeclSymTbl;
 
-  if (containsDeclaredEntry(declSymTbl, name)) 
+  if (containsDeclaredEntry(declSymTbl, name))
     newDeclSymTbl = replaceDeclaredEntry(declSymTbl, name, value, copyValue, freeValue);
-  else 
+  else
     newDeclSymTbl = declareNewEntry(declSymTbl, name, value, copyValue);
 
-  return newDeclSymTbl; 
+  return newDeclSymTbl;
 }
 
 int performListPrependOnEntry(chain *symTbl, char *ident, node *tree) {
@@ -332,7 +332,7 @@ int performListPrependOnEntry(chain *symTbl, char *ident, node *tree) {
 	    oldNode->argArraySize++;
 	    (oldNode->argArray)[(oldNode->argArraySize - 1) - 0] = tree;
 	  } else {
-	    if ((neededSize <= ((size_t) (2 * oldNode->argArrayAllocSize))) && 
+	    if ((neededSize <= ((size_t) (2 * oldNode->argArrayAllocSize))) &&
 		(((size_t) (2 * oldNode->argArrayAllocSize)) <= ((size_t) SOLLYA_MAX_ARG_ARRAY_ALLOC_SIZE)) &&
 		(((size_t) (2 * oldNode->argArrayAllocSize)) > ((size_t) 0))) {
 	      oldNode->argArrayAllocSize = (size_t) (2 * oldNode->argArrayAllocSize);
@@ -388,7 +388,7 @@ int performListTailOnEntry(chain *symTbl, char *ident) {
       oldNode = (node *) (((entry *) curr->value)->value);
       if ((oldNode->nodeType == MEMREF) && (oldNode->child1 == oldNode->child2)) oldChecked = 1;
       while (1) {
-	if (oldNode->nodeType != MEMREF) break; 
+	if (oldNode->nodeType != MEMREF) break;
 	if (oldNode->libFunDeriv > 1) break;
 	oldNode = oldNode->child1;
       }
@@ -396,8 +396,8 @@ int performListTailOnEntry(chain *symTbl, char *ident) {
       case MEMREF:
 	if (oldNode->libFunDeriv > 1) {
 	  if (((oldNode->child1->nodeType == LIST) ||
-	       (oldNode->child1->nodeType == FINALELLIPTICLIST)) && 
-	      ((oldNode->child1->arguments != NULL) && 
+	       (oldNode->child1->nodeType == FINALELLIPTICLIST)) &&
+	      ((oldNode->child1->arguments != NULL) &&
 	       (oldNode->child1->arguments->next != NULL) &&
 	       (oldNode->child1->arguments->next != NULL))) {
 	    newArgs = copyChainWithoutReversal(oldNode->child1->arguments->next, copyThingOnVoid);
@@ -417,8 +417,8 @@ int performListTailOnEntry(chain *symTbl, char *ident) {
 	  } else {
 	    newNode = deepCopyThing(oldNode);
 	    if (((newNode->nodeType == LIST) ||
-		 (newNode->nodeType == FINALELLIPTICLIST)) && 
-		((oldNode->child1->arguments != NULL) && 
+		 (newNode->nodeType == FINALELLIPTICLIST)) &&
+		((oldNode->child1->arguments != NULL) &&
 		 (oldNode->child1->arguments->next != NULL) &&
 		 (oldNode->child1->arguments->next->next != NULL))) {
 	      freeThing(oldNode);

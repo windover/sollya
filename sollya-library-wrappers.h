@@ -51,7 +51,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #define SOLLYA_LIBRARY_WRAPPERS_H
 
 /* Attention: do not change order of includes neither remove the
-   following #define.  
+   following #define.
 */
 
 #define __SOLLYA_NODE_TYPE_ALREADY_DEFINED 1

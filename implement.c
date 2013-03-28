@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2006-2012 by 
+  Copyright 2006-2012 by
 
-  Laboratoire de l'Informatique du Parallelisme, 
+  Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
 
   and by
@@ -23,16 +23,16 @@
   implementer and a fast Remez algorithm.
 
   This software is governed by the CeCILL-C license under French law and
-  abiding by the rules of distribution of free software.  You can  use, 
+  abiding by the rules of distribution of free software.  You can  use,
   modify and/ or redistribute the software under the terms of the CeCILL-C
   license as circulated by CEA, CNRS and INRIA at the following URL
-  "http://www.cecill.info". 
+  "http://www.cecill.info".
 
   As a counterpart to the access to the source code and  rights to copy,
   modify and redistribute granted by the license, users are provided only
   with a limited warranty  and the software's author,  the holder of the
   economic rights,  and the successive licensors  have only  limited
-  liability. 
+  liability.
 
   In this respect, the user's attention is drawn to the risks associated
   with loading,  using,  modifying and/or developing or reproducing the
@@ -41,9 +41,9 @@
   therefore means  that it is reserved for developers  and  experienced
   professionals having in-depth computer knowledge. Users are therefore
   encouraged to load and test the software's suitability as regards their
-  requirements in conditions enabling the security of their systems and/or 
-  data to be ensured and,  more generally, to use and operate it in the 
-  same conditions as regards security. 
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
   The fact that you are presently reading this means that you have had
   knowledge of the CeCILL-C license and that you accept its terms.
@@ -88,16 +88,16 @@ int determinePowers(mpfr_t *coefficients, int degree, int *mulPrec, int *powPrec
     k=1;
     i++;
   }
-  
+
   return 1;
 }
 
 
-int determinePrecisionsHelper(mpfr_t *coefficients, int degree, 
-                              int *addPrec, int *mulPrec, 
-                              mpfr_t accuracy, rangetype range, 
+int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
+                              int *addPrec, int *mulPrec,
+                              mpfr_t accuracy, rangetype range,
                               mp_prec_t prec) {
-  
+
   mpfr_t temp, temp2;
   int precOfAccur, res;
   node *q, *tempNode, *tempNode2, *qCopy;
@@ -122,7 +122,7 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
   /* In this case, we check if the constant coefficient is zero.
      If this is the case, no addition must be made, so addPrec will be -1.
      The multiplication must be performed with the precision demanded by the
-     target accuracy. Thus, mulPrec will be precOfAccur. 
+     target accuracy. Thus, mulPrec will be precOfAccur.
      We continue then filling in the values for the higher degrees with the
      same accuracy.
   */
@@ -130,13 +130,13 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
   if (mpfr_zero_p(coefficients[0])) {
     addPrec[0] = -1;
     mulPrec[0] = precOfAccur;
-    res = determinePrecisionsHelper(coefficients+1, degree-1, addPrec+1, mulPrec+1, 
+    res = determinePrecisionsHelper(coefficients+1, degree-1, addPrec+1, mulPrec+1,
 			            accuracy, range, prec);
     mpfr_clear(temp);
     return res;
   }
 
-  /* If we are here, we have a non-zero constant coefficient 
+  /* If we are here, we have a non-zero constant coefficient
      and thus an addition to do.
 
      Notate      p(x) = c + x * q(x)
@@ -144,15 +144,15 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
      We compute alpha = || x * q(x) / c ||^\infty in the given range.
 
      The addition must be made with the precision demanded by the
-     target accuracy. 
-     
+     target accuracy.
+
      If alpha is less than 1/2, the addition can be performed
-     without any cancellation. 
+     without any cancellation.
      We check this condition. If it cannot be fulfilled, we
      do not know how to implement the polynomial automatically.
 
 
-     The multiplication and the following steps can then be 
+     The multiplication and the following steps can then be
      performed with an accuracy of accuracy / alpha.
   */
 
@@ -183,7 +183,7 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
   tempNode2 = horner(tempNode);
   free_memory(tempNode);
   tempNode = tempNode2;
-  
+
   uncertifiedInfnorm(temp, tempNode, *(range.a), *(range.b), defaultpoints, prec);
 
   free_memory(tempNode);
@@ -212,11 +212,11 @@ int determinePrecisionsHelper(mpfr_t *coefficients, int degree,
   precOfAccur = -mpfr_get_si(temp,GMP_RNDD);
 
   mulPrec[0] = precOfAccur;
-  
+
   /* We really do want to have a non-lazy evaluation here, so we use & and not && */
-  res = (!(!res)) & (!(!(determinePrecisionsHelper(coefficients+1, degree-1, addPrec+1, mulPrec+1, 
+  res = (!(!res)) & (!(!(determinePrecisionsHelper(coefficients+1, degree-1, addPrec+1, mulPrec+1,
 						   temp2, range, prec))));
-  
+
   mpfr_clear(temp);
   mpfr_clear(temp2);
   return res;
@@ -241,14 +241,14 @@ int determineCoefficientFormat(mpfr_t coefficient) {
       }
     }
   }
-  
+
   mpfr_clear(temp);
   return res;
 }
 
-int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree, 
-			int *addPrec, int *mulPrec, 
-			mpfr_t accuracy, rangetype range, 
+int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
+			int *addPrec, int *mulPrec,
+			mpfr_t accuracy, rangetype range,
 			mp_prec_t prec) {
   int res, i, currentPrec, format, coeffPrec, rounded;
   mpfr_t temp;
@@ -278,7 +278,7 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
     /* Check if the precision of the next step is at least as great as the one of the previous (multiplication) */
     if (mulPrec[i] >= 0) {
       if (currentPrec > mulPrec[i]) {
-	mulPrec[i] = currentPrec; 
+	mulPrec[i] = currentPrec;
 	printMessage(2,SOLLYA_MSG_PREC_OF_HORNER_STEP_GREATER_THAN_FOR_PREV_ONE,"Information: the precision of a previous Horner step is greater than the one of the next.\n");
 	printMessage(2,SOLLYA_MSG_CONTINUATION,"Must adapt the precision for the next step on a multiplication.\n");
       } else currentPrec = mulPrec[i];
@@ -286,7 +286,7 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
 
     if ((!coeffsAutoRound[i]) && (!mpfr_zero_p(coefficients[i]))) {
       /* The coefficient will not be rounded automatically
-	 Its precision must be taken into account 
+	 Its precision must be taken into account
       */
       format = determineCoefficientFormat(coefficients[i]);
       if (format > 3) {
@@ -298,7 +298,7 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
 	mpfr_set(coefficients[i],temp,GMP_RNDN);
       }
       switch (format) {
-      case 3: 
+      case 3:
 	coeffPrec = 159;
 	break;
       case 2:
@@ -307,27 +307,27 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
       case 1:
 	coeffPrec = 53;
 	break;
-      default: 
+      default:
 	sollyaFprintf(stderr,"Error: in determinePrecisions: unknown expansion format.\n");
       }
-     
+
       if (coeffPrec > currentPrec) {
 	currentPrec = coeffPrec;
 	printMessage(1,SOLLYA_MSG_INFERED_COEFF_PREC_HIGHER_THAN_REQUIRED,"Warning: the infered precision of the %dth coefficient of the polynomial is greater than\n",i);
 	printMessage(1,SOLLYA_MSG_CONTINUATION,"the necessary precision computed for this step. This may make the automatic determination\n");
 	printMessage(1,SOLLYA_MSG_CONTINUATION,"of precisions useless.\n");
       }
-    } 
-    
+    }
+
     /* Check if the precision of the next step is at least as great as the one of the previous (addition) */
     if (addPrec[i] >= 0) {
-      if (currentPrec > addPrec[i]) {	
+      if (currentPrec > addPrec[i]) {
 	printMessage(2,SOLLYA_MSG_PREC_OF_HORNER_STEP_GREATER_THAN_FOR_PREV_ONE,"Information: the precision of a previous Horner step is greater than the one of the next.\n");
 	printMessage(2,SOLLYA_MSG_CONTINUATION,"Must adapt the precision for the next step on an addition.\n");
-	addPrec[i] = currentPrec; 
+	addPrec[i] = currentPrec;
       } else currentPrec = addPrec[i];
     }
-    
+
   }
 
   currentPrec = 50;
@@ -336,8 +336,8 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
   for (i=degree;i>=0;i--) {
     if (coeffsAutoRound[i]) {
       /* Automatically round the coefficient to the computed necessary precision */
-      if (addPrec[i] >= 0) 
-	currentPrec = addPrec[i]; 
+      if (addPrec[i] >= 0)
+	currentPrec = addPrec[i];
       else {
 	if ((i > 0) && (mulPrec[i-1] >= 0)) currentPrec = mulPrec[i-1];
       }
@@ -394,15 +394,15 @@ int determinePrecisions(mpfr_t *coefficients, int *coeffsAutoRound, int degree,
 int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, char *name, int *overlaps, int *varNum, chain **gappaAssign) {
   int i, k, l, res, issuedCode, issuedVariables, c, t, c2, t2;
   int *powers, *operand1, *operand2;
-  char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2, *operand1Name, *operand2Name, *resultName; 
+  char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2, *operand1Name, *operand2Name, *resultName;
   gappaAssignment *newAssign;
   int op1format, op2format;
 
   op1format = -1;
   op2format = -1;
 
-  res = 1; 
-  
+  res = 1;
+
   code = (char *) safeCalloc(CODESIZE,sizeof(char));
   variables = (char *) safeCalloc(CODESIZE,sizeof(char));
   buffer1 = (char *) safeCalloc(CODESIZE,sizeof(char));
@@ -415,21 +415,21 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
     resultName = (char *) safeCalloc(CODESIZE,sizeof(char));
     operand1Name = (char *) safeCalloc(CODESIZE,sizeof(char));
     operand2Name = (char *) safeCalloc(CODESIZE,sizeof(char));
-  } 
-  
+  }
+
   codeIssue = code;
   variablesIssue = variables;
   issuedCode = 0;
   issuedVariables = 0;
-  
+
   powers = (int *) safeCalloc(degree,sizeof(int));
   operand1 = (int *) safeCalloc(degree,sizeof(int));
   operand2 = (int *) safeCalloc(degree,sizeof(int));
   for (i=0;i<degree;i++) powers[i] = powPrec[i];
-    
+
   for (i=degree-1;i>0;i--) {
     if (powers[i] >= 0) {
-      if ((i % 2) == 1) { 
+      if ((i % 2) == 1) {
 	if (powers[i] > powers[(i+1)/2-1]) powers[(i+1)/2-1] = powers[i];
 	operand1[i] = (i+1)/2 - 1;
 	operand2[i] = (i+1)/2 - 1;
@@ -443,15 +443,15 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	operand1[i] = k;
 	operand2[i] = l;
       }
-    }    
+    }
   }
-  
+
   for (i=1;i<degree;i++) {
-    if (powers[i] >= 0) {      
+    if (powers[i] >= 0) {
       /* Test whether we must produce a double, a double-double or a triple-double */
       if (powers[i] > 102) {
 	/* Produce a triple-double or an exact result for x^2 with x as a double */
-	
+
 	if (operand1[i] == 0) {
 	  /* The first operand is x */
 	  if (operand2[i] == 0) {
@@ -492,7 +492,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      c = sollya_snprintf(buffer2,CODESIZE,
                                   "double %s_%s_%d_pow2h, %s_%s_%d_pow2m, %s_%s_%d_pow2l;",
                                   name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1],name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	      
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      overlaps[i] = 49;
 	      if (gappaAssign != NULL) {
 		sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
@@ -525,7 +525,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		*gappaAssign = addElement(*gappaAssign,newAssign);
 	      }
 	      break;
-	    default: 
+	    default:
 	      res = 0;
 	    }
 	  } else {
@@ -557,10 +557,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      } else {
 		/* Produce a triple-double out of a double x and a triple-double x^? */
 
-		/* The operation's precision depends on the overlap of the triple-double x^? 
+		/* The operation's precision depends on the overlap of the triple-double x^?
 		   We must check if this value must be renormalized.
 
-		   The precision is roughly 100 + overlap bits. 
+		   The precision is roughly 100 + overlap bits.
 		*/
 
 		c = 0; c2 = 0;
@@ -578,7 +578,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand2[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -598,7 +598,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);		
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		overlaps[i] = overlaps[operand2[i]] - 5;
 		if (overlaps[i] > 47) overlaps[i] = 47;
@@ -614,12 +614,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	    case 2:
 	      /* Produce a triple-double out of a double-double x and a triple-double x^? */
 
-	      /* The operation's precision depends on the overlap of the triple-double x^? 
+	      /* The operation's precision depends on the overlap of the triple-double x^?
 		 We must check if this value must be renormalized.
-		 
-		 The precision is roughly 96 + overlap bits. 
+
+		 The precision is roughly 96 + overlap bits.
 	      */
-	      
+
 	      c = 0; c2 = 0;
 	      if (overlaps[operand2[i]] + 96 < powers[i]) {
 		/* If we are here, we must renormalize the operand */
@@ -635,7 +635,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
                                      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand2[i]] = 52;
 		if (gappaAssign != NULL) {
@@ -645,7 +645,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
 		}
 	      }
-	      
+
 	      t = c; t2 = c2;
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                   "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
@@ -669,14 +669,14 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      break;
 	    case 3:
 	      /* Produce a triple-double out of a triple-double x and a triple-double x^? */
-	      
-	      /* The operation's precision depends on the overlap of the triple-double x^? 
+
+	      /* The operation's precision depends on the overlap of the triple-double x^?
 		 The triple-double x is supposed to be renormalized anytime.
 		 We must check if this value must be renormalized.
-		 
-		 The precision is roughly 98 + overlap bits. 
+
+		 The precision is roughly 98 + overlap bits.
 	      */
-	      
+
 	      c = 0; c2 = 0;
 	      if (overlaps[operand2[i]] + 98 < powers[i]) {
 		/* If we are here, we must renormalize the operand */
@@ -692,7 +692,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
                                      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand2[i]] = 52;
 		if (gappaAssign != NULL) {
@@ -725,7 +725,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		*gappaAssign = addElement(*gappaAssign,newAssign);
 	      }
 	      break;
-	    default: 
+	    default:
 	      res = 0;
 	    }
 	  }
@@ -758,10 +758,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      } else {
 		/* Produce a triple-double out of a triple-double x^? and a double x*/
 
-		/* The operation's precision depends on the overlap of the triple-double x^? 
+		/* The operation's precision depends on the overlap of the triple-double x^?
 		   We must check if this value must be renormalized.
 
-		   The precision is roughly 100 + overlap bits. 
+		   The precision is roughly 100 + overlap bits.
 		*/
 		c = 0; c2 = 0;
 		if (overlaps[operand1[i]] + 100 < powers[i]) {
@@ -778,7 +778,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -798,7 +798,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;",
-                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);		
+                                    name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		overlaps[i] = overlaps[operand1[i]] - 5;
 		if (overlaps[i] > 47) overlaps[i] = 47;
@@ -814,10 +814,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	    case 2:
 	      /* Produce a triple-double out of a triple-double x^? and a double-double x */
 
-	      /* The operation's precision depends on the overlap of the triple-double x^? 
+	      /* The operation's precision depends on the overlap of the triple-double x^?
 		 We must check if this value must be renormalized.
-		 
-		 The precision is roughly 96 + overlap bits. 
+
+		 The precision is roughly 96 + overlap bits.
 	      */
 	      c = 0; c2 = 0;
 	      if (overlaps[operand1[i]] + 96 < powers[i]) {
@@ -834,7 +834,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
                                      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand1[i]] = 52;
 		if (gappaAssign != NULL) {
@@ -844,7 +844,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
 		}
 	      }
-	      
+
 	      t = c; t2 = c2;
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                   "Mul233(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
@@ -868,10 +868,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      break;
 	    case 3:
 	      /* Produce a triple-double out of a triple-double x^? and a triple-double x */
-	      /* The operation's precision depends on the overlap of the triple-double x^? 
+	      /* The operation's precision depends on the overlap of the triple-double x^?
 		 We must check if this value must be renormalized.
-		 
-		 The precision is roughly 98 + overlap bits. 
+
+		 The precision is roughly 98 + overlap bits.
 	      */
 	      c = 0; c2 = 0;
 	      if (overlaps[operand1[i]] + 98 < powers[i]) {
@@ -888,7 +888,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
                                      "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		overlaps[operand1[i]] = 52;
 		if (gappaAssign != NULL) {
@@ -921,7 +921,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		*gappaAssign = addElement(*gappaAssign,newAssign);
 	      }
 	      break;
-	    default: 
+	    default:
 	      res = 0;
 	    }
 	  } else {
@@ -953,10 +953,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		} else {
 		  /* Produce a triple-double out of a double-double x^2 and a triple-double x^? */
 
-		  /* The operation's precision depends on the overlap of the triple-double x^? 
+		  /* The operation's precision depends on the overlap of the triple-double x^?
 		     We must check if this value must be renormalized.
-		     
-		     The precision is roughly 96 + overlap bits. 
+
+		     The precision is roughly 96 + overlap bits.
 		  */
 		  c = 0; c2 = 0;
 		  if (overlaps[operand2[i]] + 96 < powers[i]) {
@@ -973,7 +973,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1012,10 +1012,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  /* The second operand is a double-double x^2 */
 		  /* Produce a triple-double out of a triple-double x^? and a double-double x^2 */
 
-		  /* The operation's precision depends on the overlap of the triple-double x^? 
+		  /* The operation's precision depends on the overlap of the triple-double x^?
 		     We must check if this value must be renormalized.
-		     
-		     The precision is roughly 96 + overlap bits. 
+
+		     The precision is roughly 96 + overlap bits.
 		  */
 		  c = 0; c2 = 0;
 		  if (overlaps[operand1[i]] + 96 < powers[i]) {
@@ -1032,7 +1032,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1067,11 +1067,11 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		} else {
 		  /* Both operands are surely triple-doubles; we produce a triple-double */
 
-		  /* The operation's precision depends on the overlap of *both* triple-double x^? 
+		  /* The operation's precision depends on the overlap of *both* triple-double x^?
 		     We must check if one or two of the values must be renormalized.
-		     
+
 		     The precision is roughly 97 + min(overlaps of both)
-		     
+
 		  */
 		  t = 0; c2 = 0; t2 = 0;
 		  if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
@@ -1090,7 +1090,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
                                            "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                           name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                           name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      overlaps[operand1[i]] = 52;
 		      if (gappaAssign != NULL) {
@@ -1113,7 +1113,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
                                            "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                           name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                           name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      overlaps[operand2[i]] = 52;
 		      if (gappaAssign != NULL) {
@@ -1124,7 +1124,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		      }
 		    }
 		    t += c; t2 += c2;
-		    
+
 		    /* Check once again the precision */
 		    if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
 		      /* If we are here, we must renormalize also the other operand.
@@ -1145,7 +1145,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                              "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                             name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                             name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			overlaps[operand1[i]] = 52;
 			if (gappaAssign != NULL) {
@@ -1168,7 +1168,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                              "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                             name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                             name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			overlaps[operand2[i]] = 52;
 			if (gappaAssign != NULL) {
@@ -1181,7 +1181,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		      t += c; t2 += c2;
 		    }
 		  }
-		  
+
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                       "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
@@ -1208,11 +1208,11 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      }
 	    } else {
 	      /* Both operands are surely triple-doubles; we produce a triple-double */
-	      /* The operation's precision depends on the overlap of *both* triple-double x^? 
+	      /* The operation's precision depends on the overlap of *both* triple-double x^?
 		 We must check if one or two of the values must be renormalized.
-		 
+
 		 The precision is roughly 97 + min(overlaps of both)
-		 
+
 	      */
 	      t = 0; t2 = 0;
 	      if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
@@ -1231,7 +1231,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -1254,7 +1254,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand2[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -1265,7 +1265,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  }
 		}
 		t += c; t2 += c2;
-		
+
 		/* Check once again the precision */
 		if (MIN(overlaps[operand1[i]],overlaps[operand2[i]]) + 97 < powers[i]) {
 		  /* If we are here, we must renormalize also the other operand.
@@ -1286,7 +1286,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		    c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		    if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1309,7 +1309,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		    c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		    if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1322,7 +1322,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  t += c; t2 += c2;
 		}
 	      }
-	      
+
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                   "Mul33(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,&%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
                                   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
@@ -1402,11 +1402,11 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      switch (variablePrecision) {
 	      case 1:
 		/* Produce a double-double out of a double x and a double-double or better x^? */
-		
+
 		/* If x^? is actually a triple-double, its higher overlap affects the precision of the
 		   operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
-		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
-		   is less than powers[i]. 
+		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand]
+		   is less than powers[i].
 		*/
 		c = 0; c2 = 0; op2format = 2;
 		if (overlaps[operand2[i]] < 53) {
@@ -1426,7 +1426,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1437,7 +1437,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    }
 		  }
 		}
-		
+
 		t = c; t2 = c2;
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                     "Mul122(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
@@ -1459,10 +1459,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      case 2:
 	      case 3:
 		/* Produce a double-double out of a double-double or better x and a double-double or better x^? */
-		
+
 		/* If x^? is actually a triple-double, its higher overlap affects the precision of the
 		   operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
-		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
+		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand]
 		   is less than powers[i].
 		   The usage of a triple-double x as a double-double is not critical because
 		   x is supposed to be renormalized in this case.
@@ -1485,7 +1485,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand2[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1529,8 +1529,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		/* Produce a double-double out of a double-double or better x^? and a double x */
 		/* If x^? is actually a triple-double, its higher overlap affects the precision of the
 		   operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
-		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
-		   is less than powers[i]. 
+		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand]
+		   is less than powers[i].
 		*/
 		c = 0; c2 = 0; op2format = 2;
 		if (overlaps[operand1[i]] < 53) {
@@ -1550,7 +1550,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1561,7 +1561,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    }
 		  }
 		}
-		
+
 		t = c; t2 = c2;
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                     "Mul122(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
@@ -1586,7 +1586,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 		/* If x^? is actually a triple-double, its higher overlap affects the precision of the
 		   operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
-		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
+		   and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand]
 		   is less than powers[i].
 		   The usage of a triple-double x as a double-double is not critical because
 		   x is supposed to be renormalized in this case.
@@ -1609,7 +1609,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    overlaps[operand1[i]] = 52;
 		    if (gappaAssign != NULL) {
@@ -1620,7 +1620,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		    }
 		  }
 		}
-		
+
 		t = c; t2 = c2;
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                     "Mul22(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%sh,%sm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
@@ -1649,7 +1649,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
 	      /* If operands are actually triple-doubles, their higher overlaps affect the precision of the
                  operation. We check if overlap[operand] is less than 53 (only triple-doubles can be like that)
-                 and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand] 
+                 and renormalize the whole triple-double (and adjust its overlap) if 53 + overlap[operand]
                  is less than powers[i]. We do this for both one after the other.
 	      */
 
@@ -1672,7 +1672,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  overlaps[operand1[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -1684,7 +1684,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		}
 	      }
 	      t += c; t2 += c2;
-	      
+
 	      c = 0; c2 = 0;
 	      if (overlaps[operand2[i]] < 53) {
 		op2format = 3;
@@ -1703,7 +1703,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		  if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		  c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[operand2[i]],operand2[i]+1);
 		  if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		  overlaps[operand2[i]] = 52;
 		  if (gappaAssign != NULL) {
@@ -1715,7 +1715,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		}
 	      }
 	      t += c; t2 += c2;
-	      
+
 	      c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                   "Mul22(&%s_%s_%d_pow%dh,&%s_%s_%d_pow%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm);",
                                   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,
@@ -1725,7 +1725,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                   "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm;",
                                   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1,name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
-	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      if (gappaAssign != NULL) {
 		sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
 		sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),varNum[operand1[i]],operand1[i]+1);
@@ -1751,7 +1751,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_%s_%d_pow2h;",
                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[i]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -1761,8 +1761,8 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		}
 	      } else {
 		/* Produce x^2 as a double out of x as a double-double or better */
-		/* Here the usage of a triple-double x as a double is 
-		   not critical because we suppose that x is renormalized. 
+		/* Here the usage of a triple-double x as a double is
+		   not critical because we suppose that x is renormalized.
 		*/
 		c = sollya_snprintf(buffer1,CODESIZE,
                                     "%s_%s_%d_pow2h = %sh * %sh;",
@@ -1771,7 +1771,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_%s_%d_pow2h;",
                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[i]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),varNum[1]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -1785,10 +1785,10 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      if (variablePrecision == 1) {
 		/* Produce a double out of a double x and a double or better x^? */
 
-		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to 
+		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to
 		   use as a double, we must check if overlaps[operand] is not less than
 		   the precision needed (powers[i]). If this is the case, since we do not
-		   want to renormalize the whole triple-double, we use a rounded sum of 
+		   want to renormalize the whole triple-double, we use a rounded sum of
 		   the higher and middle value.
 		*/
 		if ((overlaps[operand2[i]] < 53) && (overlaps[operand2[i]] < powers[i])) {
@@ -1819,14 +1819,14 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_%s_%d_pow%dh;",
                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      } else {
 		/* Produce a double out of a double-double or better x and a double or better x^? */
 
-		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to 
+		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to
 		   use as a double, we must check if overlaps[operand] is not less than
 		   the precision needed (powers[i]). If this is the case, since we do not
-		   want to renormalize the whole triple-double, we use a rounded sum of 
+		   want to renormalize the whole triple-double, we use a rounded sum of
 		   the higher and middle value.
 		*/
 
@@ -1858,20 +1858,20 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_%s_%d_pow%dh;",
                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      }
 	    }
-	  } else { 
+	  } else {
 	    /* The first operand is x^? as a double or better */
 	    if (operand2[i] == 0) {
 	      /* The second operand is x */
 	      if (variablePrecision == 1) {
 		/* Produce a double out of a double or better x^? and a double x */
 
-		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to 
+		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to
 		   use as a double, we must check if overlaps[operand] is not less than
 		   the precision needed (powers[i]). If this is the case, since we do not
-		   want to renormalize the whole triple-double, we use a rounded sum of 
+		   want to renormalize the whole triple-double, we use a rounded sum of
 		   the higher and middle value.
 		*/
 		if ((overlaps[operand1[i]] < 53) && (overlaps[operand1[i]] < powers[i])) {
@@ -1902,16 +1902,16 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_%s_%d_pow%dh;",
                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      } else {
 		/* Produce a double out of a double or better x^? and a double-double or better x */
 
-		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to 
+		/* If x^? is a triple-double (overlaps[operand] < 53) that we want to
 		   use as a double, we must check if overlaps[operand] is not less than
 		   the precision needed (powers[i]). If this is the case, since we do not
-		   want to renormalize the whole triple-double, we use a rounded sum of 
+		   want to renormalize the whole triple-double, we use a rounded sum of
 		   the higher and middle value.
-		   The usage of a triple-double x as a double is not a problem because 
+		   The usage of a triple-double x as a double is not a problem because
 		   this value is supposed to be renormalized in this case.
 		*/
 		if ((overlaps[operand1[i]] < 53) && (overlaps[operand1[i]] < powers[i])) {
@@ -1942,14 +1942,14 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_%s_%d_pow%dh;",
                                     name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      }
 	    } else {
 	      /* Produce a double out of two doubles or better */
-	      /* If one of the operands is a triple-double (overlaps[operand] < 53) that we want to 
+	      /* If one of the operands is a triple-double (overlaps[operand] < 53) that we want to
 		 use as a double, we must check if overlaps[operand] is not less than
 		 the precision needed (powers[i]). If this is the case, since we do not
-		 want to renormalize the whole triple-double, we use a rounded sum of 
+		 want to renormalize the whole triple-double, we use a rounded sum of
 		 the higher and middle value.
 	      */
 
@@ -2016,12 +2016,12 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	      c = sollya_snprintf(buffer2,CODESIZE,
                                   "double %s_%s_%d_pow%dh;",
                                   name,((variablename == NULL) ? "_x_" : variablename),varNum[i],i+1);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	    }
 	  }
 	}
       }
-      
+
       /* Issue the buffers to code and variable buffers */
       c = sollya_snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
       if (c < 0) {
@@ -2044,7 +2044,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 	c = CODESIZE-issuedVariables;
       }
       issuedVariables += c;
-      variablesIssue += c;    
+      variablesIssue += c;
 
     } /* end if powers[i] >= 0 */
   } /* end loop */
@@ -2052,7 +2052,7 @@ int implementPowers(int *powPrec, int degree, int variablePrecision, FILE *fd, c
 
   /* Issue the variable definitions and the code */
   if (sollyaFprintf(fd,"%s\n\n%s\n\n",variables,code) < 0) res = 0;
-  
+
   safeFree(powers);
   safeFree(operand1);
   safeFree(operand2);
@@ -2138,11 +2138,11 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
 	    }
 	    res = 0;
 	  }
-	  sollyaFprintf(fd,"#define %s_coeff_%dl %1.80e\n",name,i,current); 
+	  sollyaFprintf(fd,"#define %s_coeff_%dl %1.80e\n",name,i,current);
 	  constLo = current;
 	}
       }
-      
+
       if (gappaAssign != NULL) {
 	resultVariable = (char *) safeCalloc(CODESIZE,sizeof(char));
 	sprintf(resultVariable,"%s_coeff_%d",name,i);
@@ -2152,7 +2152,7 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
       }
     }
   }
- 
+
   sollyaFprintf(fd,"\n\n");
 
   mpfr_clear(temp);
@@ -2160,11 +2160,11 @@ int implementCoefficients(mpfr_t *coefficients, int degree, FILE *fd, char *name
   return res;
 }
 
-int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec, 
+int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    int degree, int variablePrecision, FILE *fd, char *name, int *powerOverlaps, int *powVarNum, chain **gappaAssign) {
   int res, i, k, variableNumber, comingFormat, producedFormat, issuedCode, issuedVariables, c, c2, t2;
   int coeffFormat, currOverlap, t, oldCurrOverlap;
-  char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2; 
+  char *code, *variables, *codeIssue, *variablesIssue, *buffer1, *buffer2;
   int *tempVarNum;
   char *resultName, *operand1Name, *operand2Name, *operand3Name;
   int op2format;
@@ -2181,22 +2181,22 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
     operand1Name = (char *) safeCalloc(CODESIZE,sizeof(char));
     operand2Name = (char *) safeCalloc(CODESIZE,sizeof(char));
     operand3Name = (char *) safeCalloc(CODESIZE,sizeof(char));
-  } 
+  }
 
-  res = 1; 
-  
+  res = 1;
+
   code = (char *) safeCalloc(CODESIZE,sizeof(char));
   variables = (char *) safeCalloc(CODESIZE,sizeof(char));
   buffer1 = (char *) safeCalloc(CODESIZE,sizeof(char));
   buffer2 = (char *) safeCalloc(CODESIZE,sizeof(char));
 
   tempVarNum = (int *) safeCalloc((2* degree) + 3,sizeof(int));
-  
+
   codeIssue = code;
   variablesIssue = variables;
   issuedCode = 0;
   issuedVariables = 0;
-  
+
   currOverlap = 53;
 
   /* Initialise with the first step */
@@ -2216,18 +2216,18 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                         name,variableNumber,tempVarNum[variableNumber],
                         name,variableNumber,tempVarNum[variableNumber],
                         name,variableNumber,tempVarNum[variableNumber]);
-    if ((c < 0) || (c >= CODESIZE)) res = 0;	 
+    if ((c < 0) || (c >= CODESIZE)) res = 0;
     variableNumber++;
-    /* The overlap should be 53 since we have correctly rounded coefficients 
+    /* The overlap should be 53 since we have correctly rounded coefficients
        But: there is the case of double renormalization in the firststep in strange honorcoeffprec cases.
     */
-    currOverlap = 52; 
+    currOverlap = 52;
     if (gappaAssign != NULL) {
       sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
       sollya_snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
       newAssign = newGappaOperation(GAPPA_COPY, -1, 3, currOverlap, resultName, 3, 3, operand1Name, 0, 0, NULL);
       *gappaAssign = addElement(*gappaAssign,newAssign);
-    } 
+    }
     break;
   case 2:
     c = sollya_snprintf(buffer1,CODESIZE,
@@ -2239,16 +2239,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                         "double %s_t_%d_%dh, %s_t_%d_%dm;",
                         name,variableNumber,tempVarNum[variableNumber],
                         name,variableNumber,tempVarNum[variableNumber]);
-    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+    if ((c < 0) || (c >= CODESIZE)) res = 0;
     variableNumber++;
     /* The overlap is 53 since we have correctly rounded coefficients */
-    currOverlap = 53; 
+    currOverlap = 53;
     if (gappaAssign != NULL) {
       sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
       sollya_snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
       newAssign = newGappaOperation(GAPPA_COPY, -1, 2, currOverlap, resultName, 2, 2, operand1Name, 0, 0, NULL);
       *gappaAssign = addElement(*gappaAssign,newAssign);
-    } 
+    }
     break;
   case 1:
     c = sollya_snprintf(buffer1,CODESIZE,
@@ -2258,22 +2258,22 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
     c = sollya_snprintf(buffer2,CODESIZE,
                         "double %s_t_%d_%dh;",
                         name,variableNumber,tempVarNum[variableNumber]);
-    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+    if ((c < 0) || (c >= CODESIZE)) res = 0;
     variableNumber++;
     /* The overlap is 53 since we have correctly rounded coefficients */
-    currOverlap = 53; 
+    currOverlap = 53;
     if (gappaAssign != NULL) {
       sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
       sollya_snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
       newAssign = newGappaOperation(GAPPA_COPY, -1, 1, -1, resultName, 1, 1, operand1Name, 0, 0, NULL);
       *gappaAssign = addElement(*gappaAssign,newAssign);
-    } 
+    }
     break;
   default:
     printMessage(1,SOLLYA_MSG_A_COEFF_COULD_NOT_BE_STORED_IN_ANY_KNOWN_FORMAT,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
     producedFormat = 1;
     res = 0;
-  }  
+  }
 
   comingFormat = producedFormat;
 
@@ -2298,8 +2298,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
     c = CODESIZE-issuedVariables;
   }
   issuedVariables += c;
-  variablesIssue += c;    
-  
+  variablesIssue += c;
+
   /* Continue with the normal steps */
 
   while (i>=0) {
@@ -2315,21 +2315,21 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
       /* Special case: fused addition and multiplication */
       /* We have two special operators:
-	 
+
          MulAdd212 and MulAdd22
-      
-         We can use them if 
+
+         We can use them if
          - 53 < addPrec[i] <= 102
          - 53 < mulPrec[i] <= 102
          - comingFormat = 2
          - coeffFormat = 2
-	 
+
 	 The value for x^k will either be completely correct (k = 1, variablePrecision = 1) or
 	 can be rounded down because of the target accuracy.
-      
+
       */
       if ((53 < addPrec[i]) && (addPrec[i] <= 102) &&
-	  (53 < mulPrec[i]) && (mulPrec[i] <= 102) && 
+	  (53 < mulPrec[i]) && (mulPrec[i] <= 102) &&
 	  (comingFormat == 2) &&
 	  (coeffFormat == 2)) {
 
@@ -2348,7 +2348,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    c = sollya_snprintf(buffer2,CODESIZE,
                                 "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	    if ((c < 0) || (c >= CODESIZE)) res = 0;
 	    if (gappaAssign != NULL) {
 	      sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 	      sollya_snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
@@ -2360,7 +2360,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      newAssign->operand3Variable = (char *) safeCalloc(strlen(operand3Name)+1,sizeof(char));
 	      strcpy(newAssign->operand3Variable,operand3Name);
 	      *gappaAssign = addElement(*gappaAssign,newAssign);
-	    } 
+	    }
 	  } else {
 	    /* Multiplication by x stored as a double-double (or better) */
 	    c = sollya_snprintf(buffer1,CODESIZE,
@@ -2373,7 +2373,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    c = sollya_snprintf(buffer2,CODESIZE,
                                 "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                 name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	    if ((c < 0) || (c >= CODESIZE)) res = 0;
 	    if (gappaAssign != NULL) {
 	      sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 	      sollya_snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
@@ -2385,18 +2385,18 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      newAssign->operand3Variable = (char *) safeCalloc(strlen(operand3Name)+1,sizeof(char));
 	      strcpy(newAssign->operand3Variable,operand3Name);
 	      *gappaAssign = addElement(*gappaAssign,newAssign);
-	    } 
+	    }
 	  }
 	} else {
 	  /* Multiplication by x^k, which will be in any case at least a double-double */
 
 	  /* We have to check that if x^k is actually a triple-double that is read as a double-double
-	     that the precision obtained is sufficient regardless of the overlap in the triple-double 
-	     The obtained precision is roughly 53 + overlap value. If it is not sufficient, 
-	     we renormalize the whole triple-double value. 
+	     that the precision obtained is sufficient regardless of the overlap in the triple-double
+	     The obtained precision is roughly 53 + overlap value. If it is not sufficient,
+	     we renormalize the whole triple-double value.
 	  */
-	  
-	  t = 0; t2 = 0; 
+
+	  t = 0; t2 = 0;
 	  if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 	    /* We must renormalize the power */
 	    c = sollya_snprintf(buffer1,CODESIZE,
@@ -2404,10 +2404,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                 name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
                                 name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 	    powVarNum[k-1]++;
-	    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	    if ((c < 0) || (c >= CODESIZE)) res = 0;
 	    c2 = sollya_snprintf(buffer2,CODESIZE,
                                  "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                 name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                 name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 	    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 	    powerOverlaps[k-1] = 52;
 	    t = c; t2 = c2;
@@ -2428,7 +2428,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                               "double %s_t_%d_%dh, %s_t_%d_%dm;",
                               name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+	  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	  if (gappaAssign != NULL) {
 	    if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
 	    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -2441,12 +2441,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    newAssign->operand3Variable = (char *) safeCalloc(strlen(operand3Name)+1,sizeof(char));
 	    strcpy(newAssign->operand3Variable,operand3Name);
 	    *gappaAssign = addElement(*gappaAssign,newAssign);
-	  } 
+	  }
 	}
 
 	variableNumber++;
 	comingFormat = producedFormat;
-	
+
 	/* Issue the generated buffers to memory */
 	c = sollya_snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
 	if (c < 0) {
@@ -2469,20 +2469,20 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  c = CODESIZE-issuedVariables;
 	}
 	issuedVariables += c;
-	variablesIssue += c;    
+	variablesIssue += c;
 
 	/* The overlap is 53 since we have always double-double operations */
-	currOverlap = 53; 
+	currOverlap = 53;
 
       } else {
 	/* General case: multiplication followed by addition */
 
-      
+
 	/* Generate first the multiplication by x or the correspondant power of x in the buffer */
-	/* mulPrec[i] determines the format to produce and influences on the 
+	/* mulPrec[i] determines the format to produce and influences on the
 	   precision of x or the power of x
 	*/
-	
+
 	if (mulPrec[i] > 102) {
 	  /* Produce a triple-double (or a double-double exactly if comingFormat = 1 and x as a double */
 	  if (k == 1) {
@@ -2494,7 +2494,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      switch (comingFormat) {
 	      case 3:
 		/* Multiply the triple-double temporary by a triple-double x, produce a triple-double */
-		
+
 		/* We have to check the precision of the operation which depends
 		   on the overlap of the entering triple-double operands.
 		   The overlap of x is fixed by hypothesis, so the precision
@@ -2508,12 +2508,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
                                       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  tempVarNum[variableNumber-1]++;
 		  currOverlap = 52;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -2533,17 +2533,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x, produce a triple-double */
@@ -2562,20 +2562,20 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 48;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      default:
 		/* Multiply the double temporary by a triple-double x, produce a triple-double */
-		
+
 		/* The precision is fixed because of the operands' formats:
 		   - x is supposed to be non-overlapping by hypothesis
 		   - the other operand is a double
@@ -2590,16 +2590,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 152, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 	      }
 	      break;
 	    case 2:
@@ -2621,12 +2621,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
                                       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  currOverlap = 52;
 		  tempVarNum[variableNumber-1]++;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -2646,17 +2646,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double-double x, produce a triple-double */
@@ -2674,20 +2674,20 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 49;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      default:
 		/* Multiply the double temporary by a double-double x, produce a triple-double */
-		
+
 		/* The precision is fixed because of the operands' formats:
 		   the operands are double and double-double
 		*/
@@ -2701,16 +2701,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 	      }
 	      break;
 	    case 1:
@@ -2731,12 +2731,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
                                       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  currOverlap = 52;
 		  tempVarNum[variableNumber-1]++;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -2757,17 +2757,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(47,currOverlap-5);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 100 + oldCurrOverlap, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double x, produce a triple-double */
@@ -2786,20 +2786,20 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      default:
 		/* Multiply the double temporary by a double x, produce a double-double */
-		
+
 		/* The precision is fixed because of the operands' formats:
 		   both operands are doubles, we produce an exact double-double
 		*/
@@ -2814,7 +2814,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 53;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -2854,12 +2854,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                         "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
                                         name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
-		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    currOverlap = 52;
 		    tempVarNum[variableNumber-1]++;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    if (gappaAssign != NULL) {
@@ -2869,7 +2869,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      *gappaAssign = addElement(*gappaAssign,newAssign);
 		    }
 		  }
-		  
+
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -2879,17 +2879,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  oldCurrOverlap = currOverlap;
 		  currOverlap = MIN(48,currOverlap-4);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a double-double x^2, produce a triple-double */
@@ -2907,16 +2907,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  currOverlap = 49;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		default:
 		  /* Multiply the double temporary by a double-double x^2, produce a triple-double */
@@ -2934,16 +2934,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  currOverlap = 47;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		}
 	      } else {
 		/* Multiply comingFormat by a triple-double x^2, produce a triple-double */
@@ -2953,9 +2953,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		  /* We have to check the precision of the operation which depends
 		     on the overlap of the entering triple-double operands.
-		     
-		     The precision is roughly 97 + min(overlaps) bits. 
-		     If it is not sufficient, we renormalize first the operands with 
+
+		     The precision is roughly 97 + min(overlaps) bits.
+		     If it is not sufficient, we renormalize first the operands with
 		     the higher overlap (lower value), check again and renormalize once
 		     again if needed.
 		  */
@@ -2973,7 +2973,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      tempVarNum[variableNumber-1]++;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
                                            "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t = c; t2 = c2;
 		      currOverlap = 52;
@@ -2993,7 +2993,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
                                            "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t = c; t2 = c2;
 		      powerOverlaps[1] = 52;
@@ -3018,7 +3018,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			currOverlap = 52;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                              "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                             name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                             name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			t2 += c2;
 			if (gappaAssign != NULL) {
@@ -3037,7 +3037,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                              "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                             name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                             name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			t += c; t2 += c2;
 			powerOverlaps[1] = 52;
@@ -3048,7 +3048,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			  *gappaAssign = addElement(*gappaAssign,newAssign);
 			}
 		      }
-		    } 
+		    }
 		  }
 
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
@@ -3060,24 +3060,24 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  oldCurrOverlap = currOverlap;
 		  currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[1])-4);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, (97 + MIN(oldCurrOverlap,powerOverlaps[1])), 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a triple-double x^2, produce a triple-double */
 
 		  /* We have to check the precision of the operation which depends
 		     on the overlap of the entering triple-double operands.
-		     The temporary is a double-double, so the precision only depends 
+		     The temporary is a double-double, so the precision only depends
 		     on the triple-double x^2
 		     If the precision is not sufficient, we renormalize.
 		  */
@@ -3089,10 +3089,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    powVarNum[1]++;
-		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
@@ -3103,7 +3103,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      *gappaAssign = addElement(*gappaAssign,newAssign);
 		    }
 		  }
-		  
+
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -3113,23 +3113,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  currOverlap = MIN(48,powerOverlaps[1]-4);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + powerOverlaps[1], 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		default:
 		  /* Multiply the double temporary by a triple-double x^2, produce a triple-double */
 
 		  /* We have to check the precision of the operation which depends
 		     on the overlap of the entering triple-double operands.
-		     The temporary is a double, so the precision only depends 
+		     The temporary is a double, so the precision only depends
 		     on the triple-double x^2
 		     If the precision is not sufficient, we renormalize.
 		  */
@@ -3141,10 +3141,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    powVarNum[1]++;
-		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
@@ -3165,16 +3165,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  currOverlap = MIN(47,powerOverlaps[1] - 5);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 100 + powerOverlaps[1], 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		}
 	      }
 	    } else {
@@ -3185,13 +3185,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		/* We have to check the precision of the operation which depends
 		   on the overlap of the entering triple-double operands.
-		   
-		   The precision is roughly 97 + min(overlaps) bits. 
-		   If it is not sufficient, we renormalize first the operands with 
+
+		   The precision is roughly 97 + min(overlaps) bits.
+		   If it is not sufficient, we renormalize first the operands with
 		   the higher overlap (lower value), check again and renormalize once
 		   again if needed.
 		*/
-		
+
 		t = 0; t2 = 0;
 		if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
 		  /* The precision is not sufficient, we have to renormalize at least one operand */
@@ -3206,7 +3206,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    tempVarNum[variableNumber-1]++;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t2 = c2;
 		    currOverlap = 52;
@@ -3226,7 +3226,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    powerOverlaps[k-1] = 52;
@@ -3250,7 +3250,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      tempVarNum[variableNumber-1]++;
 		      c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                            "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t2 += c2;
 		      currOverlap = 52;
@@ -3270,7 +3270,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		      c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                            "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t += c; t2 += c2;
 		      powerOverlaps[k-1] = 52;
@@ -3281,9 +3281,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			*gappaAssign = addElement(*gappaAssign,newAssign);
 		      }
 		    }
-		  } 
+		  }
 		}
-		
+
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                     "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -3293,24 +3293,24 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[k-1])-4);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + MIN(oldCurrOverlap,powerOverlaps[k-1]), 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x^k, produce a triple-double */
 
 		/* We have to check the precision of the operation which depends
 		   on the overlap of the entering triple-double operands.
-		   The temporary is a double-double, so the precision only depends 
+		   The temporary is a double-double, so the precision only depends
 		   on the triple-double x^k
 		   If the precision is not sufficient, we renormalize.
 		*/
@@ -3322,10 +3322,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
@@ -3336,7 +3336,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
 		  }
 		}
-		
+
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -3346,23 +3346,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		currOverlap = MIN(48,powerOverlaps[k-1]-4);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + powerOverlaps[k-1], 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      default:
 		/* Multiply the double temporary by a triple-double x^k, produce a triple-double */
 
 		/* We have to check the precision of the operation which depends
 		   on the overlap of the entering triple-double operands.
-		   The temporary is a double-double, so the precision only depends 
+		   The temporary is a double-double, so the precision only depends
 		   on the triple-double x^k
 		   If the precision is not sufficient, we renormalize.
 		*/
@@ -3374,10 +3374,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
@@ -3398,16 +3398,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		currOverlap = MIN(47,powerOverlaps[k-1]-5);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 100 + powerOverlaps[k-1], 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 	      }
 	    }
 	  }
@@ -3439,15 +3439,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, 2, operand1Name, 2, variablePrecision, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double-double (or better), produce a double-double */
@@ -3460,15 +3460,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, variablePrecision, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		}
 		break;
 	      case 1:
@@ -3490,15 +3490,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double, produce a double-double */
@@ -3511,7 +3511,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -3538,9 +3538,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		/* Multiply the double-double temporary by x^k as double-double, produce a double-double */
 
 		/* We have to check that if x^k is actually a triple-double that is read as a double-double
-		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
-		   The obtained precision is roughly 53 + overlap value. If it is not sufficient, 
-		   we renormalize the whole triple-double value. 
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double
+		   The obtained precision is roughly 53 + overlap value. If it is not sufficient,
+		   we renormalize the whole triple-double value.
 		*/
 
 		t = 0; t2 = 0;
@@ -3551,10 +3551,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
@@ -3575,24 +3575,24 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		if (gappaAssign != NULL) {
 		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, 2, operand1Name, 2, op2format, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      default:
 		/* Multiply the double temporary by x^k as a double-double, produce a double-double */
 
 		/* We have to check that if x^k is actually a triple-double that is read as a double-double
-		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
-		   The obtained precision is roughly 53 + overlap value. If it is not sufficient, 
-		   we renormalize the whole triple-double value. 
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double
+		   The obtained precision is roughly 53 + overlap value. If it is not sufficient,
+		   we renormalize the whole triple-double value.
 		*/
 
 		t = 0; t2 = 0;
@@ -3603,11 +3603,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -3627,16 +3627,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		if (gappaAssign != NULL) {
 		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, op2format, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 	      }
 	    }
 	  } else {
@@ -3649,8 +3649,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		switch (variablePrecision) {
 		case 3:
 		case 2:
-		  /* Multiply the double temporary by x as a double-double (or better) read as a double, 
-		     produce a double 
+		  /* Multiply the double temporary by x as a double-double (or better) read as a double,
+		     produce a double
 		  */
 		  c = sollya_snprintf(buffer1,CODESIZE,
                                       "%s_t_%d_%dh = %s_t_%d_%dh * %sh;",
@@ -3661,15 +3661,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh;",
                                       name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
-		    
+
 		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, variablePrecision, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		case 1:
 		  /* Multiply the double temporary by x as a double, produce a double */
@@ -3682,15 +3682,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh;",
                                       name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
-		    
+
 		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		default:
 		  printMessage(1,SOLLYA_MSG_IMPLEMENTPOLY_FREE_VAR_HAS_UNKNOWN_FORMAT,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
@@ -3707,12 +3707,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		/* Multiply the double temporary by x^k as a double (or better) */
 
 		/* We have to check that if x^k is actually a triple-double that is read as a double
-		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
-		   The obtained precision is roughly the overlap value. If it is not sufficient, 
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double
+		   The obtained precision is roughly the overlap value. If it is not sufficient,
 		   we use valueh + valuem instead of valueh.
 		*/
-		  
-		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) { 
+
+		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 		  c = sollya_snprintf(buffer1,CODESIZE,
                                       "%s_t_%d_%dh = %s_t_%d_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
                                       name,variableNumber,tempVarNum[variableNumber],
@@ -3723,10 +3723,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
-		    
+
 		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 2, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		} else {
 		  c = sollya_snprintf(buffer1,CODESIZE,
                                       "%s_t_%d_%dh = %s_t_%d_%dh * %s_%s_%d_pow%dh;",
@@ -3738,16 +3738,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
-		    
+
 		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, op2format, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh;",
                                     name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      } else {
 		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
 		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
@@ -3756,10 +3756,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    }
 	  }
 	}
-	
+
 	variableNumber++;
 	comingFormat = producedFormat;
-	
+
 	/* Issue the multiplication to memory */
 	c = sollya_snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
 	if (c < 0) {
@@ -3782,17 +3782,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  c = CODESIZE-issuedVariables;
 	}
 	issuedVariables += c;
-	variablesIssue += c;    
-	
+	variablesIssue += c;
+
 	/* Generate the addition with the next coefficient in the buffer */
-	/* addPrec[i] indicates the format to produce 
-	   coeffFormat = determineCoefficientFormat(coefficients[i]) indicates 
+	/* addPrec[i] indicates the format to produce
+	   coeffFormat = determineCoefficientFormat(coefficients[i]) indicates
 	   the format of the coefficient
 	*/
-		
+
 	if (addPrec[i] > 102) {
-	  /* Produce a triple-double or an exact double-double result 
-	     The result is a double-double if comingFormat is a double and the coefficient is a double 
+	  /* Produce a triple-double or an exact double-double result
+	     The result is a double-double if comingFormat is a double and the coefficient is a double
 	  */
 	  switch (comingFormat) {
 	  case 3:
@@ -3815,12 +3815,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
                                     name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 52;
 		tempVarNum[variableNumber-1]++;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		t = c; t2 = c2;
 		if (gappaAssign != NULL) {
@@ -3849,7 +3849,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		newAssign = newGappaOperation(GAPPA_ADD_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
-	      } 
+	      }
 	      break;
 	    case 2:
 	      /* Add the double-double coefficient to the triple-double temporary, produce a triple-double */
@@ -3867,12 +3867,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
                                     name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 52;
 		tempVarNum[variableNumber-1]++;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		t = c; t2 = c2;
 		if (gappaAssign != NULL) {
@@ -3892,7 +3892,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      oldCurrOverlap = currOverlap;
 	      currOverlap = MIN(45,currOverlap - 5);
 	      if (gappaAssign != NULL) {
@@ -3901,7 +3901,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		newAssign = newGappaOperation(GAPPA_ADD_REL, 103 + oldCurrOverlap, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
-	      } 
+	      }
 	      break;
 	    case 1:
 	      /* Add the double coefficient to the triple-double temporary, produce a triple-double */
@@ -3919,12 +3919,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                     "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
                                     name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 52;
 		tempVarNum[variableNumber-1]++;
 		c2 = sollya_snprintf(buffer2,CODESIZE,
                                      "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                     name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		t = c; t2 = c2;
 		if (gappaAssign != NULL) {
@@ -3944,7 +3944,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+	      if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 	      oldCurrOverlap = currOverlap;
 	      currOverlap = MIN(47,currOverlap - 2);
 	      if (gappaAssign != NULL) {
@@ -3953,7 +3953,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		newAssign = newGappaOperation(GAPPA_ADD_REL, 104 + oldCurrOverlap, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
-	      } 
+	      }
 
 	      break;
 	    default:
@@ -3981,7 +3981,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = sollya_snprintf(buffer2,CODESIZE,
                                   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      currOverlap = 45; /* TODO: Verify this value */
 	      if (gappaAssign != NULL) {
 		sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -3989,7 +3989,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		newAssign = newGappaOperation(GAPPA_ADD_REL, 152, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
-	      } 
+	      }
 
 	      break;
 	    case 2:
@@ -3998,7 +3998,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      /* The precision of the following operation is fixed because the temporary is a double-double
 		 and the coefficient is correctly rounded.
 	      */
-	      
+
 	      c = sollya_snprintf(buffer1,CODESIZE,
                                   "Add23(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh,%s_t_%d_%dm);",
                                   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -4008,7 +4008,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = sollya_snprintf(buffer2,CODESIZE,
                                   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    	
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      currOverlap = 45; /* TODO: verify this value and precision bound below */
 	      if (gappaAssign != NULL) {
 		sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -4016,11 +4016,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		newAssign = newGappaOperation(GAPPA_ADD_REL, 140, 3, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
-	      } 
+	      }
 	      break;
 	    case 1:
 	      /* Add the double coefficient to the double-double temporary, produce a triple-double */
-	      
+
 	      /* The precision of the following operation is fixed because the temporary is a double-double
 		 and the coefficient is a double.
 	      */
@@ -4034,7 +4034,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = sollya_snprintf(buffer2,CODESIZE,
                                   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      currOverlap = 52;
 	      if (gappaAssign != NULL) {
 		sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -4042,7 +4042,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		newAssign = newGappaOperation(GAPPA_ADD_REL, 159, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
-	      } 	     
+	      }
 	      break;
 	    default:
 	      printMessage(1,SOLLYA_MSG_A_COEFF_COULD_NOT_BE_STORED_IN_ANY_KNOWN_FORMAT,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -4069,7 +4069,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = sollya_snprintf(buffer2,CODESIZE,
                                   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      currOverlap = 47; /* TODO: Verify this value and the precision bound below */
 	      if (gappaAssign != NULL) {
 		sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -4077,7 +4077,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		newAssign = newGappaOperation(GAPPA_ADD_REL, 140, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
-	      } 
+	      }
 	      break;
 	    case 2:
 	      /* Add the double-double coefficient to the double temporary, produce a triple-double */
@@ -4086,7 +4086,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      /* The precision of the following operation is fixed because the temporary is a double
 		 and the coefficient is correctly rounded.
 	      */
-	      
+
 	      c = sollya_snprintf(buffer1,CODESIZE,
                                   "Add213(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh);",
                                   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -4096,7 +4096,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = sollya_snprintf(buffer2,CODESIZE,
                                   "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      currOverlap = 47; /* TODO: Verify this value */
 	      if (gappaAssign != NULL) {
 		sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -4104,7 +4104,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		newAssign = newGappaOperation(GAPPA_ADD_REL, 159, 3, currOverlap, resultName, 2, 2, operand1Name, 1, 1, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
-	      } 
+	      }
 	      break;
 	    case 1:
 	      /* Add the double coefficient to the double temporary, produce a double-double */
@@ -4121,15 +4121,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      c = sollya_snprintf(buffer2,CODESIZE,
                                   "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                   name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-	      if ((c < 0) || (c >= CODESIZE)) res = 0;	    
-	      currOverlap = 53; 
+	      if ((c < 0) || (c >= CODESIZE)) res = 0;
+	      currOverlap = 53;
 	      if (gappaAssign != NULL) {
 		sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		sollya_snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
 		sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		newAssign = newGappaOperation(GAPPA_ADD_EXACT, -1, 2, currOverlap, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
 		*gappaAssign = addElement(*gappaAssign,newAssign);
-	      } 
+	      }
 	      break;
 	    default:
 	      printMessage(1,SOLLYA_MSG_A_COEFF_COULD_NOT_BE_STORED_IN_ANY_KNOWN_FORMAT,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -4166,18 +4166,18 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  newAssign = newGappaOperation(GAPPA_ADD_REL, 102, 2, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      case 1:
 		/* Add the double coefficient to the double-double temporary, produce a double-double */
-				
+
 		c = sollya_snprintf(buffer1,CODESIZE,
                                     "Add122(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_t_%d_%dh,%s_t_%d_%dm);",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -4187,7 +4187,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		/* TODO: verify the following precision bound */
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -4195,7 +4195,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  newAssign = newGappaOperation(GAPPA_ADD_REL, 102, 2, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      default:
 		printMessage(1,SOLLYA_MSG_A_COEFF_COULD_NOT_BE_STORED_IN_ANY_KNOWN_FORMAT,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -4212,7 +4212,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		break;
 	      case 2:
 		/* Add the double-double coefficient to the double temporary, produce a double-double */
-				
+
 		c = sollya_snprintf(buffer1,CODESIZE,
                                     "Add212(&%s_t_%d_%dh,&%s_t_%d_%dm,%s_coeff_%dh,%s_coeff_%dm,%s_t_%d_%dh);",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -4222,7 +4222,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		/* TODO: verify the following precision bound */
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -4230,7 +4230,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  newAssign = newGappaOperation(GAPPA_ADD_REL, 102, 2, currOverlap, resultName, 2, 2, operand1Name, 1, 1, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		}     			    
+		}
 		break;
 	      case 1:
 		/* Add the double coefficient to the double temporary, produce a double-double */
@@ -4243,14 +4243,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  newAssign = newGappaOperation(GAPPA_ADD_EXACT, -1, 2, currOverlap, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		}     			    
+		}
 		break;
 	      default:
 		printMessage(1,SOLLYA_MSG_A_COEFF_COULD_NOT_BE_STORED_IN_ANY_KNOWN_FORMAT,"Warning: a coefficient could not be stored in a known format. The implementation may be wrong.\n");
@@ -4273,14 +4273,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh;",
                                     name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_coeff_%d",name,i);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  newAssign = newGappaOperation(GAPPA_ADD_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 	      } else {
 		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions in coefficient rounding. This should not occur.\n");
 		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
@@ -4293,10 +4293,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	    }
 	  }
 	}
-	
+
 	variableNumber++;
 	comingFormat = producedFormat;
-	
+
 	/* Issue the addition to memory */
 	c = sollya_snprintf(codeIssue,CODESIZE-issuedCode,"%s\n",buffer1);
 	if (c < 0) {
@@ -4319,14 +4319,14 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  c = CODESIZE-issuedVariables;
 	}
 	issuedVariables += c;
-	variablesIssue += c;    
-	
+	variablesIssue += c;
+
       } /* Special fused or normal case */
-      
+
     } else {
       k--;
       if (k > 0) {
-	/* The evaluation ends with the last multiplication by x or a power */	
+	/* The evaluation ends with the last multiplication by x or a power */
 	i = 0;
 
 	if (mulPrec[i] > 102) {
@@ -4340,7 +4340,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      switch (comingFormat) {
 	      case 3:
 		/* Multiply the triple-double temporary by a triple-double x, produce a triple-double */
-		
+
 		/* We have to check the precision of the operation which depends
 		   on the overlap of the entering triple-double operands.
 		   The overlap of x is fixed by hypothesis, so the precision
@@ -4354,12 +4354,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
                                       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  currOverlap = 52;
 		  tempVarNum[variableNumber-1]++;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -4379,17 +4379,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x, produce a triple-double */
@@ -4408,20 +4408,20 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 48;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      default:
 		/* Multiply the double temporary by a triple-double x, produce a triple-double */
-		
+
 		/* The precision is fixed because of the operands' formats:
 		   - x is supposed to be non-overlapping by hypothesis
 		   - the other operand is a double
@@ -4436,16 +4436,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 	      }
 	      break;
 	    case 2:
@@ -4467,12 +4467,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
                                       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  currOverlap = 52;
 		  tempVarNum[variableNumber-1]++;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -4492,17 +4492,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,currOverlap-4);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double-double x, produce a triple-double */
@@ -4520,20 +4520,20 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 49;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      default:
 		/* Multiply the double temporary by a double-double x, produce a triple-double */
-		
+
 		/* The precision is fixed because of the operands' formats:
 		   the operands are double and double-double
 		*/
@@ -4547,16 +4547,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 	      }
 	      break;
 	    case 1:
@@ -4577,12 +4577,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
                                       name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  currOverlap = 52;
 		  tempVarNum[variableNumber-1]++;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                       name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -4603,17 +4603,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(47,currOverlap-5);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 100 + oldCurrOverlap, 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a double x, produce a triple-double */
@@ -4632,20 +4632,20 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 47;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      default:
 		/* Multiply the double temporary by a double x, produce a double-double */
-		
+
 		/* The precision is fixed because of the operands' formats:
 		   both operands are doubles, we produce an exact double-double
 		*/
@@ -4660,7 +4660,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		currOverlap = 53;
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
@@ -4700,12 +4700,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                         "Renormalize3(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);\n",
                                         name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,name,variableNumber-1,tempVarNum[variableNumber-1]+1,
                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
-		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    currOverlap = 52;
 		    tempVarNum[variableNumber-1]++;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    if (gappaAssign != NULL) {
@@ -4715,7 +4715,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      *gappaAssign = addElement(*gappaAssign,newAssign);
 		    }
 		  }
-		  
+
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -4725,17 +4725,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2+t2,CODESIZE+t2,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  oldCurrOverlap = currOverlap;
 		  currOverlap = MIN(48,currOverlap-4);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + oldCurrOverlap, 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a double-double x^2, produce a triple-double */
@@ -4753,16 +4753,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  currOverlap = 49;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 149, 3, currOverlap, resultName, 2, 2, operand1Name, 2, 2, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		default:
 		  /* Multiply the double temporary by a double-double x^2, produce a triple-double */
@@ -4780,16 +4780,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  currOverlap = 47;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 154, 3, currOverlap, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		}
 	      } else {
 		/* Multiply comingFormat by a triple-double x^2, produce a triple-double */
@@ -4799,9 +4799,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		  /* We have to check the precision of the operation which depends
 		     on the overlap of the entering triple-double operands.
-		     
-		     The precision is roughly 97 + min(overlaps) bits. 
-		     If it is not sufficient, we renormalize first the operands with 
+
+		     The precision is roughly 97 + min(overlaps) bits.
+		     If it is not sufficient, we renormalize first the operands with
 		     the higher overlap (lower value), check again and renormalize once
 		     again if needed.
 		  */
@@ -4820,7 +4820,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      tempVarNum[variableNumber-1]++;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
                                            "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t2 = c2;
 		      currOverlap = 52;
@@ -4840,7 +4840,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c < 0) || (c >= CODESIZE)) res = 0;
 		      c2 = sollya_snprintf(buffer2,CODESIZE,
                                            "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);
 		      if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		      t = c; t2 = c2;
 		      powerOverlaps[1] = 52;
@@ -4864,7 +4864,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			tempVarNum[variableNumber-1]++;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                              "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                             name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                             name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			currOverlap = 52;
 			t2 += c2;
@@ -4884,7 +4884,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 			c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                              "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                             name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                             name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);
 			if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 			t += c; t2 += c2;
 			powerOverlaps[1] = 52;
@@ -4895,7 +4895,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			  *gappaAssign = addElement(*gappaAssign,newAssign);
 			}
 		      }
-		    } 
+		    }
 		  }
 
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
@@ -4907,24 +4907,24 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  oldCurrOverlap = currOverlap;
 		  currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[1])-4);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, (97 + MIN(oldCurrOverlap,powerOverlaps[1])), 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		case 2:
 		  /* Multiply the double-double temporary by a triple-double x^2, produce a triple-double */
 
 		  /* We have to check the precision of the operation which depends
 		     on the overlap of the entering triple-double operands.
-		     The temporary is a double-double, so the precision only depends 
+		     The temporary is a double-double, so the precision only depends
 		     on the triple-double x^2
 		     If the precision is not sufficient, we renormalize.
 		  */
@@ -4936,10 +4936,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    powVarNum[1]++;
-		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
@@ -4950,7 +4950,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      *gappaAssign = addElement(*gappaAssign,newAssign);
 		    }
 		  }
-		  
+
 		  c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                       "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow2h,%s_%s_%d_pow2m,%s_%s_%d_pow2l);",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -4960,23 +4960,23 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  currOverlap = MIN(48,powerOverlaps[1]-4);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + powerOverlaps[1], 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		default:
 		  /* Multiply the double temporary by a triple-double x^2, produce a triple-double */
 
 		  /* We have to check the precision of the operation which depends
 		     on the overlap of the entering triple-double operands.
-		     The temporary is a double, so the precision only depends 
+		     The temporary is a double, so the precision only depends
 		     on the triple-double x^2
 		     If the precision is not sufficient, we renormalize.
 		  */
@@ -4988,10 +4988,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]+1,
                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    powVarNum[1]++;
-		    if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1],2);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    powerOverlaps[1] = 52;
 		    t = c; t2 = c2;
@@ -5012,16 +5012,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		  currOverlap = MIN(48,powerOverlaps[1]-4);
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow2",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[1]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + powerOverlaps[1], 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 
 		}
 	      }
@@ -5033,13 +5033,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		/* We have to check the precision of the operation which depends
 		   on the overlap of the entering triple-double operands.
-		   
-		   The precision is roughly 97 + min(overlaps) bits. 
-		   If it is not sufficient, we renormalize first the operands with 
+
+		   The precision is roughly 97 + min(overlaps) bits.
+		   If it is not sufficient, we renormalize first the operands with
 		   the higher overlap (lower value), check again and renormalize once
 		   again if needed.
 		*/
-		
+
 		t = 0; t2 = 0;
 		if (mulPrec[i] > (97 + MIN(currOverlap,powerOverlaps[k-1]))) {
 		  /* The precision is not sufficient, we have to renormalize at least one operand */
@@ -5053,7 +5053,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    tempVarNum[variableNumber-1]++;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                         name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    currOverlap = 52;
@@ -5073,7 +5073,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    if ((c < 0) || (c >= CODESIZE)) res = 0;
 		    c2 = sollya_snprintf(buffer2,CODESIZE,
                                          "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                         name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		    if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		    t = c; t2 = c2;
 		    powerOverlaps[k-1] = 52;
@@ -5097,7 +5097,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      t += c;
 		      c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                            "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;\n",
-                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);		
+                                           name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1],name,variableNumber-1,tempVarNum[variableNumber-1]);
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t2 += c2;
 		      currOverlap = 52;
@@ -5117,7 +5117,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		      if ((c < 0) || (c >= CODESIZE-t)) res = 0;
 		      c2 = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                            "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                           name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		      if ((c2 < 0) || (c2 >= CODESIZE-t2)) res = 0;
 		      t += c; t2 += c2;
 		      powerOverlaps[k-1] = 52;
@@ -5128,9 +5128,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 			*gappaAssign = addElement(*gappaAssign,newAssign);
 		      }
 		    }
-		  } 
+		  }
 		}
-		
+
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                     "Mul33(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_t_%d_%dl);",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -5140,24 +5140,24 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		oldCurrOverlap = currOverlap;
 		currOverlap = MIN(48,MIN(currOverlap,powerOverlaps[k-1])-4);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + MIN(oldCurrOverlap,powerOverlaps[k-1]), 3, currOverlap, resultName, 3, 3, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      case 2:
 		/* Multiply the double-double temporary by a triple-double x^k, produce a triple-double */
 
 		/* We have to check the precision of the operation which depends
 		   on the overlap of the entering triple-double operands.
-		   The temporary is a double-double, so the precision only depends 
+		   The temporary is a double-double, so the precision only depends
 		   on the triple-double x^k
 		   If the precision is not sufficient, we renormalize.
 		*/
@@ -5169,10 +5169,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
@@ -5183,7 +5183,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
 		  }
 		}
-		
+
 		c = sollya_snprintf(buffer1+t,CODESIZE-t,
                                     "Mul233(&%s_t_%d_%dh,&%s_t_%d_%dm,&%s_t_%d_%dl,%s_t_%d_%dh,%s_t_%d_%dm,%s_%s_%d_pow%dh,%s_%s_%d_pow%dm,%s_%s_%d_pow%dl);",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],
@@ -5193,16 +5193,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		currOverlap = MIN(48,powerOverlaps[k-1]-4);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 97 + powerOverlaps[k-1], 3, currOverlap, resultName, 2, 2, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 
 		break;
 	      default:
@@ -5210,7 +5210,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 
 		/* We have to check the precision of the operation which depends
 		   on the overlap of the entering triple-double operands.
-		   The temporary is a double-double, so the precision only depends 
+		   The temporary is a double-double, so the precision only depends
 		   on the triple-double x^k
 		   If the precision is not sufficient, we renormalize.
 		*/
@@ -5222,10 +5222,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  t = c; t2 = c2;
@@ -5246,16 +5246,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm, %s_t_%d_%dl;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		currOverlap = MIN(47,powerOverlaps[k-1]-5);
 		if (gappaAssign != NULL) {
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 100 + powerOverlaps[k-1], 3, currOverlap, resultName, 1, 1, operand1Name, 3, 3, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 	      }
 	    }
 	  }
@@ -5287,15 +5287,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, 2, operand1Name, 2, variablePrecision, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double-double (or better), produce a double-double */
@@ -5308,15 +5308,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, variablePrecision, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		}
 		break;
 	      case 1:
@@ -5338,15 +5338,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		    newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, 2, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		default:
 		  /* Multiply the double temporary by x as a double, produce a double-double */
@@ -5359,7 +5359,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                       name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
@@ -5386,9 +5386,9 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		/* Multiply the double-double temporary by x^k as double-double, produce a double-double */
 
 		/* We have to check that if x^k is actually a triple-double that is read as a double-double
-		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
-		   The obtained precision is roughly 53 + overlap value. If it is not sufficient, 
-		   we renormalize the whole triple-double value. 
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double
+		   The obtained precision is roughly 53 + overlap value. If it is not sufficient,
+		   we renormalize the whole triple-double value.
 		*/
 
 		t = 0; t2 = 0;
@@ -5399,11 +5399,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -5423,24 +5423,24 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		if (gappaAssign != NULL) {
 		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 2, 2, operand1Name, 2, op2format, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 		break;
 	      default:
 		/* Multiply the double temporary by x^k as a double-double, produce a double-double */
 
 		/* We have to check that if x^k is actually a triple-double that is read as a double-double
-		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
-		   The obtained precision is roughly 53 + overlap value. If it is not sufficient, 
-		   we renormalize the whole triple-double value. 
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double
+		   The obtained precision is roughly 53 + overlap value. If it is not sufficient,
+		   we renormalize the whole triple-double value.
 		*/
 
 		t = 0; t2 = 0;
@@ -5451,11 +5451,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1]+1,k,
                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  powVarNum[k-1]++;
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  powerOverlaps[k-1] = 52;
 		  c2 = sollya_snprintf(buffer2,CODESIZE,
                                        "double %s_%s_%d_pow%dh, %s_%s_%d_pow%dm, %s_%s_%d_pow%dl;\n",
-                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);		
+                                       name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k,name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  if ((c2 < 0) || (c2 >= CODESIZE)) res = 0;
 		  t = c; t2 = c2;
 		  if (gappaAssign != NULL) {
@@ -5475,16 +5475,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		c = sollya_snprintf(buffer2+t2,CODESIZE-t2,
                                     "double %s_t_%d_%dh, %s_t_%d_%dm;",
                                     name,variableNumber,tempVarNum[variableNumber],name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;	    		
+		if ((c < 0) || (c >= CODESIZE-t2)) res = 0;
 		if (gappaAssign != NULL) {
 		  if (powerOverlaps[k-1] < 53) op2format = 3; else op2format = 2;
 		  sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		  sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
 		  sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
-		  
+
 		  newAssign = newGappaOperation(GAPPA_MUL_REL, 102, 2, 53, resultName, 1, 1, operand1Name, 2, op2format, operand2Name);
 		  *gappaAssign = addElement(*gappaAssign,newAssign);
-		} 
+		}
 	      }
 	    }
 	  } else {
@@ -5497,8 +5497,8 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		switch (variablePrecision) {
 		case 3:
 		case 2:
-		  /* Multiply the double temporary by x as a double-double (or better) read as a double, 
-		     produce a double 
+		  /* Multiply the double temporary by x as a double-double (or better) read as a double,
+		     produce a double
 		  */
 		  c = sollya_snprintf(buffer1,CODESIZE,
                                       "%s_t_%d_%dh = %s_t_%d_%dh * %sh;",
@@ -5509,15 +5509,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh;",
                                       name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
-		    
+
 		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, variablePrecision, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		case 1:
 		  /* Multiply the double temporary by x as a double, produce a double */
@@ -5530,15 +5530,15 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		  c = sollya_snprintf(buffer2,CODESIZE,
                                       "double %s_t_%d_%dh;",
                                       name,variableNumber,tempVarNum[variableNumber]);
-		  if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		  if ((c < 0) || (c >= CODESIZE)) res = 0;
 		  if (gappaAssign != NULL) {
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s",((variablename == NULL) ? "_x_" : variablename));
-		    
+
 		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, 1, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		  break;
 		default:
 		  printMessage(1,SOLLYA_MSG_IMPLEMENTPOLY_FREE_VAR_HAS_UNKNOWN_FORMAT,"Warning: the variable %s has an unknown format. This should not occur.\n",((variablename == NULL) ? "_x_" : variablename));
@@ -5555,12 +5555,12 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		/* Multiply the double temporary by x^k as a double (or better) */
 
 		/* We have to check that if x^k is actually a triple-double that is read as a double
-		   that the precision obtained is sufficient regardless of the overlap in the triple-double 
-		   The obtained precision is roughly the overlap value. If it is not sufficient, 
+		   that the precision obtained is sufficient regardless of the overlap in the triple-double
+		   The obtained precision is roughly the overlap value. If it is not sufficient,
 		   we use valueh + valuem instead of valueh.
 		*/
-		  
-		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) { 
+
+		if ((powerOverlaps[k-1] < 53) && (mulPrec[i] > (53 + powerOverlaps[k-1]))) {
 		  c = sollya_snprintf(buffer1,CODESIZE,
                                       "%s_t_%d_%dh = %s_t_%d_%dh * (%s_%s_%d_pow%dh + %s_%s_%d_pow%dm);",
                                       name,variableNumber,tempVarNum[variableNumber],
@@ -5571,10 +5571,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
-		    
+
 		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 2, 3, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		} else {
 		  c = sollya_snprintf(buffer1,CODESIZE,
                                       "%s_t_%d_%dh = %s_t_%d_%dh * %s_%s_%d_pow%dh;",
@@ -5586,16 +5586,16 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 		    sollya_snprintf(resultName,CODESIZE,"%s_t_%d_%d",name,variableNumber,tempVarNum[variableNumber]);
 		    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 		    sollya_snprintf(operand2Name,CODESIZE,"%s_%s_%d_pow%d",name,((variablename == NULL) ? "_x_" : variablename),powVarNum[k-1],k);
-		    
+
 		    newAssign = newGappaOperation(GAPPA_MUL_DOUBLE, 53, 1, -1, resultName, 1, 1, operand1Name, 1, op2format, operand2Name);
 		    *gappaAssign = addElement(*gappaAssign,newAssign);
-		  } 
+		  }
 		}
 		if ((c < 0) || (c >= CODESIZE)) res = 0;
 		c = sollya_snprintf(buffer2,CODESIZE,
                                     "double %s_t_%d_%dh;",
                                     name,variableNumber,tempVarNum[variableNumber]);
-		if ((c < 0) || (c >= CODESIZE)) res = 0;	    		
+		if ((c < 0) || (c >= CODESIZE)) res = 0;
 	      } else {
 		printMessage(1,SOLLYA_MSG_ERROR_IN_PRECISION_MANAGEMENT,"Warning: error in the management of precisions. This should not occur.\n");
 		printMessage(1,SOLLYA_MSG_CONTINUATION,"The implementation will be wrong.\n");
@@ -5630,10 +5630,10 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	  c = CODESIZE-issuedVariables;
 	}
 	issuedVariables += c;
-	variablesIssue += c;    
-	
+	variablesIssue += c;
+
 	/* The evaluation is now complete, issue code for copying to the result variables */
-	
+
 	switch (comingFormat) {
 	case 3:
 	  /* If we are not renormalized, we renormalize, otherwise we copy */
@@ -5661,11 +5661,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      newAssign = newGappaOperation(GAPPA_COPY, -1, 3, -1, resultName, 3, 3, operand1Name, 0, 0, NULL);
 	      *gappaAssign = addElement(*gappaAssign,newAssign);
-	    } 
+	    }
 	  }
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = sollya_snprintf(buffer2,CODESIZE," ");
-	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  break;
 	case 2:
 	  c = sollya_snprintf(buffer1,CODESIZE,
@@ -5674,13 +5674,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                               name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = sollya_snprintf(buffer2,CODESIZE," ");
-	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  if (gappaAssign != NULL) {
 	    sollya_snprintf(resultName,CODESIZE,"%s_res",name);
 	    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    newAssign = newGappaOperation(GAPPA_COPY, -1, 2, -1, resultName, 2, 2, operand1Name, 0, 0, NULL);
 	    *gappaAssign = addElement(*gappaAssign,newAssign);
-	  } 
+	  }
 	  break;
 	default:
 	  c = sollya_snprintf(buffer1,CODESIZE,
@@ -5688,17 +5688,17 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                               name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = sollya_snprintf(buffer2,CODESIZE," ");
-	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			 
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  if (gappaAssign != NULL) {
 	    sollya_snprintf(resultName,CODESIZE,"%s_res",name);
 	    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    newAssign = newGappaOperation(GAPPA_COPY, -1, 1, -1, resultName, 1, 1, operand1Name, 0, 0, NULL);
 	    *gappaAssign = addElement(*gappaAssign,newAssign);
-	  } 
+	  }
 	}
 
 	i = -1;
-	
+
       } else {
 	/* The evaluation is already complete, issue code for copying to the result variables */
 
@@ -5729,11 +5729,11 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	      sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 	      newAssign = newGappaOperation(GAPPA_COPY, -1, 3, -1, resultName, 3, 3, operand1Name, 0, 0, NULL);
 	      *gappaAssign = addElement(*gappaAssign,newAssign);
-	    } 
+	    }
 	  }
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = sollya_snprintf(buffer2,CODESIZE," ");
-	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  break;
 	case 2:
 	  c = sollya_snprintf(buffer1,CODESIZE,
@@ -5742,13 +5742,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                               name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = sollya_snprintf(buffer2,CODESIZE," ");
-	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  if (gappaAssign != NULL) {
 	    sollya_snprintf(resultName,CODESIZE,"%s_res",name);
 	    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    newAssign = newGappaOperation(GAPPA_COPY, -1, 2, -1, resultName, 2, 2, operand1Name, 0, 0, NULL);
 	    *gappaAssign = addElement(*gappaAssign,newAssign);
-	  } 
+	  }
 	  break;
 	default:
 	  c = sollya_snprintf(buffer1,CODESIZE,
@@ -5756,13 +5756,13 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
                               name,name,variableNumber-1,tempVarNum[variableNumber-1]);
 	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  c = sollya_snprintf(buffer2,CODESIZE," ");
-	  if ((c < 0) || (c >= CODESIZE)) res = 0;	    			    
+	  if ((c < 0) || (c >= CODESIZE)) res = 0;
 	  if (gappaAssign != NULL) {
 	    sollya_snprintf(resultName,CODESIZE,"%s_res",name);
 	    sollya_snprintf(operand1Name,CODESIZE,"%s_t_%d_%d",name,variableNumber-1,tempVarNum[variableNumber-1]);
 	    newAssign = newGappaOperation(GAPPA_COPY, -1, 1, -1, resultName, 1, 1, operand1Name, 0, 0, NULL);
 	    *gappaAssign = addElement(*gappaAssign,newAssign);
-	  } 
+	  }
 	}
       }
       /* Issue the buffers to memory */
@@ -5787,7 +5787,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
 	c = CODESIZE-issuedVariables;
       }
       issuedVariables += c;
-      variablesIssue += c;    
+      variablesIssue += c;
     } /* End else to if normal or last step */
   } /* End loop on degrees */
 
@@ -5806,7 +5806,7 @@ int implementHorner(mpfr_t *coefficients, int *addPrec, int *mulPrec,
     safeFree(operand1Name);
     safeFree(operand2Name);
     safeFree(operand3Name);
-  } 
+  }
 
   return res;
 }
@@ -5833,7 +5833,7 @@ int accurToVarType(mpfr_t accur) {
 }
 
 
-node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecision, 
+node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrecision,
 		    FILE *fd, char *name, int honorCoeffPrec, mp_prec_t prec, FILE *gappaFD) {
   mpfr_t temp, tempValue;
   node *simplifiedFunc, *implementedPoly;
@@ -5871,7 +5871,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     mpfr_clear(temp);
     return NULL;
   }
-  
+
   mpfr_div_2ui(temp,temp,140,GMP_RNDN);
 
   if (mpfr_less_p(*accur,temp)) {
@@ -6003,9 +6003,9 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
   sollyaFprintf(fd,"void %s(",name);
   mpfr_log2(temp,*accur,GMP_RNDD);
   targetPrec = -mpfr_get_si(temp,GMP_RNDN);
-  
+
   if (targetPrec >= 102) {
-    if (sollyaFprintf(fd,"double *%s_resh, double *%s_resm, double *%s_resl, ",name,name,name) < 0) 
+    if (sollyaFprintf(fd,"double *%s_resh, double *%s_resm, double *%s_resl, ",name,name,name) < 0)
       printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
     if (gappaFD != NULL) proof->resultType = 3;
   } else {
@@ -6014,7 +6014,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 	printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
       if (gappaFD != NULL) proof->resultType = 2;
     } else {
-      if (sollyaFprintf(fd,"double *%s_resh, ",name) < 0) 
+      if (sollyaFprintf(fd,"double *%s_resh, ",name) < 0)
 	printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
       if (gappaFD != NULL) proof->resultType = 1;
     }
@@ -6022,15 +6022,15 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
 
   switch (variablePrecision) {
   case 3:
-    if (sollyaFprintf(fd,"double %sh, double %sm, double %sl) {\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename)) < 0) 
+    if (sollyaFprintf(fd,"double %sh, double %sm, double %sl) {\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename)) < 0)
       printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
     break;
   case 2:
-    if (sollyaFprintf(fd,"double %sh, double %sm) {\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename)) < 0) 
+    if (sollyaFprintf(fd,"double %sh, double %sm) {\n",((variablename == NULL) ? "_x_" : variablename),((variablename == NULL) ? "_x_" : variablename)) < 0)
       printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
     break;
   case 1:
-    if (sollyaFprintf(fd,"double %s) {\n",((variablename == NULL) ? "_x_" : variablename)) < 0) 
+    if (sollyaFprintf(fd,"double %s) {\n",((variablename == NULL) ? "_x_" : variablename)) < 0)
       printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
     break;
   default:
@@ -6049,7 +6049,7 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     printMessage(1,SOLLYA_MSG_CONTINUATION,"The produced implementation may be incorrect.\n");
   }
 
-  if (sollyaFprintf(fd,"}\n") < 0) 
+  if (sollyaFprintf(fd,"}\n") < 0)
     printMessage(1,SOLLYA_MSG_COULD_NOT_WRITE_TO_THE_IMPLEMENTATION_FILE,"Warning: could not write to the file for the implementation.\n");
 
   if (gappaFD != NULL) {

@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2007-2013 by 
+  Copyright 2007-2013 by
 
-  Laboratoire de l'Informatique du Parallelisme, 
+  Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
   LORIA (CNRS, INPL, INRIA, UHP, U-Nancy 2)
@@ -25,16 +25,16 @@
   implementer and a fast Remez algorithm.
 
   This software is governed by the CeCILL-C license under French law and
-  abiding by the rules of distribution of free software.  You can  use, 
+  abiding by the rules of distribution of free software.  You can  use,
   modify and/ or redistribute the software under the terms of the CeCILL-C
   license as circulated by CEA, CNRS and INRIA at the following URL
-  "http://www.cecill.info". 
+  "http://www.cecill.info".
 
   As a counterpart to the access to the source code and  rights to copy,
   modify and redistribute granted by the license, users are provided only
   with a limited warranty  and the software's author,  the holder of the
   economic rights,  and the successive licensors  have only  limited
-  liability. 
+  liability.
 
   In this respect, the user's attention is drawn to the risks associated
   with loading,  using,  modifying and/or developing or reproducing the
@@ -43,9 +43,9 @@
   therefore means  that it is reserved for developers  and  experienced
   professionals having in-depth computer knowledge. Users are therefore
   encouraged to load and test the software's suitability as regards their
-  requirements in conditions enabling the security of their systems and/or 
-  data to be ensured and,  more generally, to use and operate it in the 
-  same conditions as regards security. 
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
   The fact that you are presently reading this means that you have had
   knowledge of the CeCILL-C license and that you accept its terms.
@@ -77,9 +77,9 @@
 #if (defined(HAVE_DLADDR) && (HAVE_DLADDR))
 typedef struct {
   const char *dli_fname;
-  void       *dli_fbase;                          
-  const char *dli_sname;                          
-  void       *dli_saddr;                          
+  void       *dli_fbase;
+  const char *dli_sname;
+  void       *dli_saddr;
 } Dl_info;
 
 int dladdr(void *, Dl_info *);
@@ -91,7 +91,7 @@ int dladdr(void *, Dl_info *);
 #define LIBRARYCONSTANT_CASE 1
 #define LIBRARYPROC_CASE 2
 
-/* List of Sollya keywords we must not bind dynamic objects to. 
+/* List of Sollya keywords we must not bind dynamic objects to.
 
    The last entry must be NULL.
 
@@ -320,7 +320,7 @@ void copyIdentifierSymbols(char *ptr, const char *src) {
 }
 
 char *getBaseFunctionName(void *func, const char *base) {
-  char *myFuncName, *funcName;  
+  char *myFuncName, *funcName;
 #if (defined(HAVE_DLADDR) && (HAVE_DLADDR))
   int errorOccurred;
   Dl_info myInfo;
@@ -406,7 +406,7 @@ char *unifySymbolName(char *basename) {
       number++;
     }
   } while (!found);
-  
+
   res = safeCalloc(strlen(str)+1,sizeof(char));
   strcpy(res, str);
   safeFree(str);
@@ -421,7 +421,7 @@ libraryHandle *getLibraryHandle(char *libraryName, int type) {
   void *dlfcnHandle;
 
   openedLibraries = NULL;
-  
+
   switch(type) {
   case LIBRARYFUNCTION_CASE: openedLibraries = openedFunctionLibraries; break;
   case LIBRARYCONSTANT_CASE: openedLibraries = openedConstantLibraries; break;
@@ -431,14 +431,14 @@ libraryHandle *getLibraryHandle(char *libraryName, int type) {
   curr = openedLibraries;
   while (curr != NULL) {
     currHandle = (libraryHandle *) curr->value;
-    if (strcmp(currHandle->libraryName,libraryName) == 0) 
+    if (strcmp(currHandle->libraryName,libraryName) == 0)
       return currHandle;
     curr = curr->next;
   }
 
-  dlerror(); 
+  dlerror();
   dlfcnHandle = dlopen(libraryName, RTLD_LOCAL | RTLD_NOW);
-  if (dlfcnHandle == NULL) 
+  if (dlfcnHandle == NULL)
     return NULL;
 
   currHandle = (libraryHandle *) safeMalloc(sizeof(libraryHandle));
@@ -490,14 +490,14 @@ libraryFunction *bindFunction(char* libraryName, char *functionName) {
     printMessage(1,SOLLYA_MSG_COULD_NOT_OPEN_LIBRARY_WITH_EXTERN_FUNC_OR_PROC,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,functionName,dlerror());
     return NULL;
   }
-    
+
   dlerror();
   myFunction = (int (*)(sollya_mpfi_t, sollya_mpfi_t, int)) dlsym(libHandle->libraryDescriptor, functionName);
   if ((error = dlerror()) != NULL) {
     printMessage(1, SOLLYA_MSG_EXTERNAL_FUNC_OR_PROC_NOT_FOUND_IN_LIBRARY, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",functionName,libraryName,error);
     return NULL;
   }
-  
+
   sollya_mpfi_init2(rop,12);
   sollya_mpfi_init2(op,12);
   sollya_mpfi_set_d(op,1.0);
@@ -511,11 +511,11 @@ libraryFunction *bindFunction(char* libraryName, char *functionName) {
   currFunct->functionName = (char *) safeCalloc(strlen(functionName)+1,sizeof(char));
   strcpy(currFunct->functionName,functionName);
   currFunct->code = myFunction;
-  
+
   libHandle->functionList = addElement(libHandle->functionList,currFunct);
 
   return currFunct;
-} 
+}
 
 libraryFunction *getFunction(char *functionName) {
   chain *currLibList, *currFunList;
@@ -609,7 +609,7 @@ libraryFunction *bindFunctionByPtr(char *suggestedName, int (*func)(mpfi_t, mpfi
   res = (libraryFunction *) safeMalloc(sizeof(libraryFunction));
   res->functionName = unifiedName;
   res->code = func;
-  
+
   globalLibraryFunctions = addElement(globalLibraryFunctions, res);
 
   return res;
@@ -643,7 +643,7 @@ void freeFunctionLibraries() {
       safeFree(prevFunList);
     }
     dlerror();
-    if (dlclose(currLibHandle->libraryDescriptor) != 0) 
+    if (dlclose(currLibHandle->libraryDescriptor) != 0)
       printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
     safeFree(currLibHandle->libraryName);
     safeFree(currLibHandle);
@@ -675,14 +675,14 @@ libraryFunction *bindConstantFunction(char* libraryName, char *functionName) {
     printMessage(1,SOLLYA_MSG_COULD_NOT_OPEN_LIBRARY_WITH_EXTERN_FUNC_OR_PROC,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,functionName,dlerror());
     return NULL;
   }
-    
+
   dlerror();
   myFunction = (void (*)(mpfr_t, mp_prec_t)) dlsym(libHandle->libraryDescriptor, functionName);
   if ((error = dlerror()) != NULL) {
     printMessage(1, SOLLYA_MSG_EXTERNAL_FUNC_OR_PROC_NOT_FOUND_IN_LIBRARY, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",functionName,libraryName,error);
     return NULL;
   }
-  
+
   mpfr_init2(op,20);
   myFunction(op,5);
 
@@ -692,13 +692,13 @@ libraryFunction *bindConstantFunction(char* libraryName, char *functionName) {
   currFunct->functionName = (char *) safeCalloc(strlen(functionName)+1,sizeof(char));
   strcpy(currFunct->functionName,functionName);
   currFunct->constant_code = myFunction;
-  
+
   libHandle->functionList = addElement(libHandle->functionList,currFunct);
 
   return currFunct;
-} 
+}
 
-libraryFunction *getConstantFunction(char *functionName) { 
+libraryFunction *getConstantFunction(char *functionName) {
   chain *currLibList, *currFunList;
   libraryFunction *currFunct;
   libraryHandle *currLibHandle;
@@ -725,7 +725,7 @@ libraryFunction *getConstantFunction(char *functionName) {
   return NULL;
 }
 
-libraryFunction *getConstantFunctionByPtr(void (*func)(mpfr_t, mp_prec_t)) { 
+libraryFunction *getConstantFunctionByPtr(void (*func)(mpfr_t, mp_prec_t)) {
   chain *currLibList, *currFunList;
   libraryFunction *currFunct;
   libraryHandle *currLibHandle;
@@ -790,7 +790,7 @@ libraryFunction *bindConstantFunctionByPtr(char *suggestedName, void (*func)(mpf
   res = (libraryFunction *) safeMalloc(sizeof(libraryFunction));
   res->functionName = unifiedName;
   res->constant_code = func;
-  
+
   globalLibraryConstants = addElement(globalLibraryConstants, res);
 
   return res;
@@ -824,7 +824,7 @@ void freeConstantLibraries() {
       safeFree(prevFunList);
     }
     dlerror();
-    if (dlclose(currLibHandle->libraryDescriptor) != 0) 
+    if (dlclose(currLibHandle->libraryDescriptor) != 0)
       printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
     safeFree(currLibHandle->libraryName);
     safeFree(currLibHandle);
@@ -853,25 +853,25 @@ libraryProcedure *bindProcedure(char* libraryName, char *procedureName, chain *s
     printMessage(1,SOLLYA_MSG_COULD_NOT_OPEN_LIBRARY_WITH_EXTERN_FUNC_OR_PROC,"Error: could not open library \"%s\" for binding \"%s\": %s\n",libraryName,procedureName,dlerror());
     return NULL;
   }
-    
+
   dlerror();
   myFunction = dlsym(libHandle->libraryDescriptor, procedureName);
   if ((error = dlerror()) != NULL) {
     printMessage(1, SOLLYA_MSG_EXTERNAL_FUNC_OR_PROC_NOT_FOUND_IN_LIBRARY, "Error: could not find function \"%s\" in library \"%s\" for binding: %s\n",procedureName,libraryName,error);
     return NULL;
   }
-  
+
   currProc = (libraryProcedure *) safeMalloc(sizeof(libraryProcedure));
   currProc->procedureName = (char *) safeCalloc(strlen(procedureName)+1,sizeof(char));
   strcpy(currProc->procedureName,procedureName);
   currProc->code = myFunction;
   currProc->signature = copyChainWithoutReversal(signature, copyIntPtrOnVoid);
-  
-  
+
+
   libHandle->functionList = addElement(libHandle->functionList,currProc);
 
   return currProc;
-} 
+}
 
 
 libraryProcedure *getProcedure(char *procedureName) {
@@ -915,7 +915,7 @@ void freeProcLibraries() {
       safeFree(prevProcList);
     }
     dlerror();
-    if (dlclose(currLibHandle->libraryDescriptor) != 0) 
+    if (dlclose(currLibHandle->libraryDescriptor) != 0)
       printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
     safeFree(currLibHandle->libraryName);
     safeFree(currLibHandle);

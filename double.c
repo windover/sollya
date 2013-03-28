@@ -56,7 +56,7 @@
 
 */
 
-#define _BSD_SOURCE 
+#define _BSD_SOURCE
 
 #include <gmp.h>
 #include <mpfr.h>
@@ -74,12 +74,12 @@
 
 
 typedef union {
-  int32_t i[2]; 
+  int32_t i[2];
   double d;
 } db_number;
 
 typedef union {
-  int32_t i; 
+  int32_t i;
   float f;
 } fl_number;
 
@@ -90,7 +90,7 @@ int round_to_format(mpfr_t rop, mpfr_t op, int prec, mp_rnd_t mode) {
   int round_dir;
 
   mpfr_init2(res,(mp_prec_t)prec);
-  
+
   round_dir = mpfr_set(res,op, mode);
   if (mpfr_set(rop, res, GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
@@ -116,7 +116,7 @@ int mpfr_round_to_double(mpfr_t rop, mpfr_t op) {
       printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
-  
+
   res = mpfr_cmp(rop,op);
 
   return res;
@@ -133,7 +133,7 @@ int mpfr_round_to_double_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode) {
       printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
     }
   }
-  
+
   res = mpfr_cmp(rop,op);
 
   return res;
@@ -155,7 +155,7 @@ int mpfr_round_to_prec(mpfr_t rop, mpfr_t op, mp_prec_t prec) {
     }
   }
   mpfr_clear(temp);
-  
+
   res = mpfr_cmp(rop,op);
 
   return res;
@@ -183,7 +183,7 @@ int mpfr_round_to_single(mpfr_t rop, mpfr_t x) {
       printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
     }
   }
-  
+
   res = mpfr_cmp(temp,x);
   if (res && mpfr_number_p(x) && mpfr_number_p(temp)) {
     xfl.f = xfloat;
@@ -260,7 +260,7 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
       printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
     }
   }
-  
+
   res = mpfr_cmp(temp,x);
   if ((res != 0) && mpfr_number_p(x) && mpfr_number_p(temp)) {
     xfl.f = xfloat;
@@ -309,15 +309,15 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
   /* Now, temp is equal to the single rounding of x under round to nearest
    */
   res = mpfr_cmp(temp,x);
-  if ((mode != GMP_RNDN) && 
-      mpfr_number_p(x) && 
-      mpfr_number_p(temp) && 
+  if ((mode != GMP_RNDN) &&
+      mpfr_number_p(x) &&
+      mpfr_number_p(temp) &&
       (res != 0))  {
     /* Here, we have an inexact single rounding to nearest that is a number
-       but we must produce a directed rounding 
+       but we must produce a directed rounding
     */
-    if ((res < 0) && 
-	((mode == GMP_RNDU) || 
+    if ((res < 0) &&
+	((mode == GMP_RNDU) ||
 	 ((mode == GMP_RNDZ) && (mpfr_sgn(x) < 0)))) {
       /* The rounded value is too small */
       xfl.f = xfloat;
@@ -333,8 +333,8 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
 	}
       }
     } else {
-      if ((res > 0) && 
-	  ((mode == GMP_RNDD) || 
+      if ((res > 0) &&
+	  ((mode == GMP_RNDD) ||
 	   ((mode == GMP_RNDZ) && (mpfr_sgn(x) > 0)))) {
 	/* The rounded value is too great */
 	xfl.f = xfloat;
@@ -349,7 +349,7 @@ int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
 	    printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
 	  }
 	}
-      } 
+      }
     }
   }
 
@@ -643,21 +643,21 @@ int printDoubleInHexa(mpfr_t x) {
   db_number xdb, endianessdb;
 
   mpfr_init2(temp,mpfr_get_prec(x));
-  
+
   d = sollya_mpfr_get_d(x,GMP_RNDN);
   if (mpfr_set_d(temp,d,GMP_RNDN) != 0) {
     if (!noRoundingWarnings) {
       printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
     }
   }
-  
+
   res = mpfr_cmp(temp,x);
 
   if (res) {
     if (!noRoundingWarnings) {
-      if (res < 0) 
+      if (res < 0)
         printMessage(1,SOLLYA_MSG_ROUNDING_DOWN_BEFORE_PRINTING_DOUBLE,"Warning: rounding down occurred before printing a value as a double.\n");
-      else 
+      else
         printMessage(1,SOLLYA_MSG_ROUNDING_UP_BEFORE_PRINTING_DOUBLE,"Warning: rounding up occurred before printing a value as a double.\n");
     }
   }
@@ -707,7 +707,7 @@ int printSimpleInHexa(mpfr_t x) {
       printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
     }
   }
-  
+
   res = mpfr_cmp(temp,x);
   if (res && mpfr_number_p(x) && mpfr_number_p(temp)) {
     xfl.f = xfloat;
@@ -750,9 +750,9 @@ int printSimpleInHexa(mpfr_t x) {
 
   if (res) {
     if (!noRoundingWarnings) {
-      if (res < 0) 
+      if (res < 0)
         printMessage(1,SOLLYA_MSG_ROUNDING_DOWN_BEFORE_PRINTING_SINGLE,"Warning: rounding down occurred before printing a value as a single.\n");
-      else 
+      else
         printMessage(1,SOLLYA_MSG_ROUNDING_DOWN_BEFORE_PRINTING_SINGLE,"Warning: rounding up occurred before printing a value as a single.\n");
     }
   }
@@ -773,7 +773,7 @@ int readHexaDouble(mpfr_t res, char *c) {
   double x;
   char msbstr[9], lsbstr[9];
   db_number xdb, endianessdb;
-  
+
   x = 1.0;
   c += 2; /* Skip over "0x" */
   for (i=0;i<9;i++) {
@@ -824,7 +824,7 @@ int readHexaSimple(mpfr_t res, char *c) {
   char msbstr[9];
   fl_number xfl;
   float xfloat;
-  
+
   x = 1.0;
   c += 2; /* Skip over "0x" */
   for (i=0;i<9;i++) {
@@ -834,7 +834,7 @@ int readHexaSimple(mpfr_t res, char *c) {
     msbstr[i] = *c;
     c++;
   }
-  
+
 
   msb = strtoll(msbstr,NULL,16);
 
@@ -856,15 +856,15 @@ int readHexaSimple(mpfr_t res, char *c) {
 
 
 int readHexa(mpfr_t res, char *c) {
-  
-  if (strlen(c) == 18) 
+
+  if (strlen(c) == 18)
     return readHexaDouble(res, c);
 
-  if (strlen(c) == 10) 
+  if (strlen(c) == 10)
     return readHexaSimple(res, c);
 
   printMessage(1,SOLLYA_MSG_UNABLE_TO_CONVERT_FROM_HEXADECIMAL_CONSTANT,"Warning: unable to convert the hexadecimal sequence \"%s\" to a constant.\n");
-  
+
   mpfr_set_nan(res);
 
   return 0;
@@ -911,7 +911,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
       return temp;
     }
   }
-  
+
   tempArray = (int *) safeCalloc(degree + 1,sizeof(int));
 
   i = 0;
@@ -921,7 +921,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
     curr = curr->next;
   }
   k = i;
-  
+
   formatsArray = (int *) safeCalloc(degree + 1,sizeof(int));
 
   if (fillUp) {
@@ -1009,7 +1009,7 @@ node *roundPolynomialCoefficients(node *poly, chain *formats, mp_prec_t prec) {
       break;
     default:
       if (formatsArray[i] > 7) {
-	if (mpfr_round_to_prec(tempMpfr, fpcoefficients[i], (mp_prec_t) (formatsArray[i] - 6)) != 0) 
+	if (mpfr_round_to_prec(tempMpfr, fpcoefficients[i], (mp_prec_t) (formatsArray[i] - 6)) != 0)
 	  res = 1;
       } else {
 	printMessage(1,SOLLYA_MSG_ERROR_UNKNOWN_EXPANSION_FORMAT,"Warning: unknown expansion format found. No rounding will be performed.\n");
@@ -1064,7 +1064,7 @@ int printDoubleExpansion(mpfr_t x) {
     }
     roundingOccured = 1;
   }
-  
+
   if (!mpfr_number_p(temp)) {
     printMessage(1,SOLLYA_MSG_NON_REAL_NUMBER_CANNOT_BE_DOUBLE_EXPANSION,"Warning: will not print a number that is not real as a double expansion.\n");
     printValue(&temp);
@@ -1073,10 +1073,10 @@ int printDoubleExpansion(mpfr_t x) {
     return 1;
   }
 
-  if (mpfr_cmp(temp,x) == 0) 
+  if (mpfr_cmp(temp,x) == 0)
     noBrackets = 1;
 
-  if (!noBrackets) 
+  if (!noBrackets)
     sollyaPrintf("(");
 
   do {
@@ -1087,7 +1087,7 @@ int printDoubleExpansion(mpfr_t x) {
       }
       roundingOccured = 1;
     }
-    
+
     xdb.d = d;
     endianessdb.d = 1.0;
     if ((endianessdb.i[1] == 0x3ff00000) && (endianessdb.i[0] == 0)) {
@@ -1108,14 +1108,14 @@ int printDoubleExpansion(mpfr_t x) {
       }
       roundingOccured = 1;
     }
-    
+
     if ((d != 0.0) && (!mpfr_zero_p(rest))) {
       sollyaPrintf(" + ");
     }
 
   } while ((d != 0.0) && (!mpfr_zero_p(rest)));
 
-  if (!noBrackets) 
+  if (!noBrackets)
     sollyaPrintf(")");
 
 
@@ -1212,7 +1212,7 @@ int printPolynomialAsDoubleExpansion(node *poly, mp_prec_t prec) {
       k++;
     }
   }
-  for (i=0;i<l;i++) 
+  for (i=0;i<l;i++)
     sollyaPrintf(")");
 
   safeFree(coefficients);
@@ -1284,7 +1284,7 @@ int round_to_expansion_format(mpfr_t rop, mpfr_t op, int format, mp_rnd_t mode) 
     exit(1);
   }
 
-  if ((!mpfr_nan_p(op)) && 
+  if ((!mpfr_nan_p(op)) &&
       (!mpfr_nan_p(rop))) {
     res = mpfr_cmp(rop,op);
   } else {
@@ -1339,9 +1339,9 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
     sollya_mpfi_get_right(yb, y);
     ta = round_to_format_or_expansion_format(rya, ya, expansion_format_round, format, prec, mode);
     tb = round_to_format_or_expansion_format(ryb, yb, expansion_format_round, format, prec, mode);
-    if ((!mpfr_nan_p(rya)) && 
+    if ((!mpfr_nan_p(rya)) &&
 	(!mpfr_nan_p(ryb)) &&
-	mpfr_equal_p(rya, ryb) && 
+	mpfr_equal_p(rya, ryb) &&
 	(ta == tb)) {
       writeBackRnd = GMP_RNDN;
       if (ta < 0) writeBackRnd = GMP_RNDD;
@@ -1365,7 +1365,7 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
     }
   }
 
-  /* If we are here, we never got a correct rounding or we always got NaNs. 
+  /* If we are here, we never got a correct rounding or we always got NaNs.
 
      We are going to re-evaluate the values in ya and yb.
 
@@ -1388,7 +1388,7 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
     return 1;
   }
 
-  /* Here, ya and yb can be either real numbers bounding func or infinities. 
+  /* Here, ya and yb can be either real numbers bounding func or infinities.
 
      We continue by checking if either of them is an infinity.
 
@@ -1407,10 +1407,10 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
       sollya_mpfi_clear(x);
       return 1;
     }
-    
-    /* Here only one of ya or yb is an infinity, the other one is a real number 
 
-       We simply display a warning and return the rounding of the one of ya and yb 
+    /* Here only one of ya or yb is an infinity, the other one is a real number
+
+       We simply display a warning and return the rounding of the one of ya and yb
        that is a real number.
 
     */
@@ -1432,11 +1432,11 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
     sollya_mpfi_clear(x);
     return 1;
   }
-  
-  /* Here both ya and yb are real numbers bounding func. 
+
+  /* Here both ya and yb are real numbers bounding func.
 
      Distinguish two cases: directed rounding and rounding to nearest.
-     
+
      For the directed rounding modes, try to compute the value in
      ROUND-TO-NEAREST first (which yields the rounding boundary). Then
      round that rounding boundary.
@@ -1448,7 +1448,7 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
     /* Directed rounding mode */
     ta = round_to_format_or_expansion_format(rya, ya, expansion_format_round, format, prec, GMP_RNDN);
     tb = round_to_format_or_expansion_format(ryb, yb, expansion_format_round, format, prec, GMP_RNDN);
-    if ((!mpfr_nan_p(rya)) && 
+    if ((!mpfr_nan_p(rya)) &&
 	(!mpfr_nan_p(ryb)) &&
 	mpfr_equal_p(rya, ryb)) {
       if (!noRoundingWarnings) {
@@ -1471,7 +1471,7 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
     if (!noRoundingWarnings) {
       printMessage(1,SOLLYA_MSG_NO_CORRECT_ROUNDING_FOR_ROUND_OPERATOR,"Warning: no correctly rounded result could be obtained upon evaluation of a rounding operator.\n");
       printMessage(2,SOLLYA_MSG_NO_CORRECT_TERNARY_VALUE_FOR_ROUND,"Warning: the actual rounding direction for a round operation could not be determined.\n");
-    }    
+    }
     *ternary = round_to_format_or_expansion_format(rop, rya, expansion_format_round, format, prec, mode);
     *ternaryOkay = 0;
     sollya_mpfi_clear(y);
@@ -1481,21 +1481,21 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
     mpfr_clear(ryb);
     sollya_mpfi_clear(x);
     return 1;
-  } 
+  }
 
-  /* Here, we are in round-to-nearest mode and we know that both ya and yb are real numbers. 
+  /* Here, we are in round-to-nearest mode and we know that both ya and yb are real numbers.
 
      We first check if rounding to nearest would actually be possible if we forgot about the
-     ternary value. 
+     ternary value.
 
   */
-  if ((!mpfr_nan_p(rya)) && 
+  if ((!mpfr_nan_p(rya)) &&
       (!mpfr_nan_p(ryb)) &&
       mpfr_equal_p(rya, ryb)) {
     /* Here, we know the correct rounding rya = ryb but we are unable to produce the ternary value. */
     if (!noRoundingWarnings) {
       printMessage(2,SOLLYA_MSG_NO_CORRECT_TERNARY_VALUE_FOR_ROUND_BUT_CORRECT_ROUNDING,"Warning: correct rounding was possible but the actual rounding direction could not be determined.\n");
-    }        
+    }
     writeBackRnd = GMP_RNDN;
     if (ta < 0) writeBackRnd = GMP_RNDD;
     if (ta > 0) writeBackRnd = GMP_RNDU;
@@ -1516,7 +1516,7 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
     sollya_mpfi_clear(x);
     return 1;
   }
-  
+
   /* Here, we are in round-to-nearest mode, ya and yb are real numbers
      but we cannot produce a correct rounding.
 
@@ -1525,14 +1525,14 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
      interval of the two consecutive floating-point numbers of the
      format around that midpoint.
 
-     So we round ya down, yb up, take the middle and round it to the 
-     target format. 
+     So we round ya down, yb up, take the middle and round it to the
+     target format.
 
-     We have no means to tell if our assumption was correct, as 
+     We have no means to tell if our assumption was correct, as
      we can no way perform nextabove or nextbelow operations
      on double-double or triple-double expansions.
 
-     So in the worst case, we get some approximation first and a 
+     So in the worst case, we get some approximation first and a
      correct rounding of that approximation.
 
      In any case, we have to forget about the ternary value.
@@ -1545,7 +1545,7 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
   if (!noRoundingWarnings) {
     printMessage(1,SOLLYA_MSG_NO_CORRECT_ROUNDING_FOR_ROUND_OPERATOR,"Warning: no correctly rounded result could be obtained upon evaluation of a rounding operator.\n");
     printMessage(2,SOLLYA_MSG_NO_CORRECT_TERNARY_VALUE_FOR_ROUND,"Warning: the actual rounding direction for a round operation could not be determined.\n");
-  }    
+  }
   *ternaryOkay = 0;
   *ternary = round_to_format_or_expansion_format(rop, tya, expansion_format_round, format, prec, mode);
   mpfr_clear(tya);
@@ -1574,20 +1574,20 @@ int mpfr_mant_exp(mpfr_t rop, mp_exp_t *expo, mpfr_t op) {
     return mpfr_set(rop,op,GMP_RNDN);
   }
 
-  p = mpfr_get_prec(op);  
+  p = mpfr_get_prec(op);
   mpfr_init2(temp,p);
   mpfr_set(temp,op,GMP_RNDN);
-  
+
   e = mpfr_get_exp(temp) - p;
   mpfr_set_exp(temp,p);
-  
+
   while (mpfr_integer_p(temp)) {
     mpfr_div_2ui(temp,temp,1,GMP_RNDN);
     e++;
   }
   mpfr_mul_2ui(temp,temp,1,GMP_RNDN);
   e--;
-  
+
   *expo = e;
   res = mpfr_set(rop,temp,GMP_RNDN);
 
@@ -1608,7 +1608,7 @@ int roundRangeCorrectly(mpfr_t rop, mpfr_t a, mpfr_t b) {
     mpfr_set_nan(rop);
     return 0;
   }
-  
+
   expoA = mpfr_get_exp(a);
   expoB = mpfr_get_exp(b);
 
@@ -1737,7 +1737,7 @@ node *rationalApprox(mpfr_t x, int n) {
                                    Hence sup(xprime)-inf(xprime) <= 2^(1-(n+1))*inf(abs(xprime))
                                    Hence, for any t in xprime, |x-t| <= 2^(-n)*|x| */
   continuedFrac(q,xprime);
- 
+
   mpq_get_num(u,q);
   numerator = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
   mpfr_init2(*numerator,mp_bits_per_limb*mpz_size(u));

@@ -534,7 +534,7 @@ node *makeExternalProc(char *, node *, chain *);
 node *makeUnit();
 node *makeVariableDeclaration(chain *stringlist);
 node *makeProc(chain *stringlist, node *body, node *returnVal);
-node *makeMatchElement(node *, node *, node *); 
+node *makeMatchElement(node *, node *, node *);
 node *makeProcIllim(char *arg, node *body, node *returnVal);
 node *makeApply(node *thing, chain *thinglist);
 

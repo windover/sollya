@@ -1,8 +1,8 @@
 /*
 
-  Copyright 2007-2013 by 
+  Copyright 2007-2013 by
 
-  Laboratoire de l'Informatique du Parallelisme, 
+  Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
 
   Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
@@ -28,16 +28,16 @@
   implementer and a fast Remez algorithm.
 
   This software is governed by the CeCILL-C license under French law and
-  abiding by the rules of distribution of free software.  You can  use, 
+  abiding by the rules of distribution of free software.  You can  use,
   modify and/ or redistribute the software under the terms of the CeCILL-C
   license as circulated by CEA, CNRS and INRIA at the following URL
-  "http://www.cecill.info". 
+  "http://www.cecill.info".
 
   As a counterpart to the access to the source code and  rights to copy,
   modify and redistribute granted by the license, users are provided only
   with a limited warranty  and the software's author,  the holder of the
   economic rights,  and the successive licensors  have only  limited
-  liability. 
+  liability.
 
   In this respect, the user's attention is drawn to the risks associated
   with loading,  using,  modifying and/or developing or reproducing the
@@ -46,9 +46,9 @@
   therefore means  that it is reserved for developers  and  experienced
   professionals having in-depth computer knowledge. Users are therefore
   encouraged to load and test the software's suitability as regards their
-  requirements in conditions enabling the security of their systems and/or 
-  data to be ensured and,  more generally, to use and operate it in the 
-  same conditions as regards security. 
+  requirements in conditions enabling the security of their systems and/or
+  data to be ensured and,  more generally, to use and operate it in the
+  same conditions as regards security.
 
   The fact that you are presently reading this means that you have had
   knowledge of the CeCILL-C license and that you accept its terms.
@@ -291,7 +291,7 @@ int sollya_init_and_convert_interval(sollya_mpfi_t rop, mpfi_t op) {
   */
 
   sollya_mpfi_init2(rop, mpfi_get_prec(op));
-  if ((!sollya_mpfi_has_nan(op)) && 
+  if ((!sollya_mpfi_has_nan(op)) &&
       (mpfr_cmp(&(op->left), &(op->right)) > 0)) {
     printMessage(1,SOLLYA_MSG_RANGE_BOUNDS_IN_INVERSE_ORDER,"Warning: the bounds of a given interval are given in inverse order. Will revert them.\n");
     res = sollya_mpfi_interv_fr(rop, &(op->right), &(op->left));
@@ -518,7 +518,7 @@ define_log_func(log1p, -1)
    # Else (op2 = [a, 0]) :
    # If op1 = [u, v] with 0<=u ->  [-Inf, u/a]
    # If op1 = [u, v] with v<=0 ->  [v/a, +Inf]
-*/     
+*/
 int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
   int sign;
@@ -532,7 +532,7 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
     if (sollya_mpfi_is_zero(op2)) return sollya_mpfi_set_nan(rop);
     else return sollya_mpfi_set_si(rop, 0);
   }
-  
+
   if (sollya_mpfi_is_infinity(op1)) {
     if (sollya_mpfi_is_infinity(op2)) return sollya_mpfi_set_nan(rop);
     if (sollya_mpfi_is_zero(op2) || sollya_mpfi_has_zero_inside(op2))
@@ -574,7 +574,7 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
       mpfr_set_inf(&(rop->left),-1);
       if (mpfr_div(&(rop->right),&(op1->right),&(op2->right),GMP_RNDU) == 0)
         res = MPFI_FLAGS_BOTH_ENDPOINTS_EXACT;
-      else 
+      else
         res = MPFI_FLAGS_RIGHT_ENDPOINT_INEXACT;
     }
   }
@@ -594,7 +594,7 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
         res = MPFI_FLAGS_LEFT_ENDPOINT_INEXACT;
     }
   }
-  
+
   sollya_mpfi_nan_normalize(rop);
   return res;
 }
@@ -623,7 +623,7 @@ int sollya_mpfi_mul(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 
     Now, we know that neither op1 nor op2 are singular point intervals
     # Else -> mpfi_mul(op1, op2)
-  */     
+  */
 
   if (sollya_mpfi_is_empty(op1) || sollya_mpfi_is_empty(op2)) return sollya_mpfi_set_empty(rop);
   if (sollya_mpfi_has_nan(op1) || sollya_mpfi_has_nan(op2))  return sollya_mpfi_set_nan(rop);
@@ -654,9 +654,9 @@ int sollya_mpfi_mul(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 
 int sollya_mpfi_add(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
- 
-  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop); 
-  if (sollya_mpfi_is_empty(op2)) return sollya_mpfi_set_empty(rop); 
+
+  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop);
+  if (sollya_mpfi_is_empty(op2)) return sollya_mpfi_set_empty(rop);
 
   res = mpfi_add(rop,op1,op2); sollya_mpfi_nan_normalize(rop);
 
@@ -665,8 +665,8 @@ int sollya_mpfi_add(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 
 int sollya_mpfi_add_fr(sollya_mpfi_t rop, sollya_mpfi_t op1, mpfr_t op2) {
   int res;
- 
-  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop); 
+
+  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop);
 
   res = mpfi_add_fr(rop,op1,op2); sollya_mpfi_nan_normalize(rop);
 
@@ -675,8 +675,8 @@ int sollya_mpfi_add_fr(sollya_mpfi_t rop, sollya_mpfi_t op1, mpfr_t op2) {
 
 int sollya_mpfi_add_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) {
   int res;
- 
-  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop); 
+
+  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop);
 
   res = mpfi_add_ui(rop,op1,op2); sollya_mpfi_nan_normalize(rop);
 
@@ -685,9 +685,9 @@ int sollya_mpfi_add_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) 
 
 int sollya_mpfi_sub(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
   int res;
- 
-  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop); 
-  if (sollya_mpfi_is_empty(op2)) return sollya_mpfi_set_empty(rop); 
+
+  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop);
+  if (sollya_mpfi_is_empty(op2)) return sollya_mpfi_set_empty(rop);
 
   res = mpfi_sub(rop,op1,op2); sollya_mpfi_nan_normalize(rop);
 
@@ -697,8 +697,8 @@ int sollya_mpfi_sub(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 int sollya_mpfi_sub_fr(sollya_mpfi_t rop, sollya_mpfi_t op1, mpfr_t op2) {
   int res;
   mpfi_t tmp;
- 
-  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop); 
+
+  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop);
 
   mpfi_init2(tmp, mpfr_get_prec(op2));
   mpfi_set_fr(tmp, op2); /* exact */
@@ -711,8 +711,8 @@ int sollya_mpfi_sub_fr(sollya_mpfi_t rop, sollya_mpfi_t op1, mpfr_t op2) {
 
 int sollya_mpfi_sub_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) {
   int res;
- 
-  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop); 
+
+  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop);
 
   res = mpfi_sub_ui(rop,op1,op2); sollya_mpfi_nan_normalize(rop);
 
@@ -723,7 +723,7 @@ int sollya_mpfi_div_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) 
   int res;
   mpfi_t temp;
 
-  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop); 
+  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop);
 
   mpfi_init2(temp,8 * sizeof(op2));  mpfi_set_ui(temp,op2);
   res = sollya_mpfi_div(rop,op1,temp); sollya_mpfi_nan_normalize(rop);
@@ -736,7 +736,7 @@ int sollya_mpfi_mul_ui(sollya_mpfi_t rop, sollya_mpfi_t op1, unsigned long op2) 
   int res;
   mpfi_t temp;
 
-  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop); 
+  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop);
 
   mpfi_init2(temp,8 * sizeof(op2));  mpfi_set_ui(temp,op2);
   res = sollya_mpfi_mul(rop,op1,temp); sollya_mpfi_nan_normalize(rop);
@@ -749,7 +749,7 @@ int sollya_mpfi_ui_div(sollya_mpfi_t rop, unsigned long op1, sollya_mpfi_t op2) 
   int res;
   mpfi_t temp;
 
-  if (sollya_mpfi_is_empty(op2)) return sollya_mpfi_set_empty(rop); 
+  if (sollya_mpfi_is_empty(op2)) return sollya_mpfi_set_empty(rop);
 
   mpfi_init2(temp,8 * sizeof(op1));  mpfi_set_ui(temp,op1);
   res = sollya_mpfi_div(rop,temp, op2); sollya_mpfi_nan_normalize(rop);
@@ -769,7 +769,7 @@ int sollya_mpfi_inv(sollya_mpfi_t rop, sollya_mpfi_t op) {
 int sollya_mpfi_blow(sollya_mpfi_t rop, sollya_mpfi_t op1, double op2) {
   int res;
 
-  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop); 
+  if (sollya_mpfi_is_empty(op1)) return sollya_mpfi_set_empty(rop);
 
   res = mpfi_blow(rop,op1,op2); sollya_mpfi_nan_normalize(rop);
   return res;
@@ -804,7 +804,7 @@ int sollya_mpfi_get_left(mpfr_t rop, sollya_mpfi_t op) {
   if (sollya_mpfi_has_nan(op) || sollya_mpfi_is_empty(op)) {
     mpfr_set_nan(rop);
     return 0;
-  } 
+  }
   return mpfi_get_left(rop,op);
 }
 
@@ -812,7 +812,7 @@ int sollya_mpfi_get_right(mpfr_t rop, sollya_mpfi_t op) {
   if (sollya_mpfi_has_nan(op) || sollya_mpfi_is_empty(op)) {
     mpfr_set_nan(rop);
     return 0;
-  } 
+  }
   return mpfi_get_right(rop,op);
 }
 
@@ -900,8 +900,8 @@ int sollya_mpfi_union(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
 int sollya_mpfi_is_point_and_real(sollya_mpfi_t op) {
   /* HACK ALERT: For performance reasons, we will access the internals
      of an mpfi_t !!!
-  */  
+  */
   return ((!(mpfr_nan_p(&(op->left)) || mpfr_nan_p(&(op->right)))) &&
-	  (!(mpfr_inf_p(&(op->left)) || mpfr_inf_p(&(op->right)))) && 
+	  (!(mpfr_inf_p(&(op->left)) || mpfr_inf_p(&(op->right)))) &&
 	  (mpfr_equal_p(&(op->left),&(op->right))));
 }

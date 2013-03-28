@@ -88,7 +88,7 @@ void simplifyMpfrPrec(mpfr_t rop, mpfr_t op) {
     prec = mpz_sizeinbase(mant, 2);
     dyadicValue = mpz_scan1(mant, 0);
     p = prec - dyadicValue;
-    if (p < 12) prec = 12; else prec = p; 
+    if (p < 12) prec = 12; else prec = p;
     mpfr_init2(x,prec);
     mpfr_set_z(x,mant,GMP_RNDN);
     mpfr_mul_2si(x,x,expo,GMP_RNDN);
@@ -115,7 +115,7 @@ void simplifyMpfrPrec(mpfr_t rop, mpfr_t op) {
       mpfr_set_prec(rop,prec);
       mpfr_set(rop,x,GMP_RNDN);
       mpfr_clear(x);
-    } 
+    }
   }
 }
 
@@ -130,7 +130,7 @@ void mpfr_from_mpfi(mpfr_t rop, mpfr_t op, int n, int (*mpfifun)(sollya_mpfi_t, 
 
   mpfifun(ropItemp,opI,n);
   sollya_init_and_convert_interval(ropI, ropItemp);
-  
+
   sollya_mpfi_mid(rop,ropI);
 
   sollya_mpfi_clear(opI);
@@ -153,7 +153,7 @@ void free_memory(node *tree) {
 	safeFree(tree->arguments);
       }
       safeFree(tree);
-    } 
+    }
     return;
   }
 
@@ -278,7 +278,7 @@ void free_memory(node *tree) {
   case QUAD:
     free_memory(tree->child1);
     safeFree(tree);
-    break;  
+    break;
   case HALFPRECISION:
     free_memory(tree->child1);
     safeFree(tree);
@@ -291,7 +291,7 @@ void free_memory(node *tree) {
     free_memory(tree->child1);
     safeFree(tree);
     break;
-  case ERF: 
+  case ERF:
     free_memory(tree->child1);
     safeFree(tree);
     break;
@@ -452,7 +452,7 @@ void fprintHeadFunction(FILE *fd,node *tree, char *x, char *y) {
   case TRIPLEDOUBLE:
     sollyaFprintf(fd,"tripledouble(%s)",x);
     break;
-  case ERF: 
+  case ERF:
     sollyaFprintf(fd,"erf(%s)",x);
     break;
   case ERFC:
@@ -544,7 +544,7 @@ int precedence(node *tree) {
     return 6;
     break;
   default:
-    return 7; 
+    return 7;
   }
   return 0;
 }
@@ -557,7 +557,7 @@ int isInfix(node *tree) {
   case MEMREF:
     return isInfix(tree->child1);
     break;
-  case CONSTANT: 
+  case CONSTANT:
     if (mpfr_sgn(*(tree->value)) < 0) return 1;
     if ((dyadic == 2) || (dyadic == 3)) {
       str = sprintValue(tree->value);
@@ -640,8 +640,8 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
     mpfr_neg(bP,a,GMP_RNDN);
   }
 
-  str1 = mpfr_get_str(NULL,&e1,10,0,aP,GMP_RNDD);  
-  str2 = mpfr_get_str(NULL,&e2,10,0,bP,GMP_RNDU);  
+  str1 = mpfr_get_str(NULL,&e1,10,0,aP,GMP_RNDD);
+  str2 = mpfr_get_str(NULL,&e2,10,0,bP,GMP_RNDU);
 
   str3 = safeCalloc(strlen(str1) + 1, sizeof(char));
   removeTrailingZeros(str3,str1);
@@ -660,7 +660,7 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
       str = (char *) safeCalloc(strlen(str3) + 3, sizeof(char));
       sprintf(str,"[%s]",str3);
       safeFree(str3);
-    } else { 
+    } else {
 
       if (str1[0] == str2[0]) {
 	len1 = strlen(str1);
@@ -672,9 +672,9 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
 	  i++;
 	}
 	possibleLength = i;
-	s1 = mpfr_get_str(NULL,&e1,10,possibleLength+1,aP,GMP_RNDD);  
-	s2 = mpfr_get_str(NULL,&e2,10,possibleLength+1,bP,GMP_RNDU); 
-	
+	s1 = mpfr_get_str(NULL,&e1,10,possibleLength+1,aP,GMP_RNDD);
+	s2 = mpfr_get_str(NULL,&e2,10,possibleLength+1,bP,GMP_RNDU);
+
 	if (e1 == e2) {
 	  if (s1[0] == s2[0]) {
 	    len1 = strlen(s1);
@@ -688,14 +688,14 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
 	      i++;
 	    }
 	    str[i] = '~';
-	    if (sign > 0) 
+	    if (sign > 0)
 	      str[i+1] = s1[i];
 	    else
 	      str[i+1] = s2[i];
 	    str[i+2] = '/';
-	    if (sign > 0) 
+	    if (sign > 0)
 	      str[i+3] = s2[i];
-	    else 
+	    else
 	      str[i+3] = s1[i];
 	    str[i+4] = '~';
 	    str3 = (char *) safeCalloc(strlen(str)+1,sizeof(char));
@@ -738,8 +738,8 @@ char *sprintMidpointMode(mpfr_t a, mpfr_t b) {
     str = NULL;
   }
 
-  mpfr_free_str(str1);      
-  mpfr_free_str(str2);      
+  mpfr_free_str(str1);
+  mpfr_free_str(str2);
 
   mpfr_clear(aP);
   mpfr_clear(bP);
@@ -773,8 +773,8 @@ char *sPrintBinary(mpfr_t x) {
       temp2++;
     }
     *temp2 = *temp1; temp2++; temp1++;
-    if (*temp1 != '\0') { 
-      *temp2 = '.'; 
+    if (*temp1 != '\0') {
+      *temp2 = '.';
       temp2++;
     }
     while (*temp1 != '\0') {
@@ -790,16 +790,16 @@ char *sPrintBinary(mpfr_t x) {
     if (!mpfr_zero_p(x)) {
       if (mpfr_number_p(x)) {
 	temp3 = (char *) safeCalloc(strlen(str3)+74,sizeof(char));
-	if ((((int) expo)-1) != 0) 
-	  sprintf(temp3,"%s_2 * 2^(%d)",str3,((int)expo)-1);  
+	if ((((int) expo)-1) != 0)
+	  sprintf(temp3,"%s_2 * 2^(%d)",str3,((int)expo)-1);
 	else
-	  sprintf(temp3,"%s_2",str3);  
+	  sprintf(temp3,"%s_2",str3);
       } else {
 	temp3 = (char *) safeCalloc(strlen(raw) + 2,sizeof(char));
-	if (negative) 
-	  sprintf(temp3,"-%s",raw); 
-	else 
-	  sprintf(temp3,"%s",raw); 
+	if (negative)
+	  sprintf(temp3,"-%s",raw);
+	else
+	  sprintf(temp3,"%s",raw);
       }
     }
     else {
@@ -809,7 +809,7 @@ char *sPrintBinary(mpfr_t x) {
     safeFree(formatted);
     safeFree(str3);
   }
-  mpfr_free_str(raw);  
+  mpfr_free_str(raw);
   mpfr_clear(xx);
   resultStr = (char *) safeCalloc(strlen(temp3) + 1,sizeof(char));
   sprintf(resultStr,"%s",temp3);
@@ -845,21 +845,21 @@ char *sPrintHexadecimal(mpfr_t x) {
       temp2++; temp1++;
     }
     str3 = (char *) safeCalloc(strlen(formatted)+2,sizeof(char));
-    removeTrailingZeros(str3,formatted);    
+    removeTrailingZeros(str3,formatted);
     if (!mpfr_zero_p(x)) {
       if (mpfr_number_p(x)) {
 	temp3 = (char *) safeCalloc(strlen(str3)+74,sizeof(char));
 	if (negative) {
-	  sprintf(temp3,"-0x%sp%d",str3,4 * (((int)expo)-1)); 
+	  sprintf(temp3,"-0x%sp%d",str3,4 * (((int)expo)-1));
 	} else {
-	  sprintf(temp3,"0x%sp%d",str3,4 * (((int)expo)-1)); 
+	  sprintf(temp3,"0x%sp%d",str3,4 * (((int)expo)-1));
 	}
       } else {
 	temp3 = (char *) safeCalloc(strlen(raw) + 2,sizeof(char));
-	if (negative) 
-	  sprintf(temp3,"-%s",raw); 
-	else 
-	  sprintf(temp3,"%s",raw); 
+	if (negative)
+	  sprintf(temp3,"-%s",raw);
+	else
+	  sprintf(temp3,"%s",raw);
       }
     }
     else {
@@ -869,7 +869,7 @@ char *sPrintHexadecimal(mpfr_t x) {
     safeFree(formatted);
     safeFree(str3);
   }
-  mpfr_free_str(raw);  
+  mpfr_free_str(raw);
   mpfr_clear(xx);
   resultStr = (char *) safeCalloc(strlen(temp3) + 1,sizeof(char));
   sprintf(resultStr,"%s",temp3);
@@ -909,8 +909,8 @@ char *sprintValue(mpfr_t *aValue) {
   mpfr_t *value, myValue;
   char *res;
   mpfr_t two128;
-  
-  p = mpfr_get_prec(*aValue);  
+
+  p = mpfr_get_prec(*aValue);
   mpfr_init2(myValue,p);
   simplifyMpfrPrec(myValue, *aValue);
   if ((p > tools_precision) && (mpfr_get_prec(myValue) < tools_precision)) {
@@ -919,7 +919,7 @@ char *sprintValue(mpfr_t *aValue) {
     mpfr_set(myValue,*aValue,GMP_RNDN);
   }
   value = &myValue;
-  
+
   if (dyadic == 4) {
     res = sPrintHexadecimal(*value);
     mpfr_clear(myValue);
@@ -930,7 +930,7 @@ char *sprintValue(mpfr_t *aValue) {
     res = sPrintBinary(*value);
     mpfr_clear(myValue);
     return res;
-  } 
+  }
 
   mpfr_init2(two128,12);
   mpfr_set_ui(two128,2,GMP_RNDN);
@@ -961,8 +961,8 @@ char *sprintValue(mpfr_t *aValue) {
   tempBuf = buffer;
   mpfr_init2(y,prec);
 
-  if (mpfr_zero_p(*value) || 
-      (mpfr_number_p(*value) && 
+  if (mpfr_zero_p(*value) ||
+      (mpfr_number_p(*value) &&
        mpfr_integer_p(*value) &&
        (mpfr_cmpabs(*value,two128) < 0))) {
     if (mpfr_zero_p(*value)) {
@@ -991,7 +991,7 @@ char *sprintValue(mpfr_t *aValue) {
       }
       mpfr_free_str(str);
     }
-  } else { 
+  } else {
     mpfr_set(y,*value,GMP_RNDN);
     if (mpfr_sgn(y) < 0) {
       tempBuf += sprintf(tempBuf,"-"); mpfr_neg(y,y,GMP_RNDN);
@@ -1034,7 +1034,7 @@ char *sprintValue(mpfr_t *aValue) {
 	}
 	safeFree(str2);
       }
-      mpfr_free_str(str);      
+      mpfr_free_str(str);
     } else {
       str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
       if (mpfr_number_p(*value)) {
@@ -1047,7 +1047,7 @@ char *sprintValue(mpfr_t *aValue) {
 	  for (i=0;i<(int)strlen(str3);i++) {
 	    str4[i] = str3[i];
 	    tempBuf = tempBufOld;
-	    tempBuf += sprintf(tempBuf,"0.%s",str4);   
+	    tempBuf += sprintf(tempBuf,"0.%s",str4);
 	    mpfr_set_str(temp,buffer,10,GMP_RNDN);
 	    if (mpfr_cmp(temp,*value) == 0) break;
 	  }
@@ -1067,15 +1067,15 @@ char *sprintValue(mpfr_t *aValue) {
 	      tempBuf = tempBufOld;
 	      if (e-1 == 0) {
 		if (strlen(str4) > 1) {
-		  tempBuf += sprintf(tempBuf,"%c.%s",*str4,str4+1);   
+		  tempBuf += sprintf(tempBuf,"%c.%s",*str4,str4+1);
 		} else {
 		  tempBuf += sprintf(tempBuf,"%c",*str4);
 		}
 	      } else {
 		if (strlen(str4) > 1) {
-		  tempBuf += sprintf(tempBuf,"%c.%se%d",*str4,str4+1,(int)e-1);   
+		  tempBuf += sprintf(tempBuf,"%c.%se%d",*str4,str4+1,(int)e-1);
 		} else {
-		  tempBuf += sprintf(tempBuf,"%ce%d",*str4,(int)e-1);   
+		  tempBuf += sprintf(tempBuf,"%ce%d",*str4,(int)e-1);
 		}
 	      }
 	      mpfr_set_str(temp,buffer,10,GMP_RNDN);
@@ -1130,7 +1130,7 @@ void fprintValueWithPrintMode(FILE *fd, mpfr_t value) {
   mpfr_clear(temp);
   sollyaFprintf(fd,"%s",str);
   safeFree(str);
-  
+
 }
 
 void fprintTreeWithPrintMode(FILE *fd, node *tree) {
@@ -1155,55 +1155,55 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     fprintValueWithPrintMode(fd,*(tree->value));
     break;
   case ADD:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT))
       sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT))
       sollyaFprintf(fd,")");
     sollyaFprintf(fd," + ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       sollyaFprintf(fd,")");
     break;
   case SUB:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT))
       sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT))
       sollyaFprintf(fd,")");
     sollyaFprintf(fd," - ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       sollyaFprintf(fd,")");
     break;
   case MUL:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT))
       sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT))
       sollyaFprintf(fd,")");
     sollyaFprintf(fd," * ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       sollyaFprintf(fd,")");
     break;
   case DIV:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT))
       sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (tree->child1->nodeType != CONSTANT))
       sollyaFprintf(fd,")");
     sollyaFprintf(fd," / ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       sollyaFprintf(fd,")");
     break;
   case SQRT:
@@ -1292,30 +1292,30 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     sollyaFprintf(fd,")");
     break;
   case POW:
-    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred))
       sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred))
       sollyaFprintf(fd,")");
     sollyaFprintf(fd,"^");
     if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
-				  || ((tree->child2->nodeType == CONSTANT) 
+				  || ((tree->child2->nodeType == CONSTANT)
 				      && ((dyadic == 2) || (dyadic == 3))))) {
       sollyaFprintf(fd,"(");
     }
     fprintTreeWithPrintMode(fd,tree->child2);
     if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
-				  || ((tree->child2->nodeType == CONSTANT) 
+				  || ((tree->child2->nodeType == CONSTANT)
 				      && ((dyadic == 2) || (dyadic == 3))))) {
       sollyaFprintf(fd,")");
     }
     break;
   case NEG:
     sollyaFprintf(fd,"-");
-    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred))
       sollyaFprintf(fd,"(");
     fprintTreeWithPrintMode(fd,tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred))
       sollyaFprintf(fd,")");
     break;
   case ABS:
@@ -1353,7 +1353,7 @@ void fprintTreeWithPrintMode(FILE *fd, node *tree) {
     fprintTreeWithPrintMode(fd,tree->child1);
     sollyaFprintf(fd,")");
     break;
-  case ERF: 
+  case ERF:
     sollyaFprintf(fd,"erf(");
     fprintTreeWithPrintMode(fd,tree->child1);
     sollyaFprintf(fd,")");
@@ -1548,12 +1548,12 @@ void fprintValueForXml(FILE *fd, mpfr_t value) {
       negate = 0;
       if (mpfr_sgn(y) < 0) {
 	negate = 1; mpfr_neg(y,y,GMP_RNDN);
-      } 
+      }
       if (!mpfr_number_p(value)) {
 	str = mpfr_get_str(NULL,&e,10,0,y,GMP_RNDN);
-	if (!negate) 
+	if (!negate)
 	  sollyaFprintf(fd,"<cn type=\"real\"> %s </cn>\n",str);
-	else 
+	else
 	  sollyaFprintf(fd,"<cn type=\"real\"> -%s </cn>\n",str);
       } else {
 	expo = mpfr_get_exp(y);
@@ -1626,55 +1626,55 @@ void printTree(node *tree) {
     printValue(tree->value);
     break;
   case ADD:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       sollyaPrintf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       sollyaPrintf(")");
     sollyaPrintf(" + ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       sollyaPrintf("(");
     printTree(tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       sollyaPrintf(")");
     break;
   case SUB:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       sollyaPrintf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       sollyaPrintf(")");
     sollyaPrintf(" - ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       sollyaPrintf("(");
     printTree(tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       sollyaPrintf(")");
     break;
   case MUL:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       sollyaPrintf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       sollyaPrintf(")");
     sollyaPrintf(" * ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       sollyaPrintf("(");
     printTree(tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       sollyaPrintf(")");
     break;
   case DIV:
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       sollyaPrintf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       sollyaPrintf(")");
     sollyaPrintf(" / ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       sollyaPrintf("(");
     printTree(tree->child2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       sollyaPrintf(")");
     break;
   case SQRT:
@@ -1763,30 +1763,30 @@ void printTree(node *tree) {
     sollyaPrintf(")");
     break;
   case POW:
-    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred))
       sollyaPrintf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred))
       sollyaPrintf(")");
     sollyaPrintf("^");
     if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
-				  || ((accessThruMemRef(tree->child2)->nodeType == CONSTANT) 
+				  || ((accessThruMemRef(tree->child2)->nodeType == CONSTANT)
 				      && ((dyadic == 2) || (dyadic == 3))))) {
       sollyaPrintf("(");
     }
     printTree(tree->child2);
     if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
-				  || ((accessThruMemRef(tree->child2)->nodeType == CONSTANT) 
+				  || ((accessThruMemRef(tree->child2)->nodeType == CONSTANT)
 				      && ((dyadic == 2) || (dyadic == 3))))) {
       sollyaPrintf(")");
     }
     break;
   case NEG:
     sollyaPrintf("-");
-    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred))
       sollyaPrintf("(");
     printTree(tree->child1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred))
       sollyaPrintf(")");
     break;
   case ABS:
@@ -1824,7 +1824,7 @@ void printTree(node *tree) {
     printTree(tree->child1);
     sollyaPrintf(")");
     break;
-  case ERF: 
+  case ERF:
     sollyaPrintf("erf(");
     printTree(tree->child1);
     sollyaPrintf(")");
@@ -1974,16 +1974,16 @@ char *sprintTree(node *tree) {
     buffer2 = sprintTree(tree->child2);
     buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
     tempBuf = buffer;
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf," + ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       tempBuf += sprintf(tempBuf,")");
     break;
   case SUB:
@@ -1991,16 +1991,16 @@ char *sprintTree(node *tree) {
     buffer2 = sprintTree(tree->child2);
     buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
     tempBuf = buffer;
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf," - ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       tempBuf += sprintf(tempBuf,")");
     break;
   case MUL:
@@ -2008,16 +2008,16 @@ char *sprintTree(node *tree) {
     buffer2 = sprintTree(tree->child2);
     buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
     tempBuf = buffer;
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf," * ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) < pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) < pred))
       tempBuf += sprintf(tempBuf,")");
     break;
   case DIV:
@@ -2025,16 +2025,16 @@ char *sprintTree(node *tree) {
     buffer2 = sprintTree(tree->child2);
     buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
     tempBuf = buffer;
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) < pred) && (accessThruMemRef(tree->child1)->nodeType != CONSTANT))
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf," / ");
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer2);
-    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred)) 
+    if (isInfix(tree->child2) && (precedence(tree->child2) <= pred))
       tempBuf += sprintf(tempBuf,")");
     break;
   case SQRT:
@@ -2127,20 +2127,20 @@ char *sprintTree(node *tree) {
     buffer2 = sprintTree(tree->child2);
     buffer = (char *) safeCalloc(strlen(buffer1) + strlen(buffer2) + 9, sizeof(char));
     tempBuf = buffer;
-    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred))
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer1);
-    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred)) 
+    if (isInfix(tree->child1) && (precedence(tree->child1) <= pred))
       tempBuf += sprintf(tempBuf,")");
     tempBuf += sprintf(tempBuf,"^");
     if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
-				  || ((accessThruMemRef(tree->child2)->nodeType == CONSTANT) 
-				      && ((dyadic == 2) || (dyadic == 3))))) 
+				  || ((accessThruMemRef(tree->child2)->nodeType == CONSTANT)
+				      && ((dyadic == 2) || (dyadic == 3)))))
       tempBuf += sprintf(tempBuf,"(");
     tempBuf += sprintf(tempBuf,"%s",buffer2);
     if (isInfix(tree->child2) && ((precedence(tree->child2) <= pred)
-				  || ((accessThruMemRef(tree->child2)->nodeType == CONSTANT) 
-				      && ((dyadic == 2) || (dyadic == 3))))) 
+				  || ((accessThruMemRef(tree->child2)->nodeType == CONSTANT)
+				      && ((dyadic == 2) || (dyadic == 3)))))
       tempBuf += sprintf(tempBuf,")");
     break;
   case NEG:
@@ -2183,7 +2183,7 @@ char *sprintTree(node *tree) {
     buffer = (char *) safeCalloc(strlen(buffer1) + 16, sizeof(char));
     sprintf(buffer,"tripledouble(%s)",buffer1);
     break;
-  case ERF: 
+  case ERF:
     buffer1 = sprintTree(tree->child1);
     buffer = (char *) safeCalloc(strlen(buffer1) + 8, sizeof(char));
     sprintf(buffer,"erf(%s)",buffer1);
@@ -2279,7 +2279,7 @@ char *sprintTree(node *tree) {
 	    tempBuf += sprintf(tempBuf,"diff(");
 	  }
 	  tempBuf += sprintf(tempBuf,"function(");
-	  tempBuf += sprintf(tempBuf,"%s",buffer2); 
+	  tempBuf += sprintf(tempBuf,"%s",buffer2);
 	  tempBuf += sprintf(tempBuf,")");
 	  for (i=1;i<=tree->libFunDeriv;i++) {
 	    tempBuf += sprintf(tempBuf,")");
@@ -2347,55 +2347,55 @@ void fprintTree(FILE *fd, node *tree) {
     fprintValue(fd,*(tree->value));
     break;
   case ADD:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,")");
     sollyaFprintf(fd," + ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2))
       sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2))
       sollyaFprintf(fd,")");
     break;
   case SUB:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,")");
     sollyaFprintf(fd," - ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2))
       sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2))
       sollyaFprintf(fd,")");
     break;
   case MUL:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,")");
     sollyaFprintf(fd," * ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2))
       sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2))
       sollyaFprintf(fd,")");
     break;
   case DIV:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,")");
     sollyaFprintf(fd," / ");
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2))
       sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child2);
-    if (isInfix(tree->child2)) 
+    if (isInfix(tree->child2))
       sollyaFprintf(fd,")");
     break;
   case SQRT:
@@ -2484,10 +2484,10 @@ void fprintTree(FILE *fd, node *tree) {
     sollyaFprintf(fd,")");
     break;
   case POW:
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,")");
     sollyaFprintf(fd,"^(");
     fprintTree(fd,tree->child2);
@@ -2495,10 +2495,10 @@ void fprintTree(FILE *fd, node *tree) {
     break;
   case NEG:
     sollyaFprintf(fd,"-");
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,"(");
     fprintTree(fd,tree->child1);
-    if (isInfix(tree->child1)) 
+    if (isInfix(tree->child1))
       sollyaFprintf(fd,")");
     break;
   case ABS:
@@ -2536,7 +2536,7 @@ void fprintTree(FILE *fd, node *tree) {
     fprintTree(fd,tree->child1);
     sollyaFprintf(fd,")");
     break;
-  case ERF: 
+  case ERF:
     sollyaFprintf(fd,"erf(");
     fprintTree(fd,tree->child1);
     sollyaFprintf(fd,")");
@@ -2850,7 +2850,7 @@ node* copyTreeInner(node *tree) {
     copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = copyTreeInner(tree->child1);
     break;
-  case ERF: 
+  case ERF:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ERF;
     copy->child1 = copyTreeInner(tree->child1);
@@ -2931,9 +2931,9 @@ int mpfr_to_mpq( mpq_t y, mpfr_t x){
   if (mpfr_number_p(x)) {
     mpz_init(mant);
     expo = mpfr_get_z_exp(mant,x);
-    mpq_init(aux);    
+    mpq_init(aux);
     mpq_set_z(aux,mant);
-    
+
     if (expo>=0)
       mpq_mul_2exp(y,aux,(unsigned int)expo);
     else
@@ -2953,7 +2953,7 @@ mp_prec_t getMpzPrecision(mpz_t x) {
   prec = mpz_sizeinbase(x, 2);
   dyadicValue = mpz_scan1(x, 0);
   p = prec - dyadicValue;
-  if (p < 12) prec = 12; else prec = p; 
+  if (p < 12) prec = 12; else prec = p;
 
   return prec;
 }
@@ -2985,26 +2985,26 @@ int tryEvaluateConstantTermToMpq(mpq_t res, node *tree) {
     } else result = 0;
     break;
   case ADD:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1) &&
 	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
       mpq_add(resC,resA,resB);
     } else result = 0;
     break;
   case SUB:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1) &&
 	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
       mpq_sub(resC,resA,resB);
     } else result = 0;
     break;
   case MUL:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1) &&
 	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
       mpq_mul(resC,resA,resB);
     } else result = 0;
     break;
   case DIV:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
-	tryEvaluateConstantTermToMpq(resB, tree->child2) && 
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1) &&
+	tryEvaluateConstantTermToMpq(resB, tree->child2) &&
 	(mpq_sgn(resB) != 0)) {
       mpq_div(resC,resA,resB);
     } else result = 0;
@@ -3029,7 +3029,7 @@ int tryEvaluateConstantTermToMpq(mpq_t res, node *tree) {
     } else result = 0;
     break;
   case POW:
-    if (tryEvaluateConstantTermToMpq(resA, tree->child1) && 
+    if (tryEvaluateConstantTermToMpq(resA, tree->child1) &&
 	tryEvaluateConstantTermToMpq(resB, tree->child2)) {
       mpz_init(num);
       mpz_init(denom);
@@ -3099,7 +3099,7 @@ int containsNotANumbers(node * tree) {
   }
 
   if (tree->nodeType == CONSTANT) {
-    if (mpfr_nan_p(*(tree->value))) 
+    if (mpfr_nan_p(*(tree->value)))
       return 1;
     else
       return 0;
@@ -3137,8 +3137,8 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
   res = simplifyTreeErrorfreeInnerst(tree, rec, doRational);
 
   if ((tree != NULL) && (res != NULL) &&
-      (tree->nodeType == MEMREF) && 
-      isSyntacticallyEqual(tree,res)) {  
+      (tree->nodeType == MEMREF) &&
+      isSyntacticallyEqual(tree,res)) {
     free_memory(res);
     res = copyTree(tree);
   }
@@ -3169,7 +3169,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       sollya_mpfi_get_left(temp, *((sollya_mpfi_t *) tree->arguments->next->value));
       res = makeConstant(temp);
       mpfr_clear(temp);
-      return addMemRef(res); 
+      return addMemRef(res);
     }
     return addMemRef(simplifyTreeErrorfreeInner(tree->child1, rec, doRational));
   }
@@ -3198,7 +3198,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       exit(1);
     }
   }
-  
+
   if (doRational && isConstant(tree) && (tree->nodeType != CONSTANT)) {
     mpq_init(resMpq);
     if (tryEvaluateConstantTermToMpq(resMpq, tree)) {
@@ -3207,7 +3207,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       mpfr_set_z(num,mpq_numref(resMpq),GMP_RNDN); /* exact */
       mpfr_set_z(denom,mpq_denref(resMpq),GMP_RNDN); /* exact */
       mpfr_init2(resDiv,defaultprecision);
-      if ((mpfr_div(resDiv,num,denom,GMP_RNDN) == 0) &&  
+      if ((mpfr_div(resDiv,num,denom,GMP_RNDN) == 0) &&
 	  mpfr_number_p(resDiv)) {
 	mpfr_init2(resA,mpfr_get_prec(resDiv)+10);
 	mpfr_set(resA,resDiv,GMP_RNDN); /* exact */
@@ -3225,7 +3225,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
 	mpfr_clear(resA);
 	mpfr_clear(resB);
       }
-      
+
       mpfr_clear(num);
       mpfr_clear(denom);
       mpfr_clear(resDiv);
@@ -3235,11 +3235,11 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
     mpq_clear(resMpq);
   }
 
-  if ((tree->nodeType == DIV) && 
+  if ((tree->nodeType == DIV) &&
       (!containsNotANumbers(tree)) &&
       (isPolynomial(tree->child1)) &&
       (isPolynomial(tree->child2)) &&
-      ((alpha = getMaxPowerDivider(tree->child1)) > 0) && 
+      ((alpha = getMaxPowerDivider(tree->child1)) > 0) &&
       ((beta = getMaxPowerDivider(tree->child2)) > 0)) {
     if (alpha == beta) {
       temp1 = dividePolynomialByPowerOfVariableUnsafe(tree->child1, alpha);
@@ -3358,7 +3358,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       if (prec > 256 * tools_precision) prec = 256 * tools_precision;
       mpfr_init2(*value,prec);
       simplified->value = value;
-      if ((mpfr_add(*value, *(accessThruMemRef(simplChild1)->value), *(accessThruMemRef(simplChild2)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_add(*value, *(accessThruMemRef(simplChild1)->value), *(accessThruMemRef(simplChild2)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ADD;
 	simplified->child1 = simplChild1;
@@ -3443,7 +3443,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,prec);
       simplified->value = value;
-      if ((mpfr_sub(*value, *(accessThruMemRef(simplChild1)->value), *(accessThruMemRef(simplChild2)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_sub(*value, *(accessThruMemRef(simplChild1)->value), *(accessThruMemRef(simplChild2)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = SUB;
 	simplified->child1 = simplChild1;
@@ -3515,7 +3515,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,prec);
       simplified->value = value;
-      if ((mpfr_mul(*value, *(accessThruMemRef(simplChild1)->value), *(accessThruMemRef(simplChild2)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_mul(*value, *(accessThruMemRef(simplChild1)->value), *(accessThruMemRef(simplChild2)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = MUL;
 	simplified->child1 = simplChild1;
@@ -3529,7 +3529,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
     } else {
       if (((accessThruMemRef(simplChild1)->nodeType == CONSTANT) && (mpfr_zero_p(*(accessThruMemRef(simplChild1)->value)))) ||
 	  ((accessThruMemRef(simplChild2)->nodeType == CONSTANT) && (mpfr_zero_p(*(accessThruMemRef(simplChild2)->value))))) {
-	free_memory(simplChild1); 
+	free_memory(simplChild1);
 	free_memory(simplChild2);
 	simplified->nodeType = CONSTANT;
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
@@ -3653,19 +3653,19 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
 				simplified = recsimplified;
 			      }
 			    } else {
-			      if ((accessThruMemRef(simplChild2)->nodeType == DIV) && 
+			      if ((accessThruMemRef(simplChild2)->nodeType == DIV) &&
 				  (isSyntacticallyEqual(simplChild1,accessThruMemRef(simplChild2)->child2))) {
 				safeFree(simplified);
 				free_memory(simplChild1);
 				simplified = copyTree(accessThruMemRef(simplChild2)->child1);
-				free_memory(simplChild2); 
+				free_memory(simplChild2);
 			      } else {
-				if ((accessThruMemRef(simplChild1)->nodeType == DIV) && 
+				if ((accessThruMemRef(simplChild1)->nodeType == DIV) &&
 				    (isSyntacticallyEqual(simplChild2,accessThruMemRef(simplChild1)->child2))) {
 				  safeFree(simplified);
 				  free_memory(simplChild2);
 				  simplified = copyTree(accessThruMemRef(simplChild1)->child1);
-				  free_memory(simplChild1); 
+				  free_memory(simplChild1);
 				} else {
 				  simplified->nodeType = MUL;
 				  simplified->child1 = simplChild1;
@@ -3686,7 +3686,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       }
     }
     break;
-  case DIV: 
+  case DIV:
     simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec, doRational);
     simplChild2 = simplifyTreeErrorfreeInner(tree->child2,rec, doRational);
     simplified = (node*) safeMalloc(sizeof(node));
@@ -3702,7 +3702,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,prec);
       simplified->value = value;
-      if ((mpfr_div(*value, *(accessThruMemRef(simplChild1)->value), *(accessThruMemRef(simplChild2)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_div(*value, *(accessThruMemRef(simplChild1)->value), *(accessThruMemRef(simplChild2)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = DIV;
 	simplified->child1 = simplChild1;
@@ -3778,7 +3778,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
 		  simplified->child1->child1 = simplChild1;
 		  free_memory(simplChild2);
 		} else {
-		  if (accessThruMemRef(simplChild2)->nodeType == DIV) { 
+		  if (accessThruMemRef(simplChild2)->nodeType == DIV) {
 		    simplified->nodeType = MUL;
 		    simplified->child1 = simplChild1;
 		    simplified->child2 = (node *) safeMalloc(sizeof(node));
@@ -3828,7 +3828,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       }
     }
     break;
-  case SQRT: 
+  case SQRT:
     simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec, doRational);
     simplified = (node*) safeMalloc(sizeof(node));
     if (accessThruMemRef(simplChild1)->nodeType == CONSTANT) {
@@ -3841,7 +3841,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       if (prec > 256 * tools_precision) prec = 256 * tools_precision;
       mpfr_init2(*value,prec);
       simplified->value = value;
-      if ((mpfr_sqrt(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_sqrt(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = SQRT;
 	simplified->child1 = simplChild1;
@@ -3853,7 +3853,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
     } else {
       if ((accessThruMemRef(simplChild1)->nodeType == POW) &&
 	  (accessThruMemRef(accessThruMemRef(simplChild1)->child2)->nodeType == CONSTANT) &&
-	  (mpfr_cmp_d(*(accessThruMemRef(accessThruMemRef(simplChild1)->child2)->value),2.0) == 0.0) && 
+	  (mpfr_cmp_d(*(accessThruMemRef(accessThruMemRef(simplChild1)->child2)->value),2.0) == 0.0) &&
 	  (!mpfr_nan_p(*(accessThruMemRef(accessThruMemRef(simplChild1)->child2)->value)))) {
 	simplified->nodeType = ABS;
 	simplified->child1 = copyTree(accessThruMemRef(simplChild1)->child1);
@@ -3872,7 +3872,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_exp(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_exp(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = EXP;
 	simplified->child1 = simplChild1;
@@ -3894,7 +3894,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_log(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_log(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = LOG;
 	simplified->child1 = simplChild1;
@@ -3940,7 +3940,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_log2(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_log2(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = LOG_2;
 	simplified->child1 = simplChild1;
@@ -3962,7 +3962,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_log10(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_log10(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = LOG_10;
 	simplified->child1 = simplChild1;
@@ -3984,7 +3984,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_sin(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_sin(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = SIN;
 	simplified->child1 = simplChild1;
@@ -4006,7 +4006,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_cos(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_cos(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = COS;
 	simplified->child1 = simplChild1;
@@ -4028,7 +4028,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_tan(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_tan(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = TAN;
 	simplified->child1 = simplChild1;
@@ -4075,7 +4075,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
 	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  simplified->value = value;
-	  if ((mpfr_asin(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+	  if ((mpfr_asin(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	      (!mpfr_number_p(*value))) {
 	    simplified->nodeType = ASIN;
 	    simplified->child1 = simplChild1;
@@ -4106,7 +4106,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	simplified->value = value;
-	if ((mpfr_acos(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+	if ((mpfr_acos(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	    (!mpfr_number_p(*value))) {
 	  simplified->nodeType = ACOS;
 	  simplified->child1 = simplChild1;
@@ -4122,7 +4122,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       simplified->child1 = simplChild1;
     }
     break;
-  case ATAN: 
+  case ATAN:
     simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec, doRational);
     simplified = (node*) safeMalloc(sizeof(node));
     if (accessThruMemRef(simplChild1)->nodeType == CONSTANT) {
@@ -4155,7 +4155,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
 	  value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	  mpfr_init2(*value,tools_precision);
 	  simplified->value = value;
-	  if ((mpfr_atan(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+	  if ((mpfr_atan(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	      (!mpfr_number_p(*value))) {
 	    simplified->nodeType = ATAN;
 	    simplified->child1 = simplChild1;
@@ -4180,7 +4180,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_sinh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_sinh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = SINH;
 	simplified->child1 = simplChild1;
@@ -4202,7 +4202,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_cosh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_cosh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = COSH;
 	simplified->child1 = simplChild1;
@@ -4224,7 +4224,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_tanh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_tanh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = TANH;
 	simplified->child1 = simplChild1;
@@ -4246,7 +4246,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_asinh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_asinh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ASINH;
 	simplified->child1 = simplChild1;
@@ -4268,7 +4268,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_acosh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_acosh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ACOSH;
 	simplified->child1 = simplChild1;
@@ -4290,7 +4290,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_atanh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_atanh(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ATANH;
 	simplified->child1 = simplChild1;
@@ -4313,7 +4313,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_pow(*value, *(accessThruMemRef(simplChild1)->value), *(accessThruMemRef(simplChild2)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_pow(*value, *(accessThruMemRef(simplChild1)->value), *(accessThruMemRef(simplChild2)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value)) || (!mpfr_number_p(*(accessThruMemRef(simplChild1)->value)))) {
 	simplified->nodeType = POW;
 	simplified->child1 = simplChild1;
@@ -4333,7 +4333,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
 	value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
 	mpfr_init2(*value,tools_precision);
 	if ((accessThruMemRef(simplChild2)->nodeType == CONSTANT) &&
-	    (accessThruMemRef(simplChild1)->nodeType == POW) && 
+	    (accessThruMemRef(simplChild1)->nodeType == POW) &&
 	    (accessThruMemRef(accessThruMemRef(simplChild1)->child2)->nodeType == CONSTANT) &&
 	    (mpfr_mul(*value,*(accessThruMemRef(simplChild2)->value),*(accessThruMemRef(accessThruMemRef(simplChild1)->child2)->value),GMP_RNDN) == 0)) {
 	  simplified->nodeType = POW;
@@ -4349,7 +4349,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
 	  if ((accessThruMemRef(simplChild2)->nodeType == CONSTANT) &&
 	      (mpfr_cmp_d(*(accessThruMemRef(simplChild2)->value),2.0) == 0) &&
 	      (!mpfr_nan_p(*(accessThruMemRef(simplChild2)->value))) &&
-	      (accessThruMemRef(simplChild1)->nodeType == SQRT)) {	    
+	      (accessThruMemRef(simplChild1)->nodeType == SQRT)) {
 	    safeFree(simplified);
 	    simplified = copyTree(accessThruMemRef(simplChild1)->child1);
 	    free_memory(simplChild1);
@@ -4376,7 +4376,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       if (prec > 256 * tools_precision) prec = 256 * tools_precision;
       mpfr_init2(*value,prec);
       simplified->value = value;
-      if ((mpfr_neg(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_neg(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (mpfr_nan_p(*value))) {
 	simplified->nodeType = NEG;
 	simplified->child1 = simplChild1;
@@ -4404,7 +4404,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_abs(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_abs(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ABS;
 	simplified->child1 = simplChild1;
@@ -4432,7 +4432,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
-      mpfr_round_to_double(*value, *(accessThruMemRef(simplChild1)->value)); 
+      mpfr_round_to_double(*value, *(accessThruMemRef(simplChild1)->value));
       if (!mpfr_number_p(*value)) {
 	simplified->nodeType = DOUBLE;
 	simplified->child1 = simplChild1;
@@ -4441,7 +4441,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       } else {
 	free_memory(simplChild1);
       }
-    } else {     
+    } else {
       if (isConstant(simplChild1)) {
         xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
         xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
@@ -4456,7 +4456,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
         mpfr_round_to_double(*(xrange.a),*(yrange.a));
         mpfr_round_to_double(*(xrange.b),*(yrange.b));
-        if (mpfr_number_p(*(xrange.a)) && 
+        if (mpfr_number_p(*(xrange.a)) &&
             mpfr_number_p(*(xrange.b)) &&
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
@@ -4491,7 +4491,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
-      mpfr_round_to_single(*value, *(accessThruMemRef(simplChild1)->value)); 
+      mpfr_round_to_single(*value, *(accessThruMemRef(simplChild1)->value));
       if (!mpfr_number_p(*value)) {
 	simplified->nodeType = SINGLE;
 	simplified->child1 = simplChild1;
@@ -4500,7 +4500,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       } else {
 	free_memory(simplChild1);
       }
-    } else {     
+    } else {
       if (isConstant(simplChild1)) {
         xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
         xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
@@ -4515,7 +4515,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
         mpfr_round_to_single(*(xrange.a),*(yrange.a));
         mpfr_round_to_single(*(xrange.b),*(yrange.b));
-        if (mpfr_number_p(*(xrange.a)) && 
+        if (mpfr_number_p(*(xrange.a)) &&
             mpfr_number_p(*(xrange.b)) &&
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
@@ -4550,7 +4550,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,((tools_precision > 128)? tools_precision : 128));
       simplified->value = value;
-      mpfr_round_to_quad(*value, *(accessThruMemRef(simplChild1)->value)); 
+      mpfr_round_to_quad(*value, *(accessThruMemRef(simplChild1)->value));
       if (!mpfr_number_p(*value)) {
 	simplified->nodeType = QUAD;
 	simplified->child1 = simplChild1;
@@ -4559,7 +4559,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       } else {
 	free_memory(simplChild1);
       }
-    } else {     
+    } else {
       if (isConstant(simplChild1)) {
         xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
         xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
@@ -4574,7 +4574,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
         mpfr_round_to_quad(*(xrange.a),*(yrange.a));
         mpfr_round_to_quad(*(xrange.b),*(yrange.b));
-        if (mpfr_number_p(*(xrange.a)) && 
+        if (mpfr_number_p(*(xrange.a)) &&
             mpfr_number_p(*(xrange.b)) &&
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
@@ -4609,7 +4609,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,((tools_precision > 64)? tools_precision : 64));
       simplified->value = value;
-      mpfr_round_to_halfprecision(*value, *(accessThruMemRef(simplChild1)->value)); 
+      mpfr_round_to_halfprecision(*value, *(accessThruMemRef(simplChild1)->value));
       if (!mpfr_number_p(*value)) {
 	simplified->nodeType = HALFPRECISION;
 	simplified->child1 = simplChild1;
@@ -4618,7 +4618,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       } else {
 	free_memory(simplChild1);
       }
-    } else {     
+    } else {
       if (isConstant(simplChild1)) {
         xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
         xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
@@ -4633,7 +4633,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
         mpfr_round_to_halfprecision(*(xrange.a),*(yrange.a));
         mpfr_round_to_halfprecision(*(xrange.b),*(yrange.b));
-        if (mpfr_number_p(*(xrange.a)) && 
+        if (mpfr_number_p(*(xrange.a)) &&
             mpfr_number_p(*(xrange.b)) &&
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
@@ -4668,7 +4668,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,((tools_precision > 129)? tools_precision : 129));
       simplified->value = value;
-      mpfr_round_to_doubledouble(*value, *(accessThruMemRef(simplChild1)->value)); 
+      mpfr_round_to_doubledouble(*value, *(accessThruMemRef(simplChild1)->value));
       if (!mpfr_number_p(*value)) {
 	simplified->nodeType = DOUBLEDOUBLE;
 	simplified->child1 = simplChild1;
@@ -4692,7 +4692,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
         mpfr_round_to_doubledouble(*(xrange.a),*(yrange.a));
         mpfr_round_to_doubledouble(*(xrange.b),*(yrange.b));
-        if (mpfr_number_p(*(xrange.a)) && 
+        if (mpfr_number_p(*(xrange.a)) &&
             mpfr_number_p(*(xrange.b)) &&
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
@@ -4727,7 +4727,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,((tools_precision > 200)? tools_precision : 200));
       simplified->value = value;
-      mpfr_round_to_tripledouble(*value, *(accessThruMemRef(simplChild1)->value)); 
+      mpfr_round_to_tripledouble(*value, *(accessThruMemRef(simplChild1)->value));
       if (!mpfr_number_p(*value)) {
 	simplified->nodeType = TRIPLEDOUBLE;
 	simplified->child1 = simplChild1;
@@ -4751,7 +4751,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
         mpfr_round_to_tripledouble(*(xrange.a),*(yrange.a));
         mpfr_round_to_tripledouble(*(xrange.b),*(yrange.b));
-        if (mpfr_number_p(*(xrange.a)) && 
+        if (mpfr_number_p(*(xrange.a)) &&
             mpfr_number_p(*(xrange.b)) &&
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
@@ -4778,7 +4778,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       }
     }
     break;
-  case ERF: 
+  case ERF:
     simplChild1 = simplifyTreeErrorfreeInner(tree->child1,rec, doRational);
     simplified = (node*) safeMalloc(sizeof(node));
     if (accessThruMemRef(simplChild1)->nodeType == CONSTANT) {
@@ -4786,7 +4786,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_erf(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_erf(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ERF;
 	simplified->child1 = simplChild1;
@@ -4808,7 +4808,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_erfc(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_erfc(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = ERFC;
 	simplified->child1 = simplChild1;
@@ -4830,7 +4830,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_log1p(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_log1p(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = LOG_1P;
 	simplified->child1 = simplChild1;
@@ -4852,7 +4852,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_expm1(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) || 
+      if ((mpfr_expm1(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = EXP_M1;
 	simplified->child1 = simplChild1;
@@ -4874,7 +4874,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,((tools_precision > 128)? tools_precision : 128));
       simplified->value = value;
-      mpfr_round_to_doubleextended(*value, *(accessThruMemRef(simplChild1)->value)); 
+      mpfr_round_to_doubleextended(*value, *(accessThruMemRef(simplChild1)->value));
       if (!mpfr_number_p(*value)) {
 	simplified->nodeType = DOUBLEEXTENDED;
 	simplified->child1 = simplChild1;
@@ -4898,7 +4898,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
         mpfr_round_to_doubleextended(*(xrange.a),*(yrange.a));
         mpfr_round_to_doubleextended(*(xrange.b),*(yrange.b));
-        if (mpfr_number_p(*(xrange.a)) && 
+        if (mpfr_number_p(*(xrange.a)) &&
             mpfr_number_p(*(xrange.b)) &&
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
@@ -4971,7 +4971,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
         mpfr_ceil(*(xrange.a),*(yrange.a));
         mpfr_ceil(*(xrange.b),*(yrange.b));
-        if (mpfr_number_p(*(xrange.a)) && 
+        if (mpfr_number_p(*(xrange.a)) &&
             mpfr_number_p(*(xrange.b)) &&
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
@@ -5030,7 +5030,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
         mpfr_floor(*(xrange.a),*(yrange.a));
         mpfr_floor(*(xrange.b),*(yrange.b));
-        if (mpfr_number_p(*(xrange.a)) && 
+        if (mpfr_number_p(*(xrange.a)) &&
             mpfr_number_p(*(xrange.b)) &&
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
@@ -5089,7 +5089,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
         mpfr_nearestint(*(xrange.a),*(yrange.a));
         mpfr_nearestint(*(xrange.b),*(yrange.b));
-        if (mpfr_number_p(*(xrange.a)) && 
+        if (mpfr_number_p(*(xrange.a)) &&
             mpfr_number_p(*(xrange.b)) &&
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {
           simplified->nodeType = CONSTANT;
@@ -5176,12 +5176,12 @@ node* differentiateUnsimplified(node *tree) {
     temp_node = (node*) safeMalloc(sizeof(node));
     temp_node->nodeType = CONSTANT;
     temp_node->value = mpfr_temp;
-    derivative = temp_node;    
+    derivative = temp_node;
   } else {
     if (isPolynomial(tree) && ((deg = getDegreeSilent(tree)) <= MAXDIFFPOLYSPECIALDEGREE) && (deg >= 0)) {
       derivative = differentiatePolynomialUnsafe(tree);
     } else {
-      
+
       switch (tree->nodeType) {
       case VARIABLE:
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
@@ -5199,7 +5199,7 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node = (node*) safeMalloc(sizeof(node));
 	temp_node->nodeType = CONSTANT;
 	temp_node->value = mpfr_temp;
-	derivative = temp_node;    
+	derivative = temp_node;
 	break;
       case ADD:
 	temp_node = (node*) safeMalloc(sizeof(node));
@@ -5316,7 +5316,7 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node2 = (node*) safeMalloc(sizeof(node));
 	temp_node2->nodeType = EXP;
 	temp_node->child1 = temp_node2;
-	temp_node2->child1 = g_copy;    
+	temp_node2->child1 = g_copy;
 	derivative = temp_node;
 	break;
       case LOG:
@@ -5328,7 +5328,7 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node2 = (node*) safeMalloc(sizeof(node));
 	temp_node2->nodeType = DIV;
 	temp_node->child1 = temp_node2;
-	temp_node2->child2 = g_copy;    
+	temp_node2->child2 = g_copy;
 	temp_node3 = (node*) safeMalloc(sizeof(node));
 	temp_node3->nodeType = CONSTANT;
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
@@ -5741,7 +5741,7 @@ node* differentiateUnsimplified(node *tree) {
 	if (accessThruMemRef(tree->child2)->nodeType == CONSTANT) {
 	  g_copy = copyTree(tree->child2);
 	  g_copy2 = copyTree(tree->child2);
-	  f_diff = differentiateUnsimplified(tree->child1);      
+	  f_diff = differentiateUnsimplified(tree->child1);
 	  f_copy = copyTree(tree->child1);
 	  temp_node2 = (node*) safeMalloc(sizeof(node));
 	  temp_node2->nodeType = MUL;
@@ -5886,7 +5886,7 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node->value = mpfr_temp;
 	derivative = temp_node;
 	break;
-      case ERF: 
+      case ERF:
 	g_copy = copyTree(tree->child1);
 	g_diff = differentiateUnsimplified(tree->child1);
 	temp_node = (node*) safeMalloc(sizeof(node));
@@ -5990,7 +5990,7 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node4->nodeType = ADD;
 	temp_node4->child1 = temp_node3;
 	temp_node4->child2 = g_copy;
-	temp_node2->child2 = temp_node4;    
+	temp_node2->child2 = temp_node4;
 	temp_node3 = (node*) safeMalloc(sizeof(node));
 	temp_node3->nodeType = CONSTANT;
 	mpfr_temp = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
@@ -6009,7 +6009,7 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node2 = (node*) safeMalloc(sizeof(node));
 	temp_node2->nodeType = EXP;
 	temp_node->child1 = temp_node2;
-	temp_node2->child1 = g_copy;    
+	temp_node2->child1 = g_copy;
 	derivative = temp_node;
 	break;
       case DOUBLEEXTENDED:
@@ -6034,7 +6034,7 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node2->libFun = tree->libFun;
 	temp_node2->libFunDeriv = tree->libFunDeriv + 1;
 	temp_node->child1 = temp_node2;
-	temp_node2->child1 = g_copy;    
+	temp_node2->child1 = g_copy;
 	derivative = temp_node;
 	break;
       case PROCEDUREFUNCTION:
@@ -6048,7 +6048,7 @@ node* differentiateUnsimplified(node *tree) {
         temp_node2->child2 = copyThing(tree->child2);
 	temp_node2->libFunDeriv = tree->libFunDeriv + 1;
 	temp_node->child1 = temp_node2;
-	temp_node2->child1 = g_copy;    
+	temp_node2->child1 = g_copy;
 	derivative = temp_node;
 	break;
       case CEIL:
@@ -6092,7 +6092,7 @@ node* differentiateUnsimplified(node *tree) {
 	temp_node = (node*) safeMalloc(sizeof(node));
 	temp_node->nodeType = CONSTANT;
 	temp_node->value = mpfr_temp;
-	derivative = temp_node;    
+	derivative = temp_node;
 	break;
       default:
 	sollyaFprintf(stderr,"Error: differentiateUnsimplified: unknown identifier in the tree\n");
@@ -6110,7 +6110,7 @@ node* differentiate(node *tree) {
   node *temp, *temp3;
 
   printMessage(10,SOLLYA_MSG_FORMALLY_DIFFERENTIATING_AN_EXPRESSION,"Information: formally differentiating a function.\n");
-  
+
   printMessage(11,SOLLYA_MSG_FORMALLY_DIFFERENTIATING_A_PARTICULAR_EXPR,"Information: differentiating the expression '%b'\n",tree);
 
   if (isPolynomial(tree) && (isHorner(tree) || isCanonical(tree))) {
@@ -6397,7 +6397,7 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
 
   mpfr_clear(stack1); mpfr_clear(stack2);
   return isConstant;
-} 
+}
 
 node* simplifyTreeInnerst(node *tree);
 
@@ -6407,8 +6407,8 @@ node* simplifyTreeInner(node *tree) {
   res = simplifyTreeInnerst(tree);
 
   if ((tree != NULL) && (res != NULL) &&
-      (tree->nodeType == MEMREF) && 
-      isSyntacticallyEqual(tree,res)) {  
+      (tree->nodeType == MEMREF) &&
+      isSyntacticallyEqual(tree,res)) {
     free_memory(res);
     res = copyTree(tree);
   }
@@ -6485,7 +6485,7 @@ node* simplifyTreeInnerst(node *tree) {
 	free_memory(simplChild1);
 	safeFree(simplified);
 	simplified = simplChild2;
-      } else { 
+      } else {
 	if ((accessThruMemRef(simplChild2)->nodeType == CONSTANT) && (mpfr_zero_p(*(accessThruMemRef(simplChild2)->value)))) {
 	  free_memory(simplChild2);
 	  safeFree(simplified);
@@ -7197,8 +7197,8 @@ node* simplifyAllButDivisionInner(node *tree) {
   res = simplifyAllButDivisionInnerst(tree);
 
   if ((tree != NULL) && (res != NULL) &&
-      (tree->nodeType == MEMREF) && 
-      isSyntacticallyEqual(tree,res)) {  
+      (tree->nodeType == MEMREF) &&
+      isSyntacticallyEqual(tree,res)) {
     free_memory(res);
     res = copyTree(tree);
   }
@@ -7356,7 +7356,7 @@ node* simplifyAllButDivisionInnerst(node *tree) {
       simplified->child1 = simplChild1;
     }
     break;
-  case EXP: 
+  case EXP:
     simplChild1 = simplifyAllButDivisionInner(tree->child1);
     simplified = (node*) safeMalloc(sizeof(node));
     if (accessThruMemRef(simplChild1)->nodeType == CONSTANT) {
@@ -8240,18 +8240,18 @@ int isSyntacticallyEqual(node *tree1, node *tree2) {
 
   if (tree1->nodeType != tree2->nodeType) return 0;
   if (tree1->nodeType == PI_CONST) return 1;
-  if ((tree1->nodeType == LIBRARYFUNCTION) && 
+  if ((tree1->nodeType == LIBRARYFUNCTION) &&
       ((tree1->libFun != tree2->libFun) ||
        (tree1->libFunDeriv != tree2->libFunDeriv))) return 0;
-  if (tree1->nodeType == LIBRARYCONSTANT) 
+  if (tree1->nodeType == LIBRARYCONSTANT)
     return (tree1->libFun == tree2->libFun);
-  if ((tree1->nodeType == PROCEDUREFUNCTION) && 
+  if ((tree1->nodeType == PROCEDUREFUNCTION) &&
       ((!isEqualThing(tree1->child2, tree2->child2)) ||
        (tree1->libFunDeriv != tree2->libFunDeriv))) return 0;
   if (tree1->nodeType == CONSTANT) {
-    if (mpfr_equal_p(*(tree1->value),*(tree2->value))) 
+    if (mpfr_equal_p(*(tree1->value),*(tree2->value)))
       return 1;
-    else 
+    else
       return 0;
   }
   if (tree1->nodeType == VARIABLE) return 1;
@@ -8273,7 +8273,7 @@ int isConstant(node *tree);
 int isPolynomial(node *tree) {
   int res;
   node *temp;
-  
+
   if (tree->nodeType == MEMREF) {
     return isPolynomial(tree->child1);
   }
@@ -8335,7 +8335,7 @@ int isPolynomial(node *tree) {
   case NEARESTINT:
     res = 0;
     break;
- 
+
   case POW:
     {
       res = 0;
@@ -8343,9 +8343,9 @@ int isPolynomial(node *tree) {
 	res = 1;
       } else {
 	if (isPolynomial(tree->child1)) {
-	  if (accessThruMemRef(tree->child2)->nodeType == CONSTANT) 
-	    temp = tree->child2; 
-	  else 
+	  if (accessThruMemRef(tree->child2)->nodeType == CONSTANT)
+	    temp = tree->child2;
+	  else
 	    temp = simplifyTreeErrorfree(tree->child2);
 	  if (accessThruMemRef(temp)->nodeType == CONSTANT) {
 	    if (mpfr_integer_p(*(accessThruMemRef(temp)->value))) {
@@ -8443,9 +8443,9 @@ int isAffine(node *tree) {
     {
       res = 0;
       if (isAffine(tree->child1)) {
-        if (accessThruMemRef(tree->child2)->nodeType == CONSTANT) 
-          temp = tree->child2; 
-        else 
+        if (accessThruMemRef(tree->child2)->nodeType == CONSTANT)
+          temp = tree->child2;
+        else
           temp = simplifyTreeErrorfree(tree->child2);
         if (accessThruMemRef(temp)->nodeType == CONSTANT) {
           if (mpfr_number_p(*(accessThruMemRef(temp)->value)) && mpfr_integer_p(*(accessThruMemRef(temp)->value))) {
@@ -8521,7 +8521,7 @@ int getDegreeUnsafe(node *tree, int silent) {
       l = getDegreeUnsafe(tree->child1, silent);
       if (accessThruMemRef(tree->child2)->nodeType != CONSTANT) {
         simplifiedExponent = simplifyRationalErrorfree(tree->child2);
-        if ((accessThruMemRef(simplifiedExponent)->nodeType == CONSTANT) && 
+        if ((accessThruMemRef(simplifiedExponent)->nodeType == CONSTANT) &&
             mpfr_integer_p(*(accessThruMemRef(simplifiedExponent)->value)) &&
             (mpfr_sgn(*(accessThruMemRef(simplifiedExponent)->value)) >= 0)) {
           h = mpfr_get_ui(*(accessThruMemRef(simplifiedExponent)->value),GMP_RNDN);
@@ -8611,7 +8611,7 @@ int getDegreeUnsafeMpz(mpz_t res, node *tree) {
       mpz_clear(left);
       mpz_clear(right);
       return 1;
-    } 
+    }
     mpz_clear(left);
     mpz_clear(right);
     break;
@@ -8629,7 +8629,7 @@ int getDegreeUnsafeMpz(mpz_t res, node *tree) {
       mpz_clear(left);
       mpz_clear(right);
       return 1;
-    } 
+    }
     mpz_clear(left);
     mpz_clear(right);
     break;
@@ -8643,7 +8643,7 @@ int getDegreeUnsafeMpz(mpz_t res, node *tree) {
       mpz_clear(left);
       mpz_clear(right);
       return 1;
-    } 
+    }
     mpz_clear(left);
     mpz_clear(right);
     break;
@@ -8656,7 +8656,7 @@ int getDegreeUnsafeMpz(mpz_t res, node *tree) {
       l = getDegreeUnsafeMpz(left, tree->child1);
       if (accessThruMemRef(tree->child2)->nodeType != CONSTANT) {
         simplifiedExponent = simplifyRationalErrorfree(tree->child2);
-        if ((accessThruMemRef(simplifiedExponent)->nodeType == CONSTANT) && 
+        if ((accessThruMemRef(simplifiedExponent)->nodeType == CONSTANT) &&
             mpfr_integer_p(*(accessThruMemRef(simplifiedExponent)->value)) &&
             (mpfr_sgn(*(accessThruMemRef(simplifiedExponent)->value)) >= 0)) {
 	  mpz_init(right);
@@ -8773,19 +8773,19 @@ int getMaxPowerDividerUnsafe(node *tree) {
 	printMessage(1,SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NOT_CONSTANT,
 		     "Warning: an attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is not a constant but a constant expression.\n");
 	free_memory(simplifiedNode);
-	return -1;	
+	return -1;
       }
       if (!mpfr_integer_p(*(accessThruMemRef(simplifiedNode)->value))) {
 	printMessage(1,SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NOT_INTEGER,
 		     "Warning: an attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is not an integer.\n");
 	free_memory(simplifiedNode);
-	return -1;	
+	return -1;
       }
       if (mpfr_sgn(*(accessThruMemRef(simplifiedNode)->value)) < 0) {
 	printMessage(1,SOLLYA_MSG_DEG_OF_MAX_POLY_DIV_IS_NEGATIVE,
 		     "Warning: an attempt was made to compute the degree of the maximal polynomial divider of a polynomial in an expression using a power operator with an exponent which is negative.\n");
 	free_memory(simplifiedNode);
-	return -1;	
+	return -1;
       }
 
       r = mpfr_get_si(*(accessThruMemRef(simplifiedNode)->value),GMP_RNDN);
@@ -8823,7 +8823,7 @@ node* makeBinomial(node *a, node *b, int n, int s) {
   unsigned int i;
   mpz_t coeffGMP;
   mp_prec_t prec;
-  
+
   tree = (node*) safeMalloc(sizeof(node));
   tree->nodeType = CONSTANT;
   mpfr_temp = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
@@ -8927,7 +8927,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
     copy->nodeType = SUB;
     copy->child1 = expandPowerInPolynomialUnsafe(tree->child1);
     copy->child2 = expandPowerInPolynomialUnsafe(tree->child2);
-    return copy;    
+    return copy;
     break;
   case MUL:
     copy = (node*) safeMalloc(sizeof(node));
@@ -8950,7 +8950,7 @@ node* expandPowerInPolynomialUnsafe(node *tree) {
 	sollyaFprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. The exponent in a power operator is not constant.\n");
 	exit(1);
       }
-      if (!mpfr_integer_p(*(accessThruMemRef(tree->child2)->value))) { 
+      if (!mpfr_integer_p(*(accessThruMemRef(tree->child2)->value))) {
 	sollyaFprintf(stderr,"Error: expandPowerInPolynomialUnsafe: an error occurred. The exponent in a power operator is not integer.\n");
 	exit(1);
       }
@@ -9124,7 +9124,7 @@ node* expandDivision(node *tree) {
   if (tree->nodeType == MEMREF) {
     return addMemRef(expandDivision(tree->child1));
   }
-  
+
   switch (tree->nodeType) {
   case VARIABLE:
     copy = (node*) safeMalloc(sizeof(node));
@@ -9384,7 +9384,7 @@ node* expandDivision(node *tree) {
 
 
 node* expandPolynomialUnsafe(node *tree) {
-  node *left, *right, *copy, *tempNode, *tempNode2, *tempNode3, *tempNode4; 
+  node *left, *right, *copy, *tempNode, *tempNode2, *tempNode3, *tempNode4;
   mpfr_t *value;
 
   if (isConstant(tree)) return copyTree(tree);
@@ -9406,7 +9406,7 @@ node* expandPolynomialUnsafe(node *tree) {
     copy->nodeType = ADD;
     copy->child1 = left;
     copy->child2 = right;
-    return copy;    
+    return copy;
     break;
   case SUB:
     left = expandPolynomialUnsafe(tree->child1);
@@ -9438,7 +9438,7 @@ node* expandPolynomialUnsafe(node *tree) {
 	  copy->nodeType = MUL;
 	  copy->child1 = left;
 	  copy->child2 = right;
-	  break;  
+	  break;
 	default:
 	  tempNode = (node*) safeMalloc(sizeof(node));
 	  tempNode->nodeType = MUL;
@@ -9454,7 +9454,7 @@ node* expandPolynomialUnsafe(node *tree) {
       case ADD:
       case SUB:
       case NEG:
-      case DIV:      
+      case DIV:
 	tempNode = (node*) safeMalloc(sizeof(node));
 	tempNode->nodeType = MUL;
 	tempNode->child1 = right;
@@ -9467,9 +9467,9 @@ node* expandPolynomialUnsafe(node *tree) {
 	copy->nodeType = MUL;
 	copy->child1 = left;
 	copy->child2 = right;
-	break;  
+	break;
       }
-      break;  
+      break;
     case ADD:
       tempNode = (node*) safeMalloc(sizeof(node));
       tempNode->nodeType = ADD;
@@ -9502,7 +9502,7 @@ node* expandPolynomialUnsafe(node *tree) {
       tempNode->child2 = tempNode3;
       free_memory(left);
       copy = expandPolynomialUnsafe(tempNode);
-      free_memory(tempNode);      
+      free_memory(tempNode);
       break;
     case NEG:
       tempNode = (node*) safeMalloc(sizeof(node));
@@ -9514,7 +9514,7 @@ node* expandPolynomialUnsafe(node *tree) {
       tempNode->child1 = tempNode2;
       free_memory(left);
       copy = expandPolynomialUnsafe(tempNode);
-      free_memory(tempNode);      
+      free_memory(tempNode);
       break;
     case DIV:
       if (isConstant(left)) {
@@ -9528,7 +9528,7 @@ node* expandPolynomialUnsafe(node *tree) {
 	  case ADD:
 	  case SUB:
 	  case NEG:
-	  case DIV:      
+	  case DIV:
 	    tempNode = (node*) safeMalloc(sizeof(node));
 	    tempNode->nodeType = MUL;
 	    tempNode->child1 = right;
@@ -9541,8 +9541,8 @@ node* expandPolynomialUnsafe(node *tree) {
 	    copy->nodeType = MUL;
 	    copy->child1 = left;
 	    copy->child2 = right;
-	    break;  
-	  }  
+	    break;
+	  }
 	}
       } else {
 	tempNode = (node*) safeMalloc(sizeof(node));
@@ -9566,7 +9566,7 @@ node* expandPolynomialUnsafe(node *tree) {
 	free_memory(left);
 	copy = expandPolynomialUnsafe(tempNode);
 	free_memory(tempNode);
-      }      
+      }
       break;
     default:
       if (isConstant(left)) {
@@ -9598,7 +9598,7 @@ node* expandPolynomialUnsafe(node *tree) {
       copy->nodeType = DIV;
       copy->child1 = left;
       copy->child2 = right;
-      break;  
+      break;
     case VARIABLE:
       copy = (node*) safeMalloc(sizeof(node));
       copy->nodeType = MUL;
@@ -9647,7 +9647,7 @@ node* expandPolynomialUnsafe(node *tree) {
       tempNode->child2 = tempNode3;
       free_memory(left);
       copy = expandPolynomialUnsafe(tempNode);
-      free_memory(tempNode);      
+      free_memory(tempNode);
       break;
     case MUL:
       tempNode = (node*) safeMalloc(sizeof(node));
@@ -9670,7 +9670,7 @@ node* expandPolynomialUnsafe(node *tree) {
       tempNode4->child2 = copyTree(accessThruMemRef(left)->child2);
       free_memory(left);
       copy = expandPolynomialUnsafe(tempNode);
-      free_memory(tempNode);      
+      free_memory(tempNode);
       break;
     case DIV:
       tempNode = (node*) safeMalloc(sizeof(node));
@@ -9683,7 +9683,7 @@ node* expandPolynomialUnsafe(node *tree) {
       tempNode->child2 = tempNode2;
       free_memory(left);
       copy = expandPolynomialUnsafe(tempNode);
-      free_memory(tempNode);      
+      free_memory(tempNode);
       break;
     case NEG:
       tempNode = (node*) safeMalloc(sizeof(node));
@@ -9695,9 +9695,9 @@ node* expandPolynomialUnsafe(node *tree) {
       tempNode->child1 = tempNode2;
       free_memory(left);
       copy = expandPolynomialUnsafe(tempNode);
-      free_memory(tempNode);      
+      free_memory(tempNode);
       break;
-    default: 
+    default:
       if (isConstant(left)) {
 	return copyTree(tree);
       } else {
@@ -10089,7 +10089,7 @@ int isMonomial(node *tree) {
     break;
   case DIV:
     return (isConstant(tree->child2)) && isMonomial(tree->child1);
-  default: 
+  default:
     return isConstant(tree);
   }
   return 0;
@@ -10106,7 +10106,7 @@ node* getCoefficientsInMonomialUnsafe(node *polynom) {
   if (polynom->nodeType == MEMREF) return getCoefficientsInMonomialUnsafe(polynom->child1);
 
   if (polynom->nodeType == VARIABLE) return NULL;
- 
+
   if (polynom->nodeType == MUL) {
     leftSub = getCoefficientsInMonomialUnsafe(polynom->child1);
     rightSub = getCoefficientsInMonomialUnsafe(polynom->child2);
@@ -10120,7 +10120,7 @@ node* getCoefficientsInMonomialUnsafe(node *polynom) {
     return coeffs;
   }
 
-  if (polynom->nodeType == DIV) { 
+  if (polynom->nodeType == DIV) {
     leftSub = getCoefficientsInMonomialUnsafe(polynom->child1);
     if (leftSub == NULL) {
       coeffs = (node*) safeMalloc(sizeof(node));
@@ -10173,7 +10173,7 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
     getCoefficientsUnsafe(monomials, polynom->child1, sign);
     return;
   }
- 
+
   if (isMonomial(polynom)) {
     degree = getDegree(polynom);
     coeff = getCoefficientsInMonomialUnsafe(polynom);
@@ -10220,15 +10220,15 @@ void getCoefficientsUnsafe(node **monomials, node *polynom, int sign) {
   if (polynom->nodeType == NEG) {
     getCoefficientsUnsafe(monomials,polynom->child1,-sign);
     return;
-  }  
- 
+  }
+
 
   simplifiedTemp = expandPowerInPolynomialUnsafe(polynom);
   simplified = expandPolynomialUnsafe(simplifiedTemp);
 
   printMessage(7,SOLLYA_MSG_RECURSION_ON_POLY_COEFFICIENTS_EXTRACTION,"Warning: recursion on coefficients extraction: %b\ntransformed to\n%b\n",polynom,simplified);
 
-  getCoefficientsUnsafe(monomials, simplified, sign);  
+  getCoefficientsUnsafe(monomials, simplified, sign);
 
   free_memory(simplifiedTemp);
   free_memory(simplified);
@@ -10257,7 +10257,7 @@ void getCoefficientsHornerUnsafe(node **coefficients, node *poly, int offset, in
       deg = getDegree(accessThruMemRef(poly->child2)->child2);
       getCoefficientsHornerUnsafe(coefficients,accessThruMemRef(poly->child2)->child1,offset+deg,sign*newSign);
     } else {
-      if ((accessThruMemRef(poly->child2)->nodeType == MUL) && 
+      if ((accessThruMemRef(poly->child2)->nodeType == MUL) &&
 	  (accessThruMemRef(accessThruMemRef(poly->child2)->child1)->nodeType == MUL) &&
 	  isPowerOfVariable(accessThruMemRef(accessThruMemRef(poly->child2)->child1)->child1) &&
 	  isConstant(accessThruMemRef(accessThruMemRef(poly->child2)->child1)->child2) &&
@@ -10286,7 +10286,7 @@ void getCoefficientsHornerUnsafe(node **coefficients, node *poly, int offset, in
       }
     }
   }
-  
+
   if (coefficients[offset] == NULL) {
     if (sign == -1) {
       temp = (node *) safeMalloc(sizeof(node));
@@ -10407,10 +10407,10 @@ node *dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha);
 node *makePowerOfConstant(node *constTree, int k);
 node *makeBinomialCoefficient(unsigned int n, unsigned int k);
 
-/* Computes the coefficients of the polynomial p^k where p is 
+/* Computes the coefficients of the polynomial p^k where p is
 // given by the coefficients in input
 */
-void computePowerOfPolynomialCoefficients(int *degreeRes, node ***coeffRes, 
+void computePowerOfPolynomialCoefficients(int *degreeRes, node ***coeffRes,
                                           node **coeffs, int degree, int k) {
   int i, t;
   node **coeffsQ;
@@ -10459,10 +10459,10 @@ void computePowerOfPolynomialCoefficients(int *degreeRes, node ***coeffRes,
   }
 
   for (t=0;t<=k;t++) {
-    if ((coeffs[0] != NULL) && 
+    if ((coeffs[0] != NULL) &&
         (!((accessThruMemRef(coeffs[0])->nodeType == CONSTANT) &&
            (mpfr_zero_p(*(accessThruMemRef(coeffs[0])->value)))))) {
-      computePowerOfPolynomialCoefficients(&degreeQ, &coeffsQ, 
+      computePowerOfPolynomialCoefficients(&degreeQ, &coeffsQ,
                                            &(coeffs[1]), degree - 1, t);
       binom = makeBinomialCoefficient(k, t);
       constPow = makePowerOfConstant(coeffs[0],k-t);
@@ -10478,7 +10478,7 @@ void computePowerOfPolynomialCoefficients(int *degreeRes, node ***coeffRes,
       free_memory(factor);
     } else {
       if (k == t) {
-        computePowerOfPolynomialCoefficients(&degreeQ, &coeffsQ, 
+        computePowerOfPolynomialCoefficients(&degreeQ, &coeffsQ,
                                              &(coeffs[1]), degree - 1, t);
         factor = makeBinomialCoefficient(k, t);
         for (i=t;i<=t+degreeQ;i++) {
@@ -10525,7 +10525,7 @@ void getCoefficientsInner(int *degree, node ***coefficients, node *poly) {
   *coefficients = (node**) safeCalloc((*degree + 1),sizeof(node*));
   for (i=0;i<=*degree;i++) (*coefficients)[i] = NULL;
 
-  
+
   if (isHorner(poly)) {
     getCoefficientsHorner(*coefficients,poly);
     return;
@@ -10535,7 +10535,7 @@ void getCoefficientsInner(int *degree, node ***coefficients, node *poly) {
     getCoefficientsCanonical(*coefficients,poly);
     return;
   }
-  
+
 
   if ((poly->nodeType == ADD) || (poly->nodeType == SUB)) {
     getCoefficients(&degree1, &coefficients1, poly->child1);
@@ -10555,7 +10555,7 @@ void getCoefficientsInner(int *degree, node ***coefficients, node *poly) {
 	  } else {
 	    (*coefficients)[i] = coefficients2[i];
 	  }
-	  
+
 	} else {
 	  temp = (node *) safeMalloc(sizeof(node));
 	  temp->nodeType = poly->nodeType;
@@ -10615,9 +10615,9 @@ void getCoefficientsInner(int *degree, node ***coefficients, node *poly) {
         temp2->child2 = copyTree(poly->child2);
         getCoefficients(&degree1, &coefficients1, temp2);
         free_memory(temp2);
-        for (i=0;i<=degree1;i++) 
+        for (i=0;i<=degree1;i++)
           (*coefficients)[i + k * mpd] = coefficients1[i];
-        safeFree(coefficients1);    
+        safeFree(coefficients1);
         mpfr_clear(y);
         return;
       }
@@ -10655,12 +10655,12 @@ void getCoefficientsInner(int *degree, node ***coefficients, node *poly) {
 
       getCoefficients(&degree1, &coefficients1, poly->child1);
       for (i=0;i<=degree1;i++) {
-        if (coefficients1[i] == NULL) 
+        if (coefficients1[i] == NULL)
           coefficients1[i] = makeConstantDouble(0.0);
       }
 
-      computePowerOfPolynomialCoefficients(&degree2, &coefficients2, 
-                                           coefficients1, degree1, 
+      computePowerOfPolynomialCoefficients(&degree2, &coefficients2,
+                                           coefficients1, degree1,
                                            k);
       for (i=0;i<=degree2;i++) {
         if (coefficients2[i] != NULL) {
@@ -10671,7 +10671,7 @@ void getCoefficientsInner(int *degree, node ***coefficients, node *poly) {
       }
 
       for (i=0;i<=degree2;i++) {
-        if ((coefficients2[i] != NULL) && 
+        if ((coefficients2[i] != NULL) &&
             (!((accessThruMemRef(coefficients2[i])->nodeType == CONSTANT) &&
                (mpfr_zero_p(*(accessThruMemRef(coefficients2[i])->value)))))) {
           (*coefficients)[i] = copyTree(coefficients2[i]);
@@ -10684,7 +10684,7 @@ void getCoefficientsInner(int *degree, node ***coefficients, node *poly) {
       safeFree(coefficients2);
       mpfr_clear(y);
       return;
-    } 
+    }
     mpfr_clear(y);
   }
 
@@ -10719,7 +10719,7 @@ node* hornerPolynomialUnsafe(node *tree) {
   node **monomials;
   int degree, i, k, e;
   mpfr_t *value;
-  
+
   simplified = simplifyTreeErrorfree(tree);
 
   if (isHorner(simplified)) {
@@ -10808,7 +10808,7 @@ node* hornerPolynomialUnsafe(node *tree) {
       copy = temp;
     }
   }
-  
+
 
   for (i=0;i<=degree;i++) {
     if (monomials[i] != NULL) free_memory(monomials[i]);
@@ -10824,13 +10824,13 @@ node* dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha) {
   node **monomials;
   int degree, i, k, e;
   mpfr_t *value;
-  
+
   simplified = simplifyTreeErrorfree(tree);
 
   getCoefficients(&degree,&monomials,simplified);
 
   if (alpha > 0) {
-    for (i=0;i<alpha;i++) 
+    for (i=0;i<alpha;i++)
       if (monomials[i] != NULL) free_memory(monomials[i]);
     for (i=alpha;i<=degree;i++) {
       monomials[i-alpha] = monomials[i];
@@ -10908,7 +10908,7 @@ node* dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha) {
       copy = temp;
     }
   }
-  
+
 
   for (i=0;i<=degree;i++) {
     if (monomials[i] != NULL) free_memory(monomials[i]);
@@ -10923,16 +10923,16 @@ node* dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha) {
 
 node* hornerPolynomial(node *tree) {
   node *temp;
-  
+
   if (isConstant(tree)) return copyTree(tree);
   if (getDegree(tree) < 0) return copyTree(tree);
   if (isHorner(tree)) {
     printMessage(7,SOLLYA_MSG_EXPR_NOT_HORNERIZED_AS_ALREADY_HORNERIZED,"Information: no Horner simplification will be performed because the given tree is already in Horner form.\n");
     return copyTree(tree);
   }
-  
+
   temp = hornerPolynomialUnsafe(tree);
-  
+
   return temp;
 }
 
@@ -11195,7 +11195,7 @@ int isPowerOfVariable(node *tree) {
   if (tree->nodeType == VARIABLE) return 1;
   if ((tree->nodeType == POW) &&
       (accessThruMemRef(tree->child1)->nodeType == VARIABLE) &&
-      (accessThruMemRef(tree->child2)->nodeType == CONSTANT) && 
+      (accessThruMemRef(tree->child2)->nodeType == CONSTANT) &&
       mpfr_integer_p(*(accessThruMemRef(tree->child2)->value))) return 1;
   return 0;
 }
@@ -11228,7 +11228,7 @@ int isHornerUnsafe(node *tree) {
 
 int isHorner(node *tree) {
   if (tree->nodeType == MEMREF) return isHorner(tree->child1);
-  if ((tree->nodeType == ADD) || (tree->nodeType == SUB)) 
+  if ((tree->nodeType == ADD) || (tree->nodeType == SUB))
     return isHornerUnsafe(tree);
   if (tree->nodeType == MUL) {
     return isPowerOfVariable(tree->child1) && isHornerUnsafe(tree->child2);
@@ -11244,8 +11244,8 @@ node* horner(node *tree) {
   res = hornerInner(tree);
 
   if ((tree != NULL) && (res != NULL) && (tree != res) &&
-      (tree->nodeType == MEMREF) && 
-      isSyntacticallyEqual(tree,res)) {  
+      (tree->nodeType == MEMREF) &&
+      isSyntacticallyEqual(tree,res)) {
     free_memory(res);
     res = copyTree(tree);
   }
@@ -11321,7 +11321,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
       monomials[i-1] = NULL;
     }
   }
-  
+
   degree--;
 
   copy = copyTree(monomials[degree]);
@@ -11386,7 +11386,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
       copy = temp;
     }
   }
-  
+
 
   for (i=0;i<=degree;i++) {
     if (monomials[i] != NULL) free_memory(monomials[i]);
@@ -11405,7 +11405,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
   if (isHorner(tree)) {
     printMessage(25,SOLLYA_MSG_DIFFERENTIATION_USES_SPECIAL_ALGO_FOR_HORNER,"Information: differentiating a polynomial in Horner form uses a special algorithm.\n");
     return differentiatePolynomialHornerUnsafe(tree);
-  } 
+  }
 
   degree = getDegree(tree);
 
@@ -11418,7 +11418,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
     copy->value = value;
   } else {
     getCoefficients(&degree,&monomials,tree);
- 
+
     if (monomials[degree] == NULL) {
       copy = (node*) safeMalloc(sizeof(node));
       copy->nodeType = CONSTANT;
@@ -11428,7 +11428,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
       copy->value = value;
       monomials[degree] = copy;
     }
-    
+
     if (degree >= 2) {
       if (degree > 2) {
 	temp = copyTree(monomials[degree]);
@@ -11494,7 +11494,7 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	temp4->child2 = temp;
 	copy = temp4;
       }
-          
+
       for (i=degree-1;i>1;i--) {
 	if (monomials[i] != NULL) {
 	  temp = copyTree(monomials[i]);
@@ -11538,27 +11538,27 @@ node *differentiatePolynomialUnsafe(node *tree) {
 	  temp2->nodeType = ADD;
 	  temp2->child1 = temp5;
 	  temp2->child2 = temp;
-	  copy = temp2;      
-	} 
+	  copy = temp2;
+	}
       }
-      
+
       if (monomials[1] != NULL) {
 	temp = copyTree(monomials[1]);
 	temp2 = (node*) safeMalloc(sizeof(node));
 	temp2->nodeType = ADD;
 	temp2->child1 = temp;
 	temp2->child2 = copy;
-	copy = temp2;      
-      } 
+	copy = temp2;
+      }
     } else {
       copy = copyTree(monomials[1]);
     }
-  
+
     for (i=0;i<=degree;i++) {
       if (monomials[i] != NULL) free_memory(monomials[i]);
     }
     safeFree(monomials);
-  } 
+  }
 
   return copy;
 }
@@ -11625,7 +11625,7 @@ node *makePowerOfConstant(node *constTree, int k) {
 /* polynomialShiftAndScaleAbscissaUnsafe(poly, a, b) returns
 //
 // p(a + b * x)
-// 
+//
 // for a polynomial p and a, b constant nodes
 //
 // If poly is not a polynomial the tool is terminated.
@@ -11639,7 +11639,7 @@ node *polynomialShiftAndScaleAbscissaUnsafe(node *poly, node *a, node *b) {
   node *temp;
   int degree;
   int i,k;
- 
+
   getCoefficients(&degree, &coeffs, poly);
   if (degree < 0) {
     sollyaFprintf(stderr,"Error: polynomialShiftAndScaleAbscissaUnsafe: the given expression is not a polynomial\n");
@@ -11719,7 +11719,7 @@ node *substitutePolynomialUnsafe(node *p, node *q) {
 
   for (i=0;i<=degP;i++) {
     if (coeffsP[i] != NULL) {
-      computePowerOfPolynomialCoefficients(&degQPi, &coeffsQPi, 
+      computePowerOfPolynomialCoefficients(&degQPi, &coeffsQPi,
                                            coeffsQ, degQ, i);
       for (k=0;k<=degQPi;k++) {
         if (coeffsQPi[k] != NULL) {
@@ -11775,7 +11775,7 @@ node *substitute(node* tree, node *t) {
     return addMemRef(substitute(tree->child1, t));
   }
 
-  if (isPolynomial(tree) && 
+  if (isPolynomial(tree) &&
       isPolynomial(t)) {
     if ((getDegree(t) == 1) &&
         (getDegree(tree) >= 2)) {
@@ -11801,7 +11801,7 @@ node *substitute(node* tree, node *t) {
       safeFree(coeffs);
     }
 
-    if ((getDegree(t) >= 2) && 
+    if ((getDegree(t) >= 2) &&
         (getDegree(tree) >= 2)) {
       copy = substitutePolynomialUnsafe(tree,t);
       return copy;
@@ -11812,7 +11812,7 @@ node *substitute(node* tree, node *t) {
     copy = NULL;
     sollya_mpfi_init2(tEval, tools_precision * 2);
     sollya_mpfi_init2(treeEval, tools_precision * 2);
-    
+
     evaluateConstantExpressionToInterval(tEval, t);
     evaluateInterval(treeEval, tree, NULL, tEval);
 
@@ -11821,8 +11821,8 @@ node *substitute(node* tree, node *t) {
     mpfr_init2(tEr, treeEvalPrec);
     sollya_mpfi_get_left(tEl, treeEval);
     sollya_mpfi_get_right(tEr, treeEval);
-    
-    if (mpfr_number_p(tEr) && 
+
+    if (mpfr_number_p(tEr) &&
 	mpfr_number_p(tEl) &&
 	mpfr_equal_p(tEr, tEl)) {
       copy = makeConstant(tEr);
@@ -12085,7 +12085,7 @@ void composePolynomialsInner(sollya_mpfi_t *res, int degR, sollya_mpfi_t *p, int
    */
   sollya_mpfi_init2(temp, prec);
 
-  /* Allocate two scratch arrays of the length of 
+  /* Allocate two scratch arrays of the length of
   // the result polynomial.
   */
   r = safeCalloc(degR+1,sizeof(sollya_mpfi_t));
@@ -12104,7 +12104,7 @@ void composePolynomialsInner(sollya_mpfi_t *res, int degR, sollya_mpfi_t *p, int
   sollya_mpfi_set(r[0],p[degP]);
   for (i=degP-1;i>=0;i--) {
     /* Multiply pTilde(q) with q, result in s
-       while clearing up r 
+       while clearing up r
     */
     for (j=0;j<=degQ*(degP-1-i);j++) {
       for (k=0;k<=degQ;k++) {
@@ -12116,7 +12116,7 @@ void composePolynomialsInner(sollya_mpfi_t *res, int degR, sollya_mpfi_t *p, int
     }
     /* Add in a_i */
     sollya_mpfi_add(s[0],s[0],p[i]);
-    
+
     /* Swap r and s for next step */
     t = s;
     s = r;
@@ -12153,7 +12153,7 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
   mpfr_t *coeffsR;
   sollya_mpfi_t **radiiArray;
 
-  /* Check if both p and q are polynomials 
+  /* Check if both p and q are polynomials
   // and implement a fallback solution
   // for when this is not the case
   */
@@ -12170,7 +12170,7 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
   getCoefficients(&degP, &coeffsP, p);
   getCoefficients(&degQ, &coeffsQ, q);
 
-  /* Evaluate all coefficients of p and q to 
+  /* Evaluate all coefficients of p and q to
   // small intervals in two arrays polyP and polyQ.
   */
   polyP = (sollya_mpfi_t *) safeCalloc(degP+1,sizeof(sollya_mpfi_t));
@@ -12206,15 +12206,15 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
     }
   }
   safeFree(coeffsQ);
-  
-  /* Allocate and initialize an array of interval coefficients for the result 
+
+  /* Allocate and initialize an array of interval coefficients for the result
   // polynomial
   */
   degR = degP * degQ;
   polyR = (sollya_mpfi_t *) safeCalloc(degR+1,sizeof(sollya_mpfi_t));
   for (i=0;i<=degR;i++) {
     sollya_mpfi_init2(polyR[i],prec);
-  }  
+  }
 
   /* Have an auxiliary function do the real work of composing p and q
    */
@@ -12232,8 +12232,8 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
   safeFree(polyQ);
 
   /* Allocate and compute an array of centerpoints
-  // 
-  // Allocate also pointers to intervals and 
+  //
+  // Allocate also pointers to intervals and
   // initialize intervals that will hold the radii.
   //
   // Clear the intervals for the output coefficients
@@ -12264,7 +12264,7 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
     mpfr_clear(coeffsR[i]);
   }
   safeFree(coeffsR);
-  
+
   /* Convert the array of radii to a list of radii
    */
   *radii = NULL;
@@ -12272,11 +12272,11 @@ void composePolynomials(node **poly, chain **radii, node *p, node *q, mp_prec_t 
     *radii = addElement(*radii,(void *) (radiiArray[i]));
   }
 
-  /* Free the array holding the pointers to the 
+  /* Free the array holding the pointers to the
   // intervals of radii.
   */
   safeFree(radiiArray);
-  
+
 }
 
 int readHexadecimal(mpfr_t rop, char *c) {
@@ -12284,11 +12284,11 @@ int readHexadecimal(mpfr_t rop, char *c) {
   mp_prec_t p;
   int res, resA, resB;
   char *c2;
-  
+
   c2 = (char *) safeCalloc(strlen(c) + 2, sizeof(char));
   strcpy(c2, c);
 
-  if ((c2[strlen(c2) - 1] == 'p') || 
+  if ((c2[strlen(c2) - 1] == 'p') ||
       (c2[strlen(c2) - 1] == 'P')) c2[strlen(c2)] = '0';
 
 
@@ -12296,7 +12296,7 @@ int readHexadecimal(mpfr_t rop, char *c) {
 
   mpfr_init2(vrd, p);
   mpfr_init2(vru, p);
-  
+
   resA = mpfr_set_str(vrd, c2, 16, GMP_RNDD);
   resB = mpfr_set_str(vru, c2, 16, GMP_RNDU);
 
@@ -12328,7 +12328,7 @@ int readHexadecimal(mpfr_t rop, char *c) {
 
 
 int readDyadic(mpfr_t res, char *c) {
-  char *mantissa, *exponent, *curr, *curr2;  
+  char *mantissa, *exponent, *curr, *curr2;
   mpfr_t mant, expo, temp1, temp2;
   mp_prec_t prec;
   int rounding;
@@ -12355,7 +12355,7 @@ int readDyadic(mpfr_t res, char *c) {
   mpfr_init2(mant,prec);
   mpfr_init2(expo,prec);
   mpfr_init2(temp1,prec);
-  mpfr_init2(temp2,prec); 
+  mpfr_init2(temp2,prec);
 
   mpfr_set_str(temp1,mantissa,10,GMP_RNDU);
   mpfr_set_str(temp2,mantissa,10,GMP_RNDD);
@@ -12378,7 +12378,7 @@ int readDyadic(mpfr_t res, char *c) {
   if (mpfr_mul(res,mant,expo,GMP_RNDN) != 0) {
     rounding = 0;
   }
- 
+
   if (!mpfr_number_p(res)) rounding = 1;
 
   mpfr_clear(mant);
@@ -12405,9 +12405,9 @@ node *makePolynomialConstantExpressions(node **coeffs, int deg) {
   }
 
   degree = deg;
-  while ((degree > 0) && 
-         ((coeffs[degree] == NULL) || 
-          ((accessThruMemRef(coeffs[degree])->nodeType == CONSTANT) && 
+  while ((degree > 0) &&
+         ((coeffs[degree] == NULL) ||
+          ((accessThruMemRef(coeffs[degree])->nodeType == CONSTANT) &&
            (mpfr_zero_p(*(accessThruMemRef(coeffs[degree])->value)))))) degree--;
 
   if (degree == 0) {
@@ -12417,8 +12417,8 @@ node *makePolynomialConstantExpressions(node **coeffs, int deg) {
 
   copy = copyTree(coeffs[degree]);
   for (i=degree-1;i>=0;i--) {
-    if ((coeffs[i] == NULL) || 
-        ((accessThruMemRef(coeffs[i])->nodeType == CONSTANT) && 
+    if ((coeffs[i] == NULL) ||
+        ((accessThruMemRef(coeffs[i])->nodeType == CONSTANT) &&
          (mpfr_zero_p(*(accessThruMemRef(coeffs[i])->value))))) {
       if ((i == 0)) {
 	temp = (node *) safeMalloc(sizeof(node));
@@ -12429,8 +12429,8 @@ node *makePolynomialConstantExpressions(node **coeffs, int deg) {
 	temp->child2 = copy;
 	copy = temp;
       } else {
-	for (k=i-1;(((coeffs[k] == NULL) || 
-                     ((accessThruMemRef(coeffs[k])->nodeType == CONSTANT) && 
+	for (k=i-1;(((coeffs[k] == NULL) ||
+                     ((accessThruMemRef(coeffs[k])->nodeType == CONSTANT) &&
                       (mpfr_zero_p(*(accessThruMemRef(coeffs[k])->value))))) && (k > 0));k--);
 	e = (i - k) + 1;
 	temp = (node *) safeMalloc(sizeof(node));
@@ -12456,8 +12456,8 @@ node *makePolynomialConstantExpressions(node **coeffs, int deg) {
 	temp->child1 = temp4;
 	temp->child2 = copy;
 	copy = temp;
-	if (!((coeffs[k] == NULL) || 
-              ((accessThruMemRef(coeffs[k])->nodeType == CONSTANT) && 
+	if (!((coeffs[k] == NULL) ||
+              ((accessThruMemRef(coeffs[k])->nodeType == CONSTANT) &&
                (mpfr_zero_p(*(accessThruMemRef(coeffs[k])->value)))))) {
 	  temp = (node *) safeMalloc(sizeof(node));
 	  temp->nodeType = ADD;
@@ -12494,9 +12494,9 @@ node *makePolynomial(mpfr_t *coefficients, int degree) {
   node **coeffs;
   int i;
   node *poly;
-  
+
   /* Allocate and build an array of constant expressions
-     representing the coefficients. 
+     representing the coefficients.
      Do not represent zeros.
   */
   coeffs = (node **) safeCalloc(degree+1,sizeof(node *));
@@ -12577,8 +12577,8 @@ int treeSize(node *tree) {
   case LOG_1P:
   case EXP_M1:
   case DOUBLEEXTENDED:
-  case LIBRARYFUNCTION:    
-  case PROCEDUREFUNCTION:    
+  case LIBRARYFUNCTION:
+  case PROCEDUREFUNCTION:
   case CEIL:
   case FLOOR:
   case NEARESTINT:
@@ -12612,7 +12612,7 @@ int highestDegreeOfPolynomialSubexpression(node *tree) {
   case 0:
     return getDegree(tree);
     break;
-  default: 
+  default:
     sollyaFprintf(stderr,"Error: unknown arity of an operator.\n");
     exit(1);
   }
@@ -12622,13 +12622,13 @@ int highestDegreeOfPolynomialSubexpression(node *tree) {
 
 node *makeAddSimplified(node *a, node *b) {
 
-  if ((accessThruMemRef(a)->nodeType == CONSTANT) && 
+  if ((accessThruMemRef(a)->nodeType == CONSTANT) &&
       mpfr_zero_p(*(accessThruMemRef(a)->value))) {
     free_memory(a);
     return b;
   }
 
-  if ((accessThruMemRef(b)->nodeType == CONSTANT) && 
+  if ((accessThruMemRef(b)->nodeType == CONSTANT) &&
       mpfr_zero_p(*(accessThruMemRef(b)->value))) {
     free_memory(b);
     return a;
@@ -12639,13 +12639,13 @@ node *makeAddSimplified(node *a, node *b) {
 
 node *makeSubSimplified(node *a, node *b) {
 
-  if ((accessThruMemRef(a)->nodeType == CONSTANT) && 
+  if ((accessThruMemRef(a)->nodeType == CONSTANT) &&
       mpfr_zero_p(*(accessThruMemRef(a)->value))) {
     free_memory(a);
     return b;
   }
 
-  if ((accessThruMemRef(b)->nodeType == CONSTANT) && 
+  if ((accessThruMemRef(b)->nodeType == CONSTANT) &&
       mpfr_zero_p(*(accessThruMemRef(b)->value))) {
     free_memory(b);
     return a;
@@ -12656,26 +12656,26 @@ node *makeSubSimplified(node *a, node *b) {
 
 node *makeMulSimplified(node *a, node *b) {
 
-  if ((accessThruMemRef(a)->nodeType == CONSTANT) && 
+  if ((accessThruMemRef(a)->nodeType == CONSTANT) &&
       mpfr_zero_p(*(accessThruMemRef(a)->value))) {
     free_memory(b);
     return a;
   }
 
-  if ((accessThruMemRef(b)->nodeType == CONSTANT) && 
+  if ((accessThruMemRef(b)->nodeType == CONSTANT) &&
       mpfr_zero_p(*(accessThruMemRef(b)->value))) {
     free_memory(a);
     return b;
   }
 
-  if ((accessThruMemRef(a)->nodeType == CONSTANT) && 
+  if ((accessThruMemRef(a)->nodeType == CONSTANT) &&
       mpfr_number_p(*(accessThruMemRef(a)->value)) &&
       (mpfr_cmp_si(*(accessThruMemRef(a)->value),1) == 0)) {
     free_memory(a);
     return b;
   }
 
-  if ((accessThruMemRef(b)->nodeType == CONSTANT) && 
+  if ((accessThruMemRef(b)->nodeType == CONSTANT) &&
       mpfr_number_p(*(accessThruMemRef(b)->value)) &&
       (mpfr_cmp_si(*(accessThruMemRef(b)->value),1) == 0)) {
     free_memory(b);
@@ -12706,7 +12706,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
 
   switch (poly->nodeType) {
   case MEMREF:
-    return tryGetIthCoefficientSparseUnsafe(res, poly->child1, i); 
+    return tryGetIthCoefficientSparseUnsafe(res, poly->child1, i);
     break;
   case CONSTANT:
   case PI_CONST:
@@ -12730,7 +12730,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     break;
   case ADD:
     /* p = q + r */
-    if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i) && 
+    if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i) &&
 	tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, i)) {
       *res = makeAddSimplified(resLeft, resRight);
       resLeft = NULL;
@@ -12740,11 +12740,11 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     break;
   case SUB:
     /* p = q - r */
-    if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i) && 
+    if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, i) &&
 	tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, i)) {
       *res = makeSubSimplified(resLeft, resRight);
       resLeft = NULL;
-      resRight = NULL;      
+      resRight = NULL;
       return 1;
     }
     break;
@@ -12774,9 +12774,9 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
       if (tryGetIthCoefficientSparseUnsafe(res, poly->child1, i - 1)) return 1;
     }
     /* p = x^t * q */
-    if ((accessThruMemRef(poly->child1)->nodeType == POW) && 
+    if ((accessThruMemRef(poly->child1)->nodeType == POW) &&
 	(accessThruMemRef(accessThruMemRef(poly->child1)->child1)->nodeType == VARIABLE) &&
-	((accessThruMemRef(accessThruMemRef(poly->child1)->child2)->nodeType == CONSTANT) && 
+	((accessThruMemRef(accessThruMemRef(poly->child1)->child2)->nodeType == CONSTANT) &&
 	 (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(poly->child1)->child2)->value))))) {
       t = mpfr_get_si(*(accessThruMemRef(accessThruMemRef(poly->child1)->child2)->value),GMP_RNDN);
       mpfr_init2(tAsMpfr, 8 * sizeof(int) + 10);
@@ -12786,7 +12786,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
 	  if (tryGetIthCoefficientSparseUnsafe(res, poly->child2, i - t)) {
 	    mpfr_clear(tAsMpfr);
 	    return 1;
-	  } 
+	  }
 	} else {
 	  mpfr_clear(tAsMpfr);
 	  *res = makeConstantDouble(0.0);
@@ -12796,9 +12796,9 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
       mpfr_clear(tAsMpfr);
     }
     /* p = q * x^t */
-    if ((accessThruMemRef(poly->child2)->nodeType == POW) && 
+    if ((accessThruMemRef(poly->child2)->nodeType == POW) &&
 	(accessThruMemRef(accessThruMemRef(poly->child2)->child1)->nodeType == VARIABLE) &&
-	((accessThruMemRef(accessThruMemRef(poly->child2)->child2)->nodeType == CONSTANT) && 
+	((accessThruMemRef(accessThruMemRef(poly->child2)->child2)->nodeType == CONSTANT) &&
 	 (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(poly->child2)->child2)->value))))) {
       t = mpfr_get_si(*(accessThruMemRef(accessThruMemRef(poly->child2)->child2)->value),GMP_RNDN);
       mpfr_init2(tAsMpfr, 8 * sizeof(int) + 10);
@@ -12808,7 +12808,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
 	  if (tryGetIthCoefficientSparseUnsafe(res, poly->child1, i - t)) {
 	    mpfr_clear(tAsMpfr);
 	    return 1;
-	  } 
+	  }
 	} else {
 	  mpfr_clear(tAsMpfr);
 	  *res = makeConstantDouble(0.0);
@@ -12818,7 +12818,7 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
       mpfr_clear(tAsMpfr);
     }
     /* Continue with other optimized ways to get the i-th coefficient
-       of a sparse polynomial that is a product here. 
+       of a sparse polynomial that is a product here.
     */
     break;
   case DIV:
@@ -12833,8 +12833,8 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
     break;
   case POW:
     /* p = x^k */
-    if ((accessThruMemRef(poly->child1)->nodeType == VARIABLE) && 
-	(accessThruMemRef(poly->child2)->nodeType == CONSTANT) && 
+    if ((accessThruMemRef(poly->child1)->nodeType == VARIABLE) &&
+	(accessThruMemRef(poly->child2)->nodeType == CONSTANT) &&
 	mpfr_number_p(*(accessThruMemRef(poly->child2)->value))) {
       mpfr_init2(iAsMpfr, 8 * sizeof(int) + 10);
       mpfr_set_si(iAsMpfr, i, GMP_RNDN); /* exact */
@@ -12846,13 +12846,13 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
 	if (mpfr_integer_p(*(accessThruMemRef(poly->child2)->value))) {
 	  *res = makeConstantDouble(0.0);
 	  mpfr_clear(iAsMpfr);
-	  return 1;	  
+	  return 1;
 	}
       }
       mpfr_clear(iAsMpfr);
     }
     /* Continue with other optimized ways to get the i-th coefficient
-       of a sparse polynomial that is a power here. 
+       of a sparse polynomial that is a power here.
     */
     break;
   default:
@@ -12876,7 +12876,7 @@ int tryGetIthCoefficientSparse(node **res, node *poly, int i) {
     *res = simplifyTreeErrorfree(myres);
     free_memory(myres);
     return 1;
-  } 
+  }
 
   return 0;
 }
@@ -12893,7 +12893,7 @@ node *getIthCoefficient(node *poly, int i) {
     mpfr_init2(*(tempNode->value),10);
     mpfr_set_d(*(tempNode->value),0.0,GMP_RNDN);
     return tempNode;
-  } 
+  }
 
   if (tryGetIthCoefficientSparse(&tempNode, poly, i)) {
     printMessage(8, SOLLYA_MSG_SPECIAL_ALGORITHM_USED_FOR_COEFF, "Information: a special algorithm is used to extract the i-th coefficient of an expression that is a polynomial.\n");
@@ -12911,7 +12911,7 @@ node *getIthCoefficient(node *poly, int i) {
   } else {
     tempNode = copyTree(coefficients[i]);
   }
-  
+
   for (k=0;k<=degree;k++) {
     if (coefficients[k] != NULL) free_memory(coefficients[k]);
   }
@@ -12936,7 +12936,7 @@ node *getSubpolynomial(node *poly, chain *monomials, int fillDegrees, mp_prec_t 
 
   if (!isPolynomial(poly)) {
     return tempNode;
-  } 
+  }
 
   getCoefficients(&degree, &coefficients, poly);
 
@@ -13013,7 +13013,7 @@ node *getSubpolynomial(node *poly, chain *monomials, int fillDegrees, mp_prec_t 
   tempNode2 = horner(tempNode);
 
   free_memory(tempNode);
-  
+
   return tempNode2;
 }
 
@@ -13091,12 +13091,12 @@ node *makeCanonicalPolyUnsafe(node *poly, mp_prec_t prec) {
 int isCanonicalMonomial(node *tree) {
 
   if (tree->nodeType == MEMREF) return isCanonicalMonomial(tree->child1);
-  
+
   if (isConstant(tree)) return 1;
 
   if (isPowerOfVariable(tree)) return 1;
-  
-  if ((tree->nodeType == MUL) && 
+
+  if ((tree->nodeType == MUL) &&
       isConstant(tree->child1) &&
       isPowerOfVariable(tree->child2)) return 1;
 
@@ -13108,7 +13108,7 @@ int isCanonicalUnsafe(node *tree) {
   int deg1, deg2;
 
   if (tree->nodeType == MEMREF) return isCanonicalUnsafe(tree->child1);
-  
+
   if (isConstant(tree) || isCanonicalMonomial(tree)) return 1;
 
   if ((tree->nodeType == ADD) || (tree->nodeType == SUB)) {
@@ -13317,7 +13317,7 @@ node *makeCanonical(node *tree, mp_prec_t prec) {
     copy->nodeType = TRIPLEDOUBLE;
     copy->child1 = makeCanonical(tree->child1,prec);
     break;
-  case ERF: 
+  case ERF:
     copy = (node*) safeMalloc(sizeof(node));
     copy->nodeType = ERF;
     copy->child1 = makeCanonical(tree->child1,prec);
@@ -13425,7 +13425,7 @@ node *makeConstantInt(int a) {
 node *makeConstantMpz(mpz_t x) {
   node *res;
   mp_prec_t prec;
-  
+
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = CONSTANT;
   if (mpz_sgn(x) == 0) {
@@ -13443,7 +13443,7 @@ node *makeConstantMpz(mpz_t x) {
 
 node *makeConstant(mpfr_t x) {
   node *res;
-  
+
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = CONSTANT;
   res->value = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
@@ -13605,7 +13605,7 @@ node *makeNearestInt(node *op1) {
 
 node *makePi() {
   node *res;
-  
+
   res = (node *) safeMalloc(sizeof(node));
   res->nodeType = PI_CONST;
 
@@ -13645,7 +13645,7 @@ int readDecimalConstant(mpfr_t result, char *str) {
   mpfr_init2(b,tools_precision);
 
   mpfr_set_str(a,str,10,GMP_RNDD);
-  mpfr_set_str(b,str,10,GMP_RNDU);    
+  mpfr_set_str(b,str,10,GMP_RNDU);
   if (mpfr_cmp(a,b) != 0) {
     if (!noRoundingWarnings) {
       printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_READING_A_CONSTANT,

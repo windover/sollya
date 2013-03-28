@@ -90,7 +90,7 @@ void mpfr_to_doubledouble(double *dh, double *dm, mpfr_t op) {
   *dh = sollya_mpfr_get_d(rest, GMP_RNDN);
   mpfr_set_d(temp,*dh,GMP_RNDN);
   mpfr_sub(rest,rest,temp,GMP_RNDN);
-  
+
   *dm = sollya_mpfr_get_d(rest, GMP_RNDN);
   mpfr_set_d(temp,*dm,GMP_RNDN);
   mpfr_sub(rest,rest,temp,GMP_RNDN);
@@ -110,7 +110,7 @@ void mpfr_to_tripledouble(double *dh, double *dm, double *dl, mpfr_t op) {
   *dh = sollya_mpfr_get_d(rest, GMP_RNDN);
   mpfr_set_d(temp,*dh,GMP_RNDN);
   mpfr_sub(rest,rest,temp,GMP_RNDN);
-  
+
   *dm = sollya_mpfr_get_d(rest, GMP_RNDN);
   mpfr_set_d(temp,*dm,GMP_RNDN);
   mpfr_sub(rest,rest,temp,GMP_RNDN);
@@ -132,16 +132,16 @@ void doubledouble_to_mpfr(mpfr_t rop, double dh, double dm) {
   mp_prec_t prec;
 
   prec = mpfr_get_prec(rop);
-  
+
   if (prec < 53) prec = 53;
 
   mpfr_init2(temp, prec);
-  
+
   mpfr_set_d(rop, dh, GMP_RNDN);
-  
+
   mpfr_set_d(temp, dm, GMP_RNDN);
   mpfr_add(rop, rop, temp, GMP_RNDN);
-  
+
   mpfr_clear(temp);
 }
 
@@ -150,20 +150,20 @@ void tripledouble_to_mpfr(mpfr_t rop, double dh, double dm, double dl) {
   mp_prec_t prec;
 
   prec = mpfr_get_prec(rop);
-  
+
   if (prec < 53) prec = 53;
 
   mpfr_init2(temp, prec);
-  
+
   mpfr_set_d(rop, dh, GMP_RNDN);
-  
+
   mpfr_set_d(temp, dm, GMP_RNDN);
   mpfr_add(rop, rop, temp, GMP_RNDN);
 
   mpfr_set_d(temp, dl, GMP_RNDN);
   mpfr_add(rop, rop, temp, GMP_RNDN);
 
-  
+
   mpfr_clear(temp);
 }
 
@@ -195,7 +195,7 @@ void f(mpfr_t y, mpfr_t xMpfr) {
   _FPU_SETCW(cw);
 
 #if defined(D_TO_D)
-  mpfr_to_double(&x, xMpfr);     
+  mpfr_to_double(&x, xMpfr);
   POLYNOMIALNAME(&resh, x);
   double_to_mpfr(y, resh);
 #elif defined(D_TO_DD)
@@ -272,7 +272,7 @@ int timefunc(int *timing, void **args) {
 
   mpfr_sub(h, b, a, GMP_RNDU);
   mpfr_div_si(h, h, steps, GMP_RNDU);
-  
+
   overalltime = 0;
 
   while (mpfr_cmp(xMpfr,b) <= 0) {
@@ -282,7 +282,7 @@ int timefunc(int *timing, void **args) {
     _FPU_SETCW(cw);
 
 #if defined(D_TO_D)
-    mpfr_to_double(&x, xMpfr);     
+    mpfr_to_double(&x, xMpfr);
     gettimeofday(&start,NULL);
     for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, x);
     gettimeofday(&end,NULL);
