@@ -6,24 +6,24 @@ AC_INIT([sollya], [4.0], [christoph.lauter@ens-lyon.org, sylvain.chevillard@ens-
 AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 
- 
+
 # Checks for programs.
 AC_PROG_YACC
 AC_PROG_CC
-AC_PROG_CXX 
+AC_PROG_CXX
 AC_PROG_SED
 AM_PROG_CC_C_O
 AC_LANG_PUSH([C++])
 AC_MSG_CHECKING([whether C++ compiler works])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
-[[]] 
+[[]]
 [[]]
 , [[exit(0);]])],
-[AC_MSG_RESULT(yes) 
+[AC_MSG_RESULT(yes)
 ],[
-AC_MSG_ERROR(no)		
+AC_MSG_ERROR(no)
 ])
-AC_LANG_POP([C++])	
+AC_LANG_POP([C++])
 AC_PROG_LEX
 if test "$missing_dir" = ""; then
    missing_dir="."
@@ -40,11 +40,11 @@ AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 AC_CONFIG_MACRO_DIR([m4])
 
-#Enable 
+#Enable
 ENABLE_LEGACY_MEMORY_MANAGEMENT=no
 AC_ARG_ENABLE(legacy-memory-management, [  --enable-legacy-memory-management enables legacy memory management without reference counting (default is "disabled")], [ENABLE_LEGACY_MEMORY_MANAGEMENT=yes], [ENABLE_LEGACY_MEMORY_MANAGEMENT=no])
 
-if test "x${ENABLE_LEGACY_MEMORY_MANAGEMENT}y" == "xyesy" ; then 
+if test "x${ENABLE_LEGACY_MEMORY_MANAGEMENT}y" == "xyesy" ; then
 AC_DEFINE([HAVE_ENABLE_LEGACY_MEMORY_MANAGEMENT],[1],[Enabling legacy memory management w/o reference counting])
 fi
 
@@ -53,24 +53,24 @@ fi
 AC_ARG_ENABLE(strict-lexer-parser-check, [  --enable-strict-lexer-parser-check enables strict compatibility checking for building the lexer and parser files], [STRICTFLEXBISONTESTING="1"], [STRICTFLEXBISONTESTING=""])
 
 AC_MSG_CHECKING([flex supports interactive and pure lexers])
-if test `echo -e "%{\n%}\n\n%option always-interactive\n%option reentrant\n%option prefix=\"coucou\"\n%option bison-bridge\n%option nounput\n\n%%\n"test" { }\n%%\n" > conftest.l ; $LEX conftest.l > /dev/null 2> /dev/null ; echo $?; rm -f lex.coucou.c` -eq 0 ; then 
+if test `echo -e "%{\n%}\n\n%option always-interactive\n%option reentrant\n%option prefix=\"coucou\"\n%option bison-bridge\n%option nounput\n\n%%\n"test" { }\n%%\n" > conftest.l ; $LEX conftest.l > /dev/null 2> /dev/null ; echo $?; rm -f lex.coucou.c` -eq 0 ; then
 AC_MSG_RESULT(yes)
 else
 if test "x$STRICTFLEXBISONTESTING" = "x"; then
    AC_MSG_RESULT(flex version unable to compile the lexer from the grammar files)
 else
-   AC_MSG_ERROR(no)	
+   AC_MSG_ERROR(no)
 fi
 fi
 
 AC_MSG_CHECKING([bison supports interactive and pure parsers])
-if test `echo -e "%{\n#define YYERROR_VERBOSE 1\n#define YYPARSE_PARAM scanner\n#define YYLEX_PARAM scanner\n%}\n\n%defines\n%pure_parser\n\n%%\nstart: \".\"\n{ }\n;\n\n" > conftest.y ; $YACC conftest.y > /dev/null 2> /dev/null ; echo $?; rm -f y.tab.*` -eq 0 ; then 
+if test `echo -e "%{\n#define YYERROR_VERBOSE 1\n#define YYPARSE_PARAM scanner\n#define YYLEX_PARAM scanner\n%}\n\n%defines\n%pure_parser\n\n%%\nstart: \".\"\n{ }\n;\n\n" > conftest.y ; $YACC conftest.y > /dev/null 2> /dev/null ; echo $?; rm -f y.tab.*` -eq 0 ; then
 AC_MSG_RESULT(yes)
 else
 if test "x$STRICTFLEXBISONTESTING" = "x"; then
    AC_MSG_RESULT(bison version unable to compile the parser from the grammar files)
 else
-   AC_MSG_ERROR(no)	
+   AC_MSG_ERROR(no)
 fi
 fi
 
@@ -91,7 +91,7 @@ AC_ARG_WITH(gmp,
    [  --with-gmp=DIR          GMP install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
-   WITH_LIB_GIVEN="yes"	   
+   WITH_LIB_GIVEN="yes"
   ])
 
 AC_ARG_WITH(mpfr-include,
@@ -106,7 +106,7 @@ AC_ARG_WITH(mpfr,
    [  --with-mpfr=DIR          MPFR install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
-   WITH_LIB_GIVEN="yes"	   
+   WITH_LIB_GIVEN="yes"
   ])
 
 AC_ARG_WITH(fplll-include,
@@ -248,6 +248,24 @@ AC_CHECK_LIB([iconv], [libiconv_open], [], [])
 AC_CHECK_LIB([m],[cos])
 AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 unusable]))
 
+#Check that dynamic libraries are available at runtime
+AC_MSG_CHECKING([if libgmp is found at runtime])
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <gmp.h>]], [[mpz_t a; mpz_init(a); mpz_clear(a); return 0;]])],
+	      [AC_MSG_RESULT(yes)],
+              [AC_MSG_ERROR([libgmp is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+
+AC_MSG_CHECKING([if libmpfr is found at runtime])
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <mpfr.h>]], [[mpfr_t a; mpfr_init2(a, 53); mpfr_clear(a); return 0;]])],
+	      [AC_MSG_RESULT(yes)],
+              [AC_MSG_ERROR([libmpfr is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+
+AC_MSG_CHECKING([if libxml2 is found at runtime])
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <libxml/xmlreader.h>]], [[xmlCleanupParser(); return 0;]])],
+	      [AC_MSG_RESULT(yes)],
+              [AC_MSG_ERROR([libxml2 is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+
+
+
 #Special check for fplll
 FPLLLUSABLE="yes"
 FPLLLSPECIALINCLUDE="no"
@@ -257,12 +275,12 @@ AC_MSG_CHECKING([if fplll is a real library to be linked in])
 FPLLLOLDCFLAGS="$CFLAGS"
 FPLLLOLDCPPFLAGS="$CPPFLAGS"
 FPLLLOLDLDFLAGS="$LDFLAGS"
-LDFLAGS="-lfplll $LDFLAGS"	
+LDFLAGS="-lfplll $LDFLAGS"
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
-[[#include <fplll.h>]] 
+[[#include <fplll.h>]]
 [[#include <gmp.h>]]
 , [[ZZ_mat<mpz_t> M(3, 3); M.gen_uniform(3); lllReduction(M, 0.99, 0.51, LM_WRAPPER); return 0;]])],
-[AC_MSG_RESULT(yes) 
+[AC_MSG_RESULT(yes)
 ],[FPLLLISREALLIB="no"
 AC_MSG_RESULT(no) ])
 CFLAGS="$FPLLLOLDCFLAGS"
@@ -271,17 +289,17 @@ LDFLAGS="$FPLLLOLDLDFLAGS"
 if test "x${FPLLLISREALLIB}y" == "xnoy" ; then
 AC_MSG_CHECKING([for fplll support, fplll being just a header file])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
-[[#include <fplll.h>]] 
+[[#include <fplll.h>]]
 [[#include <gmp.h>]]
 , [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
-[AC_MSG_RESULT(yes) 
+[AC_MSG_RESULT(yes)
 FPLLLVERSIONSTRING="FPLLL: just a header file, directly in include directory$FPLLLVERSIONSTRING"
 ],[FPLLLUSABLE="no"
-AC_MSG_RESULT(no) 
+AC_MSG_RESULT(no)
 ])
 else
 # Add -lfplll to LFLAGS
-AM_LDFLAGS="-lfplll $AM_LDFLAGS"	
+AM_LDFLAGS="-lfplll $AM_LDFLAGS"
 FPLLLVERSIONSTRING="FPLLL: a real library, linked with -lfplll$FPLLLVERSIONSTRING"
 FPLLLJUSTHEADER=no
 fi
@@ -289,10 +307,10 @@ if test "x${FPLLLUSABLE}y" == "xnoy" ; then
 FPLLLSPECIALINCLUDE="yes"
 AC_MSG_CHECKING([for Debian-like fplll support, fplll being just a header file])
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
-[[#include <fplll/fplll.h>]] 
+[[#include <fplll/fplll.h>]]
 [[#include <gmp.h>]]
 , [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
-[AC_MSG_RESULT(yes) 
+[AC_MSG_RESULT(yes)
 FPLLLSPECIALINCLUDE="yes"
 FPLLLVERSIONSTRING="FPLLL: just a header file, in a subdirectory of the include directory (Debian-like)$FPLLLVERSIONSTRING"
 ],[
@@ -300,7 +318,7 @@ AC_MSG_ERROR([fplll unusable (or g++ too new -- see README)])
 FPLLLVERSIONSTRING="FPLLL: unusable or g++ too new, $FPLLLVERSIONSTRING"
 ])
 fi
-if test "x${FPLLLSPECIALINCLUDE}y" == "xyesy" ; then 
+if test "x${FPLLLSPECIALINCLUDE}y" == "xyesy" ; then
 AC_DEFINE([HAVE_SPECIAL_FPLLL_INCLUDE],[1],[Define for determining a special version of FPLLL])
 else
 AC_DEFINE([HAVE_SPECIAL_FPLLL_INCLUDE],[0],[Define for determining a special version of FPLLL])
@@ -308,19 +326,26 @@ fi
 AC_DEFINE_UNQUOTED([HAVE_FPLLL_VERSION_STRING],["$FPLLLVERSIONSTRING"],[Define a kind of a version string for FPLLL])
 
 
-if test "x${FPLLLJUSTHEADER}y" == "xyesy" ; then 
+if test "x${FPLLLJUSTHEADER}y" == "xyesy" ; then
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
-if test "x${enable_shared}y" == "xnoy" ; then 
+if test "x${enable_shared}y" == "xnoy" ; then
 AC_MSG_ERROR([fplll too old to be used in static libraries. Try to enable construction of shared libraries or update fplll])
 fi
 fi
 
 
-AC_LANG_POP([C++])	
+AC_LANG_POP([C++])
 
 
 AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
+
+# Checking if libmpfi is available at runtime.
+AC_MSG_CHECKING([if libmpfi is found at runtime])
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <mpfi.h>]], [[mpfi_t a; mpfi_init(a); mpfi_clear(a); return 0;]])],
+	      [AC_MSG_RESULT(yes)],
+              [AC_MSG_ERROR([libmpfi is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+
 
 #Check for -Wl,-export-dynamic etc.
 
@@ -331,7 +356,7 @@ LDFLAGS="$OLDLDFLAGS"
 
 AC_MSG_CHECKING([for -fPIC support])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
-[AC_MSG_RESULT(yes) 
+[AC_MSG_RESULT(yes)
 AM_CFLAGS="$AM_CFLAGS -fPIC"
 ],[AC_MSG_RESULT(no)
 ])
@@ -341,7 +366,7 @@ LDFLAGS="$OLDLDFLAGS -Wl,-export-dynamic"
 
 AC_MSG_CHECKING([for -export-dynamic support])
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]], [[exit(0);]])],
-[AC_MSG_RESULT(yes) 
+[AC_MSG_RESULT(yes)
 AM_LDFLAGS="$AM_LDFLAGS -Wl,-export-dynamic"
 ],[AC_MSG_RESULT(no)
 ])
@@ -353,7 +378,7 @@ LDFLAGS="$OLDLDFLAGS -Xlinker --allow-multiple-definition"
 
 AC_MSG_CHECKING([for -Xlinker --allow-multiple-definition support])
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]], [[exit(0);]])],
-[AC_MSG_RESULT(yes) 
+[AC_MSG_RESULT(yes)
 AM_LDFLAGS="$AM_LDFLAGS -Xlinker --allow-multiple-definition"
 ],[AC_MSG_RESULT(no)
 ])
@@ -375,14 +400,14 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdint.h>]], [[  union {
   yct.d = y;
 
   if (yct.i == 0x0000000000000000ull) return 1;]])],
-[AC_MSG_RESULT(no) 
+[AC_MSG_RESULT(no)
 ],[AC_MSG_RESULT(yes)
 AC_MSG_CHECKING([if compiler supports -fp-model precise flag])
 CPPFLAGS="$OLDCPPFLAGS"
 CFLAGS="$OLDCFLAGS -fp-model precise"
 LDFLAGS="$OLDLDFLAGS"
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]], [[exit(0);]])],
-[AC_MSG_RESULT(yes) 
+[AC_MSG_RESULT(yes)
 AM_CFLAGS="$AM_CFLAGS -fp-model precise"
 ],[AC_MSG_RESULT(no)
 ])
@@ -429,9 +454,30 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([gettimeofday memmove memset strchr strerror strrchr strtol backtrace dup2 strstr dladdr])
 
-if test "x${FPLLLJUSTHEADER}y" == "xyesy" ; then 
+if test "x${FPLLLJUSTHEADER}y" == "xyesy" ; then
 AM_LDFLAGS="$AM_LDFLAGS -lstdc++"
 fi
+
+# Checking that libfplll is found at runtime
+OLDCFLAGS="$CFLAGS"
+OLDCPPFLAGS="$CPPFLAGS"
+OLDLDFLAGS="$LDFLAGS"
+CFLAGS="$AM_CFLAGS $CFLAGS"
+CPPFLAGS="$AM_CPPFLAGS $CPPFLAGS"
+LDFLAGS="$AM_LDFLAGS $LDFLAGS"
+AC_LANG_PUSH([C++])
+AC_MSG_CHECKING([if libfplll is found at runtime])
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
+                               [[#include <fplll.h>]]
+                               [[#include <gmp.h>]],
+                               [[ZZ_mat<mpz_t> M(3, 3); M.gen_uniform(3); lllReduction(M, 0.99, 0.51, LM_WRAPPER); return 0;]])],
+	      [AC_MSG_RESULT(yes)],
+              [AC_MSG_ERROR([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+AC_LANG_POP([C++])
+CFLAGS="$OLDCFLAGS"
+CPPFLAGS="$OLDCPPFLAGS"
+LDFLAGS="$OLDLDFLAGS"
+
 
 AC_SUBST(AM_CPPFLAGS)
 AC_SUBST(AM_CFLAGS)
