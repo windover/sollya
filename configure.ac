@@ -79,6 +79,7 @@ FPLLLVERSIONSTRING=""
 FPLLLJUSTHEADER=yes
 
 WITH_LIB_GIVEN="no"
+SO_PATH=""
 AC_ARG_WITH(gmp-include,
    [  --with-gmp-include=DIR  GMP include directory ],
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval")
@@ -86,13 +87,16 @@ AC_ARG_WITH(gmp-lib,
    [  --with-gmp-lib=DIR      GMP lib directory ], [
    WITH_LIB_GIVEN="yes"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+   SO_PATH="$SO_PATH -Wl,--rpath -Wl,$withval"
   ])
 AC_ARG_WITH(gmp,
    [  --with-gmp=DIR          GMP install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   SO_PATH="$SO_PATH -Wl,--rpath -Wl,$withval/lib"
    WITH_LIB_GIVEN="yes"
   ])
+
 
 AC_ARG_WITH(mpfr-include,
    [  --with-mpfr-include=DIR  MPFR include directory ],
@@ -100,14 +104,17 @@ AC_ARG_WITH(mpfr-include,
 AC_ARG_WITH(mpfr-lib,
    [  --with-mpfr-lib=DIR      MPFR lib directory ], [
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+   SO_PATH="$SO_PATH -Wl,--rpath -Wl,$withval"
    WITH_LIB_GIVEN="yes"
   ])
 AC_ARG_WITH(mpfr,
    [  --with-mpfr=DIR          MPFR install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   SO_PATH="$SO_PATH -Wl,--rpath -Wl,$withval/lib"
    WITH_LIB_GIVEN="yes"
   ])
+
 
 AC_ARG_WITH(fplll-include,
    [  --with-fplll-include=DIR  fplll include directory ],
@@ -117,6 +124,7 @@ AC_ARG_WITH(fplll-include,
 AC_ARG_WITH(fplll-lib,
    [  --with-fplll-lib=DIR      fplll lib directory ], [
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+   SO_PATH="$SO_PATH -Wl,--rpath -Wl,$withval"
    FPLLLVERSIONSTRING=", --with-fplll-lib given as '$withval'"
    WITH_LIB_GIVEN="yes"
   ])
@@ -124,6 +132,7 @@ AC_ARG_WITH(fplll,
    [  --with-fplll=DIR          fplll install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   SO_PATH="$SO_PATH -Wl,--rpath -Wl,$withval/lib"
    FPLLLVERSIONSTRING=", --with-fplll given as '$withval'"
    WITH_LIB_GIVEN="yes"
   ])
@@ -169,6 +178,7 @@ AC_ARG_WITH(xml2-include,
 AC_ARG_WITH(xml2-lib,
    [  --with-xml2-lib=DIR      XML2 lib directory ], [
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+   SO_PATH="$SO_PATH -Wl,--rpath -Wl,$withval"
    XML2LIBGIVEN=1
    WITH_LIB_GIVEN="yes"
   ])
@@ -176,10 +186,12 @@ AC_ARG_WITH(xml2,
    [  --with-xml2=DIR          XML2 install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include -I$withval/include/libxml2"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   SO_PATH="$SO_PATH -Wl,--rpath -Wl,$withval/lib"
    XML2INCLUDEGIVEN=1
    XML2LIBGIVEN=1
    WITH_LIB_GIVEN="yes"
   ])
+
 
 AC_ARG_WITH(mpfi-include,
    [  --with-mpfi-include=DIR  MPFI include directory ],
@@ -187,12 +199,14 @@ AC_ARG_WITH(mpfi-include,
 AC_ARG_WITH(mpfi-lib,
    [  --with-mpfi-lib=DIR      MPFI lib directory ], [
    AM_LDFLAGS="$AM_LDFLAGS -L$withval"
+   SO_PATH="$SO_PATH -Wl,--rpath -Wl,$withval"
    WITH_LIB_GIVEN="yes"
   ])
 AC_ARG_WITH(mpfi,
    [  --with-mpfi=DIR          MPFI install directory ], [
    AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
    AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
+   SO_PATH="$SO_PATH -Wl,--rpath -Wl,$withval/lib"
    WITH_LIB_GIVEN="yes"
   ])
 
@@ -250,20 +264,28 @@ AC_CHECK_LIB([xml2], [xmlTextReaderIsEmptyElement], [], AC_MSG_ERROR([libxml2 un
 
 #Check that dynamic libraries are available at runtime
 AC_MSG_CHECKING([if libgmp is found at runtime])
+LDFLAGS_BAK="$LDFLAGS"
+LDFLAGS="$LDFLAGS $SO_PATH"
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <gmp.h>]], [[mpz_t a; mpz_init(a); mpz_clear(a); return 0;]])],
 	      [AC_MSG_RESULT(yes)],
               [AC_MSG_ERROR([libgmp is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+LDFLAGS="$LDFLAGS_BAK"
 
 AC_MSG_CHECKING([if libmpfr is found at runtime])
+LDFLAGS_BAK="$LDFLAGS"
+LDFLAGS="$LDFLAGS $SO_PATH"
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <mpfr.h>]], [[mpfr_t a; mpfr_init2(a, 53); mpfr_clear(a); return 0;]])],
 	      [AC_MSG_RESULT(yes)],
               [AC_MSG_ERROR([libmpfr is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+LDFLAGS="$LDFLAGS_BAK"
 
 AC_MSG_CHECKING([if libxml2 is found at runtime])
+LDFLAGS_BAK="$LDFLAGS"
+LDFLAGS="$LDFLAGS $SO_PATH"
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <libxml/xmlreader.h>]], [[xmlCleanupParser(); return 0;]])],
 	      [AC_MSG_RESULT(yes)],
               [AC_MSG_ERROR([libxml2 is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
-
+LDFLAGS="$LDFLAGS_BAK"
 
 
 #Special check for fplll
@@ -342,10 +364,12 @@ AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 
 # Checking if libmpfi is available at runtime.
 AC_MSG_CHECKING([if libmpfi is found at runtime])
+LDFLAGS_BAK="$LDFLAGS"
+LDFLAGS="$LDFLAGS $SO_PATH"
 AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <mpfi.h>]], [[mpfi_t a; mpfi_init(a); mpfi_clear(a); return 0;]])],
 	      [AC_MSG_RESULT(yes)],
               [AC_MSG_ERROR([libmpfi is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
-
+LDFLAGS="$LDFLAGS_BAK"
 
 #Check for -Wl,-export-dynamic etc.
 
@@ -467,12 +491,25 @@ CPPFLAGS="$AM_CPPFLAGS $CPPFLAGS"
 LDFLAGS="$AM_LDFLAGS $LDFLAGS"
 AC_LANG_PUSH([C++])
 AC_MSG_CHECKING([if libfplll is found at runtime])
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
-                               [[#include <fplll.h>]]
-                               [[#include <gmp.h>]],
-                               [[ZZ_mat<mpz_t> M(3, 3); M.gen_uniform(3); lllReduction(M, 0.99, 0.51, LM_WRAPPER); return 0;]])],
-	      [AC_MSG_RESULT(yes)],
-              [AC_MSG_ERROR([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+LDFLAGS_BAK="$LDFLAGS"
+LDFLAGS="$LDFLAGS $SO_PATH"
+if test "x${FPLLLSPECIALINCLUDE}y" == "xyesy"
+then
+  AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
+                                 [[#include <fplll/fplll.h>]]
+                                 [[#include <gmp.h>]],
+                                 [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
+	        [AC_MSG_RESULT(yes)],
+                [AC_MSG_ERROR([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+else
+  AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
+                                 [[#include <fplll.h>]]
+                                 [[#include <gmp.h>]],
+                                 [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
+	        [AC_MSG_RESULT(yes)],
+                [AC_MSG_ERROR([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+fi
+LDFLAGS="$LDFLAGS_BAK"
 AC_LANG_POP([C++])
 CFLAGS="$OLDCFLAGS"
 CPPFLAGS="$OLDCPPFLAGS"

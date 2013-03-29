@@ -54,20 +54,20 @@ int wrapper_sollya_snprintf(char *str, size_t size, const char *format, ...) {
   return r;
 }
 
-void clean_simple_tab(char tab[2][SIZE]) {
-  int i,j;
-  for(i=0; i<2; i++)
-    for(j=0;j<SIZE;j++) tab[i][j] = 5;
+void clean_simple_tab(char tab[SIZE]) {
+  int j;
+  for(j=0;j<SIZE;j++) tab[j] = 5;
 }
+
+void clean_buffer(char tab[BUFSIZE]) {
+  int j;
+  for(j=0;j<BUFSIZE;j++) tab[j] = 'a';
+}
+
 void clean(char tab1[2][SIZE], char tab2[2][SIZE], char res[2][BUFSIZE]) {
-  int i,j;
-
-  clean_simple_tab(tab1);
-  clean_simple_tab(tab2);
-
-  for(i=0; i<2; i++)
-    for(j=0;j<BUFSIZE;j++) res[i][j]='a';
-
+  clean_simple_tab(tab1[0]); clean_simple_tab(tab1[1]);
+  clean_simple_tab(tab2[0]); clean_simple_tab(tab2[1]);
+  clean_buffer(res[0]); clean_buffer(res[1]);
 }
 
 /* Variable all_tests is a boolean indicating if all tests should be performed.
@@ -92,24 +92,41 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
   }
 
   if (all_tests) {
-    if (counter[0] != r[0]) { test = 0; printf("sprintf returned %d but %d characters have been written. ", r[0], counter[0]); }
-    if (counter[1] != r[1]) { test = 0; printf("sollya_lib_sprintf returned %d but %d characters have been written. ", r[1], counter[1]); }
+    if (counter[0] != r[0]) {
+      test = 0;
+      printf("First function returned %d but %d characters have been written. ", r[0], counter[0]);
+    }
+    if (counter[1] != r[1]) {
+      test = 0;
+      printf("Second function returned %d but %d characters have been written. ", r[1], counter[1]);
+    }
   }
   else {
     if (size_snprintf == 0) {
       for(i=0;i<BUFSIZE-1;i++) { if (result[0][i] != 'a') test=0;}
       if (result[0][BUFSIZE-1] != '\0') test = 0;
-      if (!test) printf("The pointer should have been left intact by snprintf, but is now indeed %s\n", result[0]);
+      if (!test)
+        printf("The pointer should have been left intact by the first function, but is now indeed %s\n", result[0]);
       for(i=0;i<BUFSIZE-1;i++) { if (result[1][i] != 'a') test=0;}
       if (result[1][BUFSIZE-1] != '\0') test = 0;
-      if (!test) printf("The pointer should have been left intact by sollya_lib_snprintf, but is now indeed %s\n", result[1]);
+      if (!test)
+        printf("The pointer should have been left intact by the second function, but is now indeed %s\n", result[1]);
     }
     else {
-      if (counter[0] != size_snprintf-1) { test = 0; printf("snprintf wrote %d characters but at most %d characters should have been written. ", counter[0], (int)(size_snprintf)-1); }
-      if (counter[1] != size_snprintf-1) { test = 0; printf("sollya_lib_snprintf wrote %d characters but (at most) %d characters should have been written. ", counter[0], (int)(size_snprintf)-1); }
+      if (counter[0] != (int)(size_snprintf)-1) {
+        test = 0;
+        printf("First function wrote %d characters but at most %d characters should have been written. ", counter[0], (int)(size_snprintf)-1);
+      }
+      if (counter[1] != (int)(size_snprintf)-1) {
+        test = 0;
+        printf("Second function wrote %d characters but (at most) %d characters should have been written. ", counter[0], (int)(size_snprintf)-1);
+      }
     }
   }
-  if (r[0] != r[1]) { test = 0; printf("sprintf returned %d and sollya_lib_printf returned %d. ", r[0], r[1]); }
+  if (r[0] != r[1]) {
+    test = 0;
+    printf("First function returned %d and second function returned %d. ", r[0], r[1]);
+  }
 
   for(i=0;i<SIZE;i++) {
     if(test1[0][i] != test1[1][i]) {
@@ -120,11 +137,11 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
   }
 
   if (all_tests) {
-    clean_simple_tab(test3);
+    clean_simple_tab(test3[0]); clean_simple_tab(test3[1]);
     ptr = strstr(result[0], " Hello");
     if (ptr==NULL) {
       test = 0;
-      printf("The string returned by sprintf does not contain ' Hello'. ");
+      printf("The string returned by the first function does not contain ' Hello'. ");
     }
     else {
       n = ptr-result[0];
@@ -148,7 +165,7 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
     for(i=0;i<SIZE;i++) {
       if(test1[0][i] != test3[0][i]) {
         test = 0;
-        printf("The first %%n of sprintf did not return the expected value (%d). ", n);
+        printf("The first %%n of the first function did not return the expected value (%d). ", n);
         break;
       }
     }
@@ -166,7 +183,7 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
     ptr = strstr(result[0]+n+1, " Hello");
     if (ptr==NULL) {
       test = 0;
-      printf("The string returned by sprintf does not contain two instances of ' Hello'. ");
+      printf("The string returned by the first function does not contain two instances of ' Hello'. ");
     }
     else {
       n = ptr-result[0];
@@ -190,7 +207,7 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
     for(i=0;i<SIZE;i++) {
       if(test2[0][i] != test3[1][i]) {
         test = 0;
-        printf("The second %%n of sprintf did not return the expected value (%d). ", n);
+        printf("The second %%n of the first function did not return the expected value (%d). ", n);
         break;
       }
     }
@@ -203,31 +220,31 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
 
   if(strchr(result[0], '%')) {
     test = 0;
-    printf("The format string has not been understood by sprintf. ");
+    printf("The format string has not been understood by the first function. ");
   }
 
   if (!test) {
-    printf("Below: first the string returned by sprintf, then the string returned by sollya_lib_sprintf.\n");
+    printf("Below: first the string returned by the first function, then the string returned by the second function.\n");
     printf("%s [returned value: %d]\n", result[0], r[0]);
     printf("%s [returned value: %d]\n", result[1], r[1]);
 
     for(i=0;i<SIZE-1;i++) printf("%hhu-", test1[0][i]);
-    printf("%hhu. [First %%n returned by sprintf]\n", test1[0][SIZE-1]);
+    printf("%hhu. [First %%n returned by the first function]\n", test1[0][SIZE-1]);
 
     for(i=0;i<SIZE-1;i++) printf("%hhu-", test1[1][i]);
-    printf("%hhu. [First %%n returned by sollya_lib_sprintf]\n", test1[1][SIZE-1]);
+    printf("%hhu. [First %%n returned by the second function]\n", test1[1][SIZE-1]);
 
     for(i=0;i<SIZE-1;i++) printf("%hhu-", test3[0][i]);
-    printf("%hhu. [Expected first %%n returned by sprintf]\n", test3[0][SIZE-1]);
+    printf("%hhu. [Expected first %%n returned by the first function]\n", test3[0][SIZE-1]);
 
     for(i=0;i<SIZE-1;i++) printf("%hhu-", test2[0][i]);
-    printf("%hhu. [Second %%n returned by sprintf]\n", test2[0][SIZE-1]);
+    printf("%hhu. [Second %%n returned by the first function]\n", test2[0][SIZE-1]);
 
     for(i=0;i<SIZE-1;i++) printf("%hhu-", test2[1][i]);
-    printf("%hhu. [Second %%n returned by sollya_lib_sprintf]\n", test2[1][SIZE-1]);
+    printf("%hhu. [Second %%n returned by the second function]\n", test2[1][SIZE-1]);
 
     for(i=0;i<SIZE-1;i++) printf("%hhu-", test3[1][i]);
-    printf("%hhu. [Expected second %%n returned by sprintf]\n", test3[1][SIZE-1]);
+    printf("%hhu. [Expected second %%n returned by the first function]\n", test3[1][SIZE-1]);
   }
 
   return test;
@@ -333,7 +350,8 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
 
 
 int main(void) {
-  int flag; char flags[6];
+  int flag, flag2;
+  char flags[6];
   int w;
   int width[4] = {-17, 0, 1, 17};
   int p;
@@ -356,6 +374,13 @@ int main(void) {
   snprntf[0] = snprintf; snprntf[1] = wrapper_sollya_snprintf;
   size_t snlength[5] = {0, 0, 1, 42, 42};
   int i, j;
+  void *a[4];
+  mpfr_t tmp1;
+  mpfi_t tmp2;
+  mpq_t tmp3;
+  sollya_obj_t tmp4;
+
+  /*  mpfi_t x[2]; */
 
   sollya_lib_init();
 
@@ -401,6 +426,179 @@ int main(void) {
     }
   }
   printf("Performed %d tests.\n", counter);
+
+  mpfr_init2(tmp1, 53); mpfr_set_ui(tmp1, 42, GMP_RNDN); a[0] = (void *)tmp1;
+  mpfi_init2(tmp2, 53); mpfi_set_ui(tmp2, 17); a[1] = (void *)tmp2;
+  mpq_init(tmp3); mpq_set_ui(tmp3, 2, 3); a[2] = (void *)tmp3;
+  tmp4 = SOLLYA_CONST(51); a[3] = (void *)tmp4;
+
+  for(w=0;w<4;w++) {
+    for(p=0;p<4;p++) {
+      for(i=0;i<2;i++) {
+        /* format where the only possible flag character is '-'.
+           Since it is the only flag character accepted by Sollya, this serves as a reference.
+           Other formats, made with other possible flag characters must behave exactly the same.
+        */
+        if (p!=1) {
+          sprintf(flags, (i==0)?"":"-");
+          sprintf(format, "|%%%s%d.%.0db| %%ln %%s |%%%s%d.%.0db| %%ln %%s", flags, width[w], prec[p], flags, width[w], prec[p]);
+          clean_simple_tab(test1[0]); clean_simple_tab(test2[0]); clean_buffer(result[0]);
+          r[0] = sollya_lib_sprintf(result[0], format, (sollya_obj_t)(a[4]), (long int *)(test1[0]+9), str, (sollya_obj_t)(a[4]), (long int *)(test2[0]+9), str);
+          sollya_lib_printf("%s  [Given by format \"%s\", %b]\n", result[0], format, (sollya_obj_t)(a[4]));
+          for(flag=0;flag<16;flag++) {
+            flag2 = (2*flag+i);
+            sprintf(flags, "%s%s%s%s%s", (flag2 & 1)?"-":"", (flag2 & 2)?"#":"", (flag2 & 4)?"+":"", (flag2 & 8)?" ":"", (flag2 & 16)?"0":"");
+            sprintf(format, "|%%%s%d.%.0db| %%ln %%s |%%%s%d.%.0db| %%ln %%s", flags, width[w], prec[p], flags, width[w], prec[p]);
+            clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]);
+            r[1] = sollya_lib_sprintf(result[1], format, (sollya_obj_t)(a[4]), (long int *)(test1[1]+9), str, (sollya_obj_t)(a[4]), (long int *)(test2[1]+9), str);
+            /* 4 is for long int conversion in %n */
+            if(!verif(r, result, test1, test2, 4, 1, 17))
+              sollya_lib_printf("Flag characters are not ignored as they should be. Format string was: \"%s\", %b\n\n", format, (sollya_obj_t)(a[4]));
+          }
+
+
+          sprintf(flags, (i==0)?"":"-");
+          sprintf(format, "|%%%s*.%.0db| %%ln %%s |%%%s*.%.0db| %%ln %%s", flags, prec[p], flags, prec[p]);
+          clean_simple_tab(test1[0]); clean_simple_tab(test2[0]); clean_buffer(result[0]);
+          r[0] = sollya_lib_sprintf(result[0], format, width[w], (sollya_obj_t)(a[4]), (long int *)(test1[0]+9), str, width[w], (sollya_obj_t)(a[4]), (long int *)(test2[0]+9), str);
+          sollya_lib_printf("%s  [Given by format \"%s\", %d, %b]\n", result[0], format, width[w], (sollya_obj_t)(a[4]));
+          for(flag=0;flag<16;flag++) {
+            flag2 = (2*flag+i);
+            sprintf(flags, "%s%s%s%s%s", (flag2 & 1)?"-":"", (flag2 & 2)?"#":"", (flag2 & 4)?"+":"", (flag2 & 8)?" ":"", (flag2 & 16)?"0":"");
+            sprintf(format, "|%%%s*.%.0db| %%ln %%s |%%%s*.%.0db| %%ln %%s", flags, prec[p], flags, prec[p]);
+            clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]);
+            r[1] = sollya_lib_sprintf(result[1], format, width[w], (sollya_obj_t)(a[4]), (long int *)(test1[1]+9), str, width[w], (sollya_obj_t)(a[4]), (long int *)(test2[1]+9), str);
+            /* 4 is for long int conversion in %n */
+            if(!verif(r, result, test1, test2, 4, 1, 17))
+              sollya_lib_printf("Flag characters are not ignored as they should be. Format string was: \"%s\", %b\n\n", format, (sollya_obj_t)(a[4]));
+          }
+        }
+
+
+        sprintf(flags, (i==0)?"":"-");
+        sprintf(format, "|%%%s%d.*b| %%ln %%s |%%%s%d.*b| %%ln %%s", flags, width[w], flags, width[w]);
+        clean_simple_tab(test1[0]); clean_simple_tab(test2[0]); clean_buffer(result[0]);
+        r[0] = sollya_lib_sprintf(result[0], format, prec[p], (sollya_obj_t)(a[4]), (long int *)(test1[0]+9), str, prec[p], (sollya_obj_t)(a[4]), (long int *)(test2[0]+9), str);
+        sollya_lib_printf("%s  [Given by format \"%s\", %d, %b]\n", result[0], format, prec[p], (sollya_obj_t)(a[4]));
+        for(flag=0;flag<16;flag++) {
+          flag2 = (2*flag+i);
+          sprintf(flags, "%s%s%s%s%s", (flag2 & 1)?"-":"", (flag2 & 2)?"#":"", (flag2 & 4)?"+":"", (flag2 & 8)?" ":"", (flag2 & 16)?"0":"");
+          sprintf(format, "|%%%s%d.*b| %%ln %%s |%%%s%d.*b| %%ln %%s", flags, width[w], flags, width[w]);
+          clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]);
+          r[1] = sollya_lib_sprintf(result[1], format, prec[p], (sollya_obj_t)(a[4]), (long int *)(test1[1]+9), str, prec[p], (sollya_obj_t)(a[4]), (long int *)(test2[1]+9), str);
+          /* 4 is for long int conversion in %n */
+          if(!verif(r, result, test1, test2, 4, 1, 17))
+            sollya_lib_printf("Flag characters are not ignored as they should be. Format string was: \"%s\", %b\n\n", format, (sollya_obj_t)(a[4]));
+        }
+
+
+        sprintf(flags, (i==0)?"":"-");
+        sprintf(format, "|%%%s*.*b| %%ln %%s |%%%s*.*b| %%ln %%s", flags, flags);
+        clean_simple_tab(test1[0]); clean_simple_tab(test2[0]); clean_buffer(result[0]);
+        r[0] = sollya_lib_sprintf(result[0], format, width[w], prec[p], (sollya_obj_t)(a[4]), (long int *)(test1[0]+9), str, width[w], prec[p], (sollya_obj_t)(a[4]), (long int *)(test2[0]+9), str);
+        sollya_lib_printf("%s  [Given by format \"%s\", %d, %d, %b]\n", result[0], format, width[w], prec[p], (sollya_obj_t)(a[4]));
+        for(flag=0;flag<16;flag++) {
+          flag2 = (2*flag+i);
+          sprintf(flags, "%s%s%s%s%s", (flag2 & 1)?"-":"", (flag2 & 2)?"#":"", (flag2 & 4)?"+":"", (flag2 & 8)?" ":"", (flag2 & 16)?"0":"");
+          sprintf(format, "|%%%s*.*b| %%ln %%s |%%%s*.*b| %%ln %%s", flags, flags);
+          clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]);
+          r[1] = sollya_lib_sprintf(result[1], format, width[w], prec[p], (sollya_obj_t)(a[4]), (long int *)(test1[1]+9), str, width[w], prec[p], (sollya_obj_t)(a[4]), (long int *)(test2[1]+9), str);
+          /* 4 is for long int conversion in %n */
+          if(!verif(r, result, test1, test2, 4, 1, 17))
+            sollya_lib_printf("Flag characters are not ignored as they should be. Format string was: \"%s\", %b\n\n", format, (sollya_obj_t)(a[4]));
+        }
+      }
+    }
+  }
+
+  /*
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 8, "Hello |%-12d| %n %d", 17, (int *)(test1[0]+9), 42);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 9, "Hello |%-12d| %n %d", 17, (int *)(test1[0]+9), 42);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 10, "Hello |%-12d| %n %d", 17, (int *)(test1[0]+9), 42);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 23, "Hello |%-12d| %n %d", 17, (int *)(test1[0]+9), 42);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 24, "Hello |%-12d| %n %d", 17, (int *)(test1[0]+9), 42);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 25, "Hello |%-12d| %n %d", 17, (int *)(test1[0]+9), 42);
+  printf("%s\n", result[0]);
+
+  a[0] = SOLLYA_CONST(17);
+  a[1] = SOLLYA_CONST(42);
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 8, "Hello |%-12b| %n %b", a[0], (int *)(test1[0]+9), a[1]);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 9, "Hello |%-12b| %n %b", a[0], (int *)(test1[0]+9), a[1]);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 10, "Hello |%-12b| %n %b", a[0], (int *)(test1[0]+9), a[1]);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 23, "Hello |%-12b| %n %b", a[0], (int *)(test1[0]+9), a[1]);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 24, "Hello |%-12b| %n %b", a[0], (int *)(test1[0]+9), a[1]);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 25, "Hello |%-12b| %n %b", a[0], (int *)(test1[0]+9), a[1]);
+  printf("%s\n", result[0]);
+
+
+  mpfi_init2(x[0], 53);
+  mpfi_init2(x[1], 53);
+  mpfi_set_ui(x[0], 17);
+  mpfi_set_ui(x[1], 42);
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 8, "Hello |%-12w| %n %w", x[0], (int *)(test1[0]+9), x[1]);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 9, "Hello |%-12w| %n %w", x[0], (int *)(test1[0]+9), x[1]);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 10, "Hello |%-12w| %n %w", x[0], (int *)(test1[0]+9), x[1]);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 23, "Hello |%-12w| %n %w", x[0], (int *)(test1[0]+9), x[1]);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 24, "Hello |%-12w| %n %w", x[0], (int *)(test1[0]+9), x[1]);
+  printf("%s\n", result[0]);
+
+  clean(test1, test2, result);
+  r[0] = sollya_lib_snprintf(result[0], 25, "Hello |%-12w| %n %w", x[0], (int *)(test1[0]+9), x[1]);
+  printf("%s\n", result[0]);
+  */
+
+  sollya_lib_printf("%b (should be NULL)\n", NULL);
+  sollya_lib_printf("%% (should display the character percent)\n", NULL);
+
+  mpfr_clear(tmp1);
+  mpfi_clear(tmp2);
+  mpq_clear(tmp3);
+  sollya_clear_obj(tmp4);
 
   sollya_lib_close();
   return 0;
