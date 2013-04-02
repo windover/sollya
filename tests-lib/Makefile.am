@@ -77,6 +77,7 @@ tconstant_from_int64.c \
 tconstant_from_int.c \
 tconstant_from_uint64.c \
 tconstant_list_ops.c \
+tcopy_obj.c \
 tcos.c \
 tcosh.c \
 tcreate_structure.c \
