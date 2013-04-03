@@ -108,13 +108,15 @@ static inline int analyzePrecModifier(uint64_t *analyzedPrec, int *analyzedStar,
     return 0;
   }
 
-  /* Check that between the first and the last
-     character there is at least one other
-     character.
+  /* Check that between the first and the last character there is at
+     least one other character. If not, the analyzed precision is 0.
   */
   myStart = startBuf + 1;
   myEnd = endBufBeforeNull - 1;
-  if (myStart > myEnd) return 0;
+  if (myStart > myEnd) {
+    *analyzedPrec = 0;
+    return 1;
+  }
 
   /* Check if there is exactly one character
      between the first and the last character
