@@ -363,76 +363,90 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
   /* format where the only possible flag character is '-'.                                 */ \
   /* Since it is the only flag character accepted by Sollya, this serves as a reference.   */ \
   /* Other formats, made with other possible flag characters must behave exactly the same. */ \
-    sprintf(flags, (i==0)?"":"-");                                      \
+  sprintf(flags, (i==0)?"":"-");                                        \
+  if (p!=1)                                                             \
+    sprintf(format, "|%%%s%.0d.%d%c| %%ln %%s |%%%s%.0d.%d%c| %%ln %%s", flags, width[w], prec[p], sollya_modifier[v], flags, width[w], prec[p], sollya_modifier[v]); \
+  else                                                                  \
+    sprintf(format, "|%%%s%.0d.%c| %%ln %%s |%%%s%.0d.%c| %%ln %%s", flags, width[w], sollya_modifier[v], flags, width[w], sollya_modifier[v]); \
+  clean_simple_tab(test1[0]); clean_simple_tab(test2[0]); clean_buffer(result[0]); \
+  r[0] = sollya_lib_sprintf(result[0], format, *((cast *)(a[v])), (long int *)(test1[0]+9), str, *((cast *)(a[v])), (long int *)(test2[0]+9), str); \
+  snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;         \
+  sprintf(log_format, "%%s  [Given by format \"%%s\", %%%c]\n", sollya_modifier[v]); \
+  sollya_lib_printf(log_format, result[0], format, *((cast *)(a[v])));  \
+  for(flag=0;flag<16;flag++) {                                          \
+    flag2 = (2*flag+i);                                                 \
+    sprintf(flags, "%s%s%s%s%s", (flag2 & 1)?"-":"", (flag2 & 2)?"#":"", (flag2 & 4)?"+":"", (flag2 & 8)?" ":"", (flag2 & 16)?"0":""); \
     if (p!=1)                                                           \
       sprintf(format, "|%%%s%.0d.%d%c| %%ln %%s |%%%s%.0d.%d%c| %%ln %%s", flags, width[w], prec[p], sollya_modifier[v], flags, width[w], prec[p], sollya_modifier[v]); \
     else                                                                \
       sprintf(format, "|%%%s%.0d.%c| %%ln %%s |%%%s%.0d.%c| %%ln %%s", flags, width[w], sollya_modifier[v], flags, width[w], sollya_modifier[v]); \
-    clean_simple_tab(test1[0]); clean_simple_tab(test2[0]); clean_buffer(result[0]); \
-    r[0] = sollya_lib_sprintf(result[0], format, *((cast *)(a[v])), (long int *)(test1[0]+9), str, *((cast *)(a[v])), (long int *)(test2[0]+9), str); \
-    snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;       \
-    sprintf(log_format, "%%s  [Given by format \"%%s\", %%%c]\n", sollya_modifier[v]); \
-    sollya_lib_printf(log_format, result[0], format, *((cast *)(a[v]))); \
-    for(flag=0;flag<16;flag++) {                                        \
-      flag2 = (2*flag+i);                                               \
-      sprintf(flags, "%s%s%s%s%s", (flag2 & 1)?"-":"", (flag2 & 2)?"#":"", (flag2 & 4)?"+":"", (flag2 & 8)?" ":"", (flag2 & 16)?"0":""); \
-      sprintf(format, "|%%%s%.0d.%d%c| %%ln %%s |%%%s%.0d.%d%c| %%ln %%s", flags, width[w], prec[p], sollya_modifier[v], flags, width[w], prec[p], sollya_modifier[v]); \
-      clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
-      r[1] = sollya_lib_sprintf(result[1], format, *((cast *)(a[v])), (long int *)(test1[1]+9), str, *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
-      /* 4 is for long int conversion in %n */                          \
-      if(!verif(r, result, test1, test2, 4, 1, 17))                     \
-        sollya_lib_printf("Flag characters are not ignored as they should be. Format string was: \"%s\", %b\n\n", format, *((cast *)(a[v]))); \
-                                                                        \
-      for(j=0;j<5;j++) {                                                \
-        clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
-        sollya_lib_snprintf( (j==0)?NULL:result[1], snlength[j], format, *((cast *)(a[v])), (long int *)(test1[1]+9), str, *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
-                                                                        \
-        /* 4 is for long iny converstion in %n */                       \
-        sprintf(str_bak, result[0]);                                    \
-        clean_buffer(result[0]);                                        \
-        r[0] = snprintf(result[0], snlength[j], str_bak);               \
-        result[0][BUFSIZE-1] = '\0'; result[1][BUFSIZE-1] = '\0';       \
-        if(!verif(r, result, test1, test2, 4, (j==4), snlength[j]))     \
-          sollya_lib_printf("Tested format string was: \"%s\", %b\n\n", format, *((cast *)(a[v]))); \
-        sprintf(result[0], str_bak);                                    \
-      }                                                                 \
+    clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
+    r[1] = sollya_lib_sprintf(result[1], format, *((cast *)(a[v])), (long int *)(test1[1]+9), str, *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
+    /* 4 is for long int conversion in %n */                            \
+    if(!verif(r, result, test1, test2, 4, 1, 17)) {                     \
+      sprintf(log_format, "Flag characters are not ignored as they should be. Format string was: \"%%s\", %%%c\n\n", sollya_modifier[v]); \
+      sollya_lib_printf(log_format, format, *((cast *)(a[v])));         \
     }                                                                   \
                                                                         \
+    for(j=0;j<5;j++) {                                                  \
+      clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
+      sollya_lib_snprintf( (j==0)?NULL:result[1], snlength[j], format, *((cast *)(a[v])), (long int *)(test1[1]+9), str, *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
                                                                         \
-    sprintf(flags, (i==0)?"":"-");                                      \
+      /* 4 is for long iny converstion in %n */                         \
+      sprintf(str_bak, result[0]);                                      \
+      clean_buffer(result[0]);                                          \
+      r[0] = snprintf(result[0], snlength[j], str_bak);                 \
+      result[0][BUFSIZE-1] = '\0'; result[1][BUFSIZE-1] = '\0';         \
+      if(!verif(r, result, test1, test2, 4, (j==4), snlength[j])) {     \
+        sprintf(log_format, "Tested format string was: \"%%s\", %%%c\n\n", sollya_modifier[v]); \
+        sollya_lib_printf(log_format, format, *((cast *)(a[v])));       \
+      }                                                                 \
+      sprintf(result[0], str_bak);                                      \
+    }                                                                   \
+  }                                                                     \
+                                                                        \
+                                                                        \
+  sprintf(flags, (i==0)?"":"-");                                        \
+  if (p!=1)                                                             \
+    sprintf(format, "|%%%s*.%d%c| %%ln %%s |%%%s*.%d%c| %%ln %%s", flags, prec[p], sollya_modifier[v], flags, prec[p], sollya_modifier[v]); \
+  else                                                                  \
+    sprintf(format, "|%%%s*.%c| %%ln %%s |%%%s*.%c| %%ln %%s", flags, sollya_modifier[v], flags, sollya_modifier[v]); \
+  clean_simple_tab(test1[0]); clean_simple_tab(test2[0]); clean_buffer(result[0]); \
+  r[0] = sollya_lib_sprintf(result[0], format, width[w], *((cast *)(a[v])), (long int *)(test1[0]+9), str, width[w], *((cast *)(a[v])), (long int *)(test2[0]+9), str); \
+  snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;         \
+  sprintf(log_format, "%%s  [Given by format \"%%s\", %%d, %%%c]\n", sollya_modifier[v]); \
+  sollya_lib_printf(log_format, result[0], format, width[w], *((cast *)(a[v]))); \
+  for(flag=0;flag<16;flag++) {                                          \
+    flag2 = (2*flag+i);                                                 \
+    sprintf(flags, "%s%s%s%s%s", (flag2 & 1)?"-":"", (flag2 & 2)?"#":"", (flag2 & 4)?"+":"", (flag2 & 8)?" ":"", (flag2 & 16)?"0":""); \
     if (p!=1)                                                           \
       sprintf(format, "|%%%s*.%d%c| %%ln %%s |%%%s*.%d%c| %%ln %%s", flags, prec[p], sollya_modifier[v], flags, prec[p], sollya_modifier[v]); \
     else                                                                \
       sprintf(format, "|%%%s*.%c| %%ln %%s |%%%s*.%c| %%ln %%s", flags, sollya_modifier[v], flags, sollya_modifier[v]); \
-    clean_simple_tab(test1[0]); clean_simple_tab(test2[0]); clean_buffer(result[0]); \
-    r[0] = sollya_lib_sprintf(result[0], format, width[w], *((cast *)(a[v])), (long int *)(test1[0]+9), str, width[w], *((cast *)(a[v])), (long int *)(test2[0]+9), str); \
-    snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;       \
-    sprintf(log_format, "%%s  [Given by format \"%%s\", %%d, %%%c]\n", sollya_modifier[v]); \
-    sollya_lib_printf(log_format, result[0], format, width[w], *((cast *)(a[v]))); \
-    for(flag=0;flag<16;flag++) {                                        \
-      flag2 = (2*flag+i);                                               \
-      sprintf(flags, "%s%s%s%s%s", (flag2 & 1)?"-":"", (flag2 & 2)?"#":"", (flag2 & 4)?"+":"", (flag2 & 8)?" ":"", (flag2 & 16)?"0":""); \
-      sprintf(format, "|%%%s*.%d%c| %%ln %%s |%%%s*.%d%c| %%ln %%s", flags, prec[p], sollya_modifier[v], flags, prec[p], sollya_modifier[v]); \
-      clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
-      r[1] = sollya_lib_sprintf(result[1], format, width[w], *((cast *)(a[v])), (long int *)(test1[1]+9), str, width[w], *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
-      /* 4 is for long int conversion in %n */                          \
-      if(!verif(r, result, test1, test2, 4, 1, 17))                     \
-        sollya_lib_printf("Flag characters are not ignored as they should be. Format string was: \"%s\", %b\n\n", format, *((cast *)(a[v]))); \
-                                                                        \
-      for(j=0;j<5;j++) {                                                \
-        clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
-        sollya_lib_snprintf( (j==0)?NULL:result[1], snlength[j], format, width[w], *((cast *)(a[v])), (long int *)(test1[1]+9), str, width[w], *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
-                                                                        \
-        /* 4 is for long iny converstion in %n */                       \
-        sprintf(str_bak, result[0]);                                    \
-        clean_buffer(result[0]);                                        \
-        r[0] = snprintf(result[0], snlength[j], str_bak);               \
-        result[0][BUFSIZE-1] = '\0'; result[1][BUFSIZE-1] = '\0';       \
-        if(!verif(r, result, test1, test2, 4, (j==4), snlength[j]))     \
-          sollya_lib_printf("Tested format string was: \"%s\", %b\n\n", format, *((cast *)(a[v]))); \
-        sprintf(result[0], str_bak);                                    \
-      }                                                                 \
+    clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
+    r[1] = sollya_lib_sprintf(result[1], format, width[w], *((cast *)(a[v])), (long int *)(test1[1]+9), str, width[w], *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
+  /* 4 is for long int conversion in %n */                              \
+    if(!verif(r, result, test1, test2, 4, 1, 17)) {                     \
+      sprintf(log_format, "Flag characters are not ignored as they should be. Format string was: \"%%s\", %%%c\n\n", sollya_modifier[v]); \
+      sollya_lib_printf(log_format, format, *((cast *)(a[v])));         \
     }                                                                   \
+                                                                        \
+    for(j=0;j<5;j++) {                                                  \
+      clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
+      sollya_lib_snprintf( (j==0)?NULL:result[1], snlength[j], format, width[w], *((cast *)(a[v])), (long int *)(test1[1]+9), str, width[w], *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
+                                                                        \
+      /* 4 is for long iny converstion in %n */                         \
+      sprintf(str_bak, result[0]);                                      \
+      clean_buffer(result[0]);                                          \
+      r[0] = snprintf(result[0], snlength[j], str_bak);                 \
+      result[0][BUFSIZE-1] = '\0'; result[1][BUFSIZE-1] = '\0';         \
+      if(!verif(r, result, test1, test2, 4, (j==4), snlength[j])) {     \
+        sprintf(log_format, "Tested format string was: \"%%s\", %%%c\n\n", sollya_modifier[v]); \
+        sollya_lib_printf(log_format, format, *((cast *)(a[v])));       \
+      }                                                                 \
+      sprintf(result[0], str_bak);                                      \
+    }                                                                   \
+  }                                                                     \
                                                                         \
   sprintf(flags, (i==0)?"":"-");                                        \
   sprintf(format, "|%%%s%.0d.*%c| %%ln %%s |%%%s%.0d.*%c| %%ln %%s", flags, width[w], sollya_modifier[v], flags, width[w], sollya_modifier[v]); \
@@ -448,8 +462,10 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
     clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
     r[1] = sollya_lib_sprintf(result[1], format, prec[p], *((cast *)(a[v])), (long int *)(test1[1]+9), str, prec[p], *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
     /* 4 is for long int conversion in %n */                            \
-    if(!verif(r, result, test1, test2, 4, 1, 17))                       \
-      sollya_lib_printf("Flag characters are not ignored as they should be. Format string was: \"%s\", %b\n\n", format, *((cast *)(a[v]))); \
+    if(!verif(r, result, test1, test2, 4, 1, 17)) {                     \
+      sprintf(log_format, "Flag characters are not ignored as they should be. Format string was: \"%%s\", %%%c\n\n", sollya_modifier[v]); \
+      sollya_lib_printf(log_format, format, *((cast *)(a[v])));         \
+    }                                                                   \
                                                                         \
     for(j=0;j<5;j++) {                                                  \
       clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
@@ -460,8 +476,10 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
       clean_buffer(result[0]);                                          \
       r[0] = snprintf(result[0], snlength[j], str_bak);                 \
       result[0][BUFSIZE-1] = '\0'; result[1][BUFSIZE-1] = '\0';         \
-      if(!verif(r, result, test1, test2, 4, (j==4), snlength[j]))       \
-        sollya_lib_printf("Tested format string was: \"%s\", %b\n\n", format, *((cast *)(a[v]))); \
+      if(!verif(r, result, test1, test2, 4, (j==4), snlength[j])) {     \
+        sprintf(log_format, "Tested format string was: \"%%s\", %%%c\n\n", sollya_modifier[v]); \
+        sollya_lib_printf(log_format, format, *((cast *)(a[v])));       \
+      }                                                                 \
       sprintf(result[0], str_bak);                                      \
     }                                                                   \
   }                                                                     \
@@ -481,20 +499,24 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
     clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
     r[1] = sollya_lib_sprintf(result[1], format, width[w], prec[p], *((cast *)(a[v])), (long int *)(test1[1]+9), str, width[w], prec[p], *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
     /* 4 is for long int conversion in %n */                            \
-    if(!verif(r, result, test1, test2, 4, 1, 17))                       \
-      sollya_lib_printf("Flag characters are not ignored as they should be. Format string was: \"%s\", %b\n\n", format, *((cast *)(a[v]))); \
+    if(!verif(r, result, test1, test2, 4, 1, 17)) {                     \
+      sprintf(log_format, "Flag characters are not ignored as they should be. Format string was: \"%%s\", %%%c\n\n", sollya_modifier[v]); \
+      sollya_lib_printf(log_format, format, *((cast *)(a[v])));         \
+    }                                                                   \
                                                                         \
     for(j=0;j<5;j++) {                                                  \
       clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
       sollya_lib_snprintf( (j==0)?NULL:result[1], snlength[j], format, width[w], prec[p], *((cast *)(a[v])), (long int *)(test1[1]+9), str, width[w], prec[p], *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
                                                                         \
-      /* 4 is for long iny converstion in %n */                         \
+      /* 4 is for long int conversion in %n */                          \
       sprintf(str_bak, result[0]);                                      \
       clean_buffer(result[0]);                                          \
       r[0] = snprintf(result[0], snlength[j], str_bak);                 \
       result[0][BUFSIZE-1] = '\0'; result[1][BUFSIZE-1] = '\0';         \
-      if(!verif(r, result, test1, test2, 4, (j==4), snlength[j]))       \
-        sollya_lib_printf("Tested format string was: \"%s\", %b\n\n", format, *((cast *)(a[v]))); \
+      if(!verif(r, result, test1, test2, 4, (j==4), snlength[j])) {     \
+        sprintf(log_format, "Tested format string was: \"%%s\", %%%c\n\n", sollya_modifier[v]); \
+        sollya_lib_printf(log_format, format, *((cast *)(a[v])));       \
+      }                                                                 \
       sprintf(result[0], str_bak);                                      \
     }                                                                   \
   }                                                                     \
