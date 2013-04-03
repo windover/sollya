@@ -105,7 +105,7 @@ int main(void) {
 
   /* Constant */
   f = SOLLYA_PI;
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], &g[1], &g[2], NULL);
@@ -118,7 +118,7 @@ int main(void) {
 
   /* Another constant */
   f = SOLLYA_CONST(3);
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], &g[1], &g[2], NULL);
@@ -131,7 +131,7 @@ int main(void) {
 
   /* A library constant constant */
   f = sollya_lib_libraryconstant("superconst", euler_gamma);
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], &g[1], &g[2], NULL);
@@ -144,7 +144,7 @@ int main(void) {
 
   /* Free variable */
   f = SOLLYA_X_;
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], &g[1], &g[2], NULL);
@@ -157,7 +157,7 @@ int main(void) {
 
   /* Elementary function */
   f = SOLLYA_EXP(SOLLYA_ADD(SOLLYA_SIN(SOLLYA_X_), SOLLYA_CONST(17)));
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], &g[1], &g[2], NULL);
@@ -174,7 +174,7 @@ int main(void) {
   tmp2 = sollya_lib_diff(tmp);
   tmp3 = SOLLYA_SIN(SOLLYA_X_);
   f = sollya_lib_apply(tmp2, tmp3, NULL);
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], &g[1], &g[2], NULL);
@@ -190,7 +190,7 @@ int main(void) {
 
   /* Library function */
   f = sollya_lib_build_function_libraryfunction(SOLLYA_COS(SOLLYA_X_), "stupid1", stupid1);
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], &g[1], &g[2], NULL);
@@ -204,7 +204,7 @@ int main(void) {
   /* arithmetic operator */
   f = SOLLYA_ADD(SOLLYA_X_,
                  sollya_lib_build_function_libraryfunction(SOLLYA_X_, "stupid1", stupid1));
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], &g[1], &g[2], NULL);
@@ -217,7 +217,7 @@ int main(void) {
 
   /* A Sollya object that is not an expression */
   f = sollya_lib_absolute();
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], &g[1], &g[2], NULL);
@@ -230,7 +230,7 @@ int main(void) {
 
   /* Another one */
   f = sollya_lib_parse_string("[1,2]");
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], &g[1], &g[2], NULL);
@@ -247,7 +247,7 @@ int main(void) {
 
   /* As second argument */
   f = SOLLYA_EXP(SOLLYA_ADD(SOLLYA_SIN(SOLLYA_X_), SOLLYA_CONST(17)));
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, NULL, &n, &g[1], &g[2]);
@@ -260,7 +260,7 @@ int main(void) {
 
   /* As third argument */
   f = SOLLYA_EXP(SOLLYA_ADD(SOLLYA_SIN(SOLLYA_X_), SOLLYA_CONST(17)));
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, NULL, &g[1], &g[2]);
@@ -273,7 +273,7 @@ int main(void) {
 
   /* As fourth argument */
   f = SOLLYA_EXP(SOLLYA_ADD(SOLLYA_SIN(SOLLYA_X_), SOLLYA_CONST(17)));
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, NULL, &g[1], &g[2]);
@@ -286,7 +286,7 @@ int main(void) {
 
   /* As fourth argument in a binary operator */
   f = SOLLYA_ADD(SOLLYA_SIN(SOLLYA_X_), SOLLYA_CONST(17));
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, NULL, &g[1], &g[2]);
@@ -299,7 +299,7 @@ int main(void) {
 
   /* As fifth argument in a binary operator */
   f = SOLLYA_ADD(SOLLYA_SIN(SOLLYA_X_), SOLLYA_CONST(17));
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], NULL, &g[2]);
@@ -312,7 +312,7 @@ int main(void) {
 
   /* As fourth argument in a library function */
   f = sollya_lib_build_function_libraryfunction(SOLLYA_COS(SOLLYA_X_), "stupid1", stupid1);
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, NULL, &g[1], &g[2]);
@@ -325,7 +325,7 @@ int main(void) {
 
   /* As fifth argument in a library function */
   f = sollya_lib_build_function_libraryfunction(SOLLYA_COS(SOLLYA_X_), "stupid1", stupid1);
-  type = -1;
+  type = (sollya_base_function_t) -1;
   g[0] = NULL; g[1] = NULL; g[2] = NULL;
   n = -1;
   res = sollya_lib_decompose_function(f, &type, &n, &g[0], NULL, &g[2]);

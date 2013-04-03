@@ -14,6 +14,8 @@ int callback(sollya_msg_t msg, void *data) {
 int main(void) {
   sollya_obj_t a, a2, prec, tmp;
   double d;
+  volatile double e;
+  volatile double f;
 
   sollya_lib_init();
   sollya_lib_install_msg_callback(callback, NULL);
@@ -67,7 +69,9 @@ int main(void) {
   sollya_lib_set_prec(prec);
   sollya_lib_clear_obj(prec);
   a2 = sollya_lib_parse_string("D(5.4611528809225927e-310)");
-  d = 5.4611528809225927e-310; /* subnormal */
+  e = 1.787648654869691154845095994269186112904125380971e-159;
+  f = 3.0549363634996046820519793932136176997894027405723e-151;
+  d = e * f; /* subnormal */
   a = sollya_lib_constant_from_double(d);
   sollya_lib_printf("%b\n%b (should be the same as above)\n", a, a2);
   sollya_lib_clear_obj(a2);

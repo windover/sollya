@@ -74,7 +74,7 @@ int main(void) {
 
   /* Constant */
   f = SOLLYA_PI;
-  type = -1;
+  type = (sollya_base_function_t) -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
   else sollya_lib_printf("%b is not a functional expression (type=%s. Expecting -1)\n", f, pretty_print(type));
@@ -82,7 +82,7 @@ int main(void) {
 
   /* Another constant */
   f = SOLLYA_CONST(3);
-  type = -1;
+  type = (sollya_base_function_t) -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
   else sollya_lib_printf("%b is not a functional expression (type=%s. Expecting -1)\n", f, pretty_print(type));
@@ -90,7 +90,7 @@ int main(void) {
 
   /* A library constant constant */
   f = sollya_lib_libraryconstant("superconst", euler_gamma);
-  type = -1;
+  type = (sollya_base_function_t) -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
   else sollya_lib_printf("%b is not a functional expression (type=%s. Expecting -1)\n", f, pretty_print(type));
@@ -98,7 +98,7 @@ int main(void) {
 
   /* Free variable */
   f = SOLLYA_X_;
-  type = -1;
+  type = (sollya_base_function_t) -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
   else sollya_lib_printf("%b is not a functional expression (type=%s. Expecting -1)\n", f, pretty_print(type));
@@ -106,7 +106,7 @@ int main(void) {
 
   /* Elementary function */
   f = SOLLYA_EXP(SOLLYA_X_);
-  type = -1;
+  type = (sollya_base_function_t) -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
   else sollya_lib_printf("%b is not a functional expression (type=%s. Expecting -1)\n", f, pretty_print(type));
@@ -116,7 +116,7 @@ int main(void) {
   tmp = sollya_lib_parse_string("proc(X,n,p) {var res, oldPrec; oldPrec = prec; prec = p!; res = exp(X); prec = oldPrec!; return res; };");
   tmp = sollya_lib_build_function_procedurefunction(SOLLYA_X_, tmp);
   f = sollya_lib_diff(tmp);
-  type = -1;
+  type = (sollya_base_function_t) -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
   else sollya_lib_printf("%b is not a functional expression (type=%s. Expecting -1)\n", f, pretty_print(type));
@@ -125,7 +125,7 @@ int main(void) {
 
   /* Library function */
   f = sollya_lib_build_function_libraryfunction(SOLLYA_X_, "stupid1", stupid1);
-  type = -1;
+  type = (sollya_base_function_t) -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
   else sollya_lib_printf("%b is not a functional expression (type=%s. Expecting -1)\n", f, pretty_print(type));
@@ -134,7 +134,7 @@ int main(void) {
   /* arithmetic operator */
   f = SOLLYA_ADD(SOLLYA_X_,
                  sollya_lib_build_function_libraryfunction(SOLLYA_X_, "stupid1", stupid1));
-  type = -1;
+  type = (sollya_base_function_t) -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
   else sollya_lib_printf("%b is not a functional expression (type=%s. Expecting -1)\n", f, pretty_print(type));
@@ -142,7 +142,7 @@ int main(void) {
 
   /* A Sollya object that is not an expression */
   f = sollya_lib_absolute();
-  type = -1;
+  type = (sollya_base_function_t) -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
   else sollya_lib_printf("%b is not a functional expression (type=%s. Expecting 'Unknown type')\n", f, pretty_print(type));
@@ -150,7 +150,7 @@ int main(void) {
 
   /* Another one */
   f = sollya_lib_parse_string("[1,2]");
-  type = -1;
+  type = (sollya_base_function_t) -1;
   res = sollya_lib_get_head_function(&type, f);
   if (res) sollya_lib_printf("Type of %b: %s\n", f, pretty_print(type));
   else sollya_lib_printf("%b is not a functional expression (type=%s. Expecting 'Unknown type')\n", f, pretty_print(type));
