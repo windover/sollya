@@ -251,58 +251,66 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
 }
 
 #define DO_TESTS(cast)                                                  \
-  if (p!=1) {                                                           \
-    clean(test1, test2, result);                                        \
-    sprintf(format, "|%%%s%d.%.0d%s%c| %%%sn %%s |%%%s%d.%.0d%s%c| %%%sn %%s", \
+  clean(test1, test2, result);                                          \
+  if (p!=1)                                                             \
+    sprintf(format, "|%%%s%.0d.%d%s%c| %%%sn %%s |%%%s%.0d.%d%s%c| %%%sn %%s", \
             flags, width[w], prec[p], length[L], conv[c], length[L],    \
             flags, width[w], prec[p], length[L], conv[c], length[L]);   \
-    for(i=0;i<2;i++)                                                    \
-      r[i] = prntf[i](result[i], format,                                \
-                      (cast)(val[v]), (cast *)(test1[i]+9), str,        \
-                      (cast)(val[v]), (cast *)(test2[i]+9), str);       \
-    if(!verif(r, result, test1, test2, 2*L+(!c), 1, 17))                \
-      printf("Tested format string was: \"%s\", %d\n\n", format, val[v]); \
-    snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;       \
-    for(j=0;j<5;j++) {                                                  \
-      clean(test1, test2, result);                                      \
-      for(i=0;i<2;i++) {                                                \
-        r[i] = snprntf[i]( (j==0)?NULL:result[i], snlength[j], format,  \
-                          (cast)(val[v]), (cast *)(test1[i]+9), str,    \
-                          (cast)(val[v]), (cast *)(test2[i]+9), str);   \
-        result[i][BUFSIZE-1] = '\0';                                    \
-      }                                                                 \
-      if(!verif(r, result, test1, test2, 2*L+(!c), (j==4), snlength[j])) \
-        printf("Tested format string was: \"%s\", %d\n\n", format, val[v]); \
-    }                                                                   \
-                                                                        \
-                                                                        \
-                                                                        \
+  else                                                                  \
+    sprintf(format, "|%%%s%.0d.%s%c| %%%sn %%s |%%%s%.0d.%s%c| %%%sn %%s", \
+            flags, width[w], length[L], conv[c], length[L],             \
+            flags, width[w], length[L], conv[c], length[L]);            \
+  for(i=0;i<2;i++)                                                      \
+    r[i] = prntf[i](result[i], format,                                  \
+                    (cast)(val[v]), (cast *)(test1[i]+9), str,          \
+                    (cast)(val[v]), (cast *)(test2[i]+9), str);         \
+  if(!verif(r, result, test1, test2, 2*L+(!c), 1, 17))                  \
+    printf("Tested format string was: \"%s\", %d\n\n", format, val[v]); \
+  snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;         \
+  for(j=0;j<5;j++) {                                                    \
     clean(test1, test2, result);                                        \
-    sprintf(format, "|%%%s*.%.0d%s%c| %%%sn %%s |%%%s*.%.0d%s%c| %%%sn %%s", \
+    for(i=0;i<2;i++) {                                                  \
+      r[i] = snprntf[i]( (j==0)?NULL:result[i], snlength[j], format,    \
+                         (cast)(val[v]), (cast *)(test1[i]+9), str,     \
+                         (cast)(val[v]), (cast *)(test2[i]+9), str);    \
+      result[i][BUFSIZE-1] = '\0';                                      \
+    }                                                                   \
+    if(!verif(r, result, test1, test2, 2*L+(!c), (j==4), snlength[j]))  \
+      printf("Tested format string was: \"%s\", %d\n\n", format, val[v]); \
+  }                                                                     \
+                                                                        \
+                                                                        \
+                                                                        \
+  clean(test1, test2, result);                                          \
+  if (p!=1)                                                             \
+    sprintf(format, "|%%%s*.%d%s%c| %%%sn %%s |%%%s*.%d%s%c| %%%sn %%s", \
             flags, prec[p], length[L], conv[c], length[L],              \
             flags, prec[p], length[L], conv[c], length[L]);             \
-    for(i=0;i<2;i++)                                                    \
-      r[i] = prntf[i](result[i], format,                                \
-                      width[w], (cast)(val[v]), (cast *)(test1[i]+9), str, \
-                      width[w], (cast)(val[v]), (cast *)(test2[i]+9), str); \
-    if(!verif(r, result, test1, test2, 2*L+(!c), 1, 17))                \
-      printf("Tested format string was: \"%s\", %d, %d\n\n", format, width[w], val[v]); \
-    snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;       \
-    for(j=0;j<5;j++) {                                                  \
-      clean(test1, test2, result);                                      \
-      for(i=0;i<2;i++) {                                                \
-        r[i] = snprntf[i]( (j==0)?NULL:result[i], snlength[j], format,  \
-                           width[w], (cast)(val[v]), (cast *)(test1[i]+9), str, \
-                           width[w], (cast)(val[v]), (cast *)(test2[i]+9), str); \
-        result[i][BUFSIZE-1] = '\0';                                    \
-      }                                                                 \
-      if(!verif(r, result, test1, test2, 2*L+(!c), (j==4), snlength[j])) \
-        printf("Tested format string was: \"%s\", %d, %d\n\n", format, width[w], val[v]); \
+  else                                                                  \
+    sprintf(format, "|%%%s*.%s%c| %%%sn %%s |%%%s*.%s%c| %%%sn %%s",    \
+            flags, length[L], conv[c], length[L],                       \
+            flags, length[L], conv[c], length[L]);                      \
+  for(i=0;i<2;i++)                                                      \
+    r[i] = prntf[i](result[i], format,                                  \
+                    width[w], (cast)(val[v]), (cast *)(test1[i]+9), str, \
+                    width[w], (cast)(val[v]), (cast *)(test2[i]+9), str); \
+  if(!verif(r, result, test1, test2, 2*L+(!c), 1, 17))                  \
+    printf("Tested format string was: \"%s\", %d, %d\n\n", format, width[w], val[v]); \
+  snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;         \
+  for(j=0;j<5;j++) {                                                    \
+    clean(test1, test2, result);                                        \
+    for(i=0;i<2;i++) {                                                  \
+      r[i] = snprntf[i]( (j==0)?NULL:result[i], snlength[j], format,    \
+                         width[w], (cast)(val[v]), (cast *)(test1[i]+9), str, \
+                         width[w], (cast)(val[v]), (cast *)(test2[i]+9), str); \
+      result[i][BUFSIZE-1] = '\0';                                      \
     }                                                                   \
+    if(!verif(r, result, test1, test2, 2*L+(!c), (j==4), snlength[j]))  \
+      printf("Tested format string was: \"%s\", %d, %d\n\n", format, width[w], val[v]); \
   }                                                                     \
                                                                         \
   clean(test1, test2, result);                                          \
-  sprintf(format, "|%%%s%d.*%s%c| %%%sn %%s |%%%s%d.*%s%c| %%%sn %%s",  \
+  sprintf(format, "|%%%s%.0d.*%s%c| %%%sn %%s |%%%s%.0d.*%s%c| %%%sn %%s", \
           flags, width[w], length[L], conv[c], length[L],               \
           flags, width[w], length[L], conv[c], length[L]);              \
   for(i=0;i<2;i++)                                                      \
@@ -355,9 +363,11 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
   /* format where the only possible flag character is '-'.                                 */ \
   /* Since it is the only flag character accepted by Sollya, this serves as a reference.   */ \
   /* Other formats, made with other possible flag characters must behave exactly the same. */ \
-  if (p!=1) {                                                           \
     sprintf(flags, (i==0)?"":"-");                                      \
-    sprintf(format, "|%%%s%d.%.0d%c| %%ln %%s |%%%s%d.%.0d%c| %%ln %%s", flags, width[w], prec[p], sollya_modifier[v], flags, width[w], prec[p], sollya_modifier[v]); \
+    if (p!=1)                                                           \
+      sprintf(format, "|%%%s%.0d.%d%c| %%ln %%s |%%%s%.0d.%d%c| %%ln %%s", flags, width[w], prec[p], sollya_modifier[v], flags, width[w], prec[p], sollya_modifier[v]); \
+    else                                                                \
+      sprintf(format, "|%%%s%.0d.%c| %%ln %%s |%%%s%.0d.%c| %%ln %%s", flags, width[w], sollya_modifier[v], flags, width[w], sollya_modifier[v]); \
     clean_simple_tab(test1[0]); clean_simple_tab(test2[0]); clean_buffer(result[0]); \
     r[0] = sollya_lib_sprintf(result[0], format, *((cast *)(a[v])), (long int *)(test1[0]+9), str, *((cast *)(a[v])), (long int *)(test2[0]+9), str); \
     snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;       \
@@ -366,7 +376,7 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
     for(flag=0;flag<16;flag++) {                                        \
       flag2 = (2*flag+i);                                               \
       sprintf(flags, "%s%s%s%s%s", (flag2 & 1)?"-":"", (flag2 & 2)?"#":"", (flag2 & 4)?"+":"", (flag2 & 8)?" ":"", (flag2 & 16)?"0":""); \
-      sprintf(format, "|%%%s%d.%.0d%c| %%ln %%s |%%%s%d.%.0d%c| %%ln %%s", flags, width[w], prec[p], sollya_modifier[v], flags, width[w], prec[p], sollya_modifier[v]); \
+      sprintf(format, "|%%%s%.0d.%d%c| %%ln %%s |%%%s%.0d.%d%c| %%ln %%s", flags, width[w], prec[p], sollya_modifier[v], flags, width[w], prec[p], sollya_modifier[v]); \
       clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
       r[1] = sollya_lib_sprintf(result[1], format, *((cast *)(a[v])), (long int *)(test1[1]+9), str, *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
       /* 4 is for long int conversion in %n */                          \
@@ -390,7 +400,10 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
                                                                         \
                                                                         \
     sprintf(flags, (i==0)?"":"-");                                      \
-    sprintf(format, "|%%%s*.%.0d%c| %%ln %%s |%%%s*.%.0d%c| %%ln %%s", flags, prec[p], sollya_modifier[v], flags, prec[p], sollya_modifier[v]); \
+    if (p!=1)                                                           \
+      sprintf(format, "|%%%s*.%d%c| %%ln %%s |%%%s*.%d%c| %%ln %%s", flags, prec[p], sollya_modifier[v], flags, prec[p], sollya_modifier[v]); \
+    else                                                                \
+      sprintf(format, "|%%%s*.%c| %%ln %%s |%%%s*.%c| %%ln %%s", flags, sollya_modifier[v], flags, sollya_modifier[v]); \
     clean_simple_tab(test1[0]); clean_simple_tab(test2[0]); clean_buffer(result[0]); \
     r[0] = sollya_lib_sprintf(result[0], format, width[w], *((cast *)(a[v])), (long int *)(test1[0]+9), str, width[w], *((cast *)(a[v])), (long int *)(test2[0]+9), str); \
     snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;       \
@@ -399,7 +412,7 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
     for(flag=0;flag<16;flag++) {                                        \
       flag2 = (2*flag+i);                                               \
       sprintf(flags, "%s%s%s%s%s", (flag2 & 1)?"-":"", (flag2 & 2)?"#":"", (flag2 & 4)?"+":"", (flag2 & 8)?" ":"", (flag2 & 16)?"0":""); \
-      sprintf(format, "|%%%s*.%.0d%c| %%ln %%s |%%%s*.%.0d%c| %%ln %%s", flags, prec[p], sollya_modifier[v], flags, prec[p], sollya_modifier[v]); \
+      sprintf(format, "|%%%s*.%d%c| %%ln %%s |%%%s*.%d%c| %%ln %%s", flags, prec[p], sollya_modifier[v], flags, prec[p], sollya_modifier[v]); \
       clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
       r[1] = sollya_lib_sprintf(result[1], format, width[w], *((cast *)(a[v])), (long int *)(test1[1]+9), str, width[w], *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
       /* 4 is for long int conversion in %n */                          \
@@ -420,10 +433,9 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
         sprintf(result[0], str_bak);                                    \
       }                                                                 \
     }                                                                   \
-  }                                                                     \
                                                                         \
   sprintf(flags, (i==0)?"":"-");                                        \
-  sprintf(format, "|%%%s%d.*%c| %%ln %%s |%%%s%d.*%c| %%ln %%s", flags, width[w], sollya_modifier[v], flags, width[w], sollya_modifier[v]); \
+  sprintf(format, "|%%%s%.0d.*%c| %%ln %%s |%%%s%.0d.*%c| %%ln %%s", flags, width[w], sollya_modifier[v], flags, width[w], sollya_modifier[v]); \
   clean_simple_tab(test1[0]); clean_simple_tab(test2[0]); clean_buffer(result[0]); \
   r[0] = sollya_lib_sprintf(result[0], format, prec[p], *((cast *)(a[v])), (long int *)(test1[0]+9), str, prec[p], *((cast *)(a[v])), (long int *)(test2[0]+9), str); \
   snlength[3] = (size_t)(r[0]); snlength[4] = (size_t)(r[0])+1;         \
@@ -432,7 +444,7 @@ int verif(int r[2], char result[2][BUFSIZE], char test1[2][SIZE], char test2[2][
   for(flag=0;flag<16;flag++) {                                          \
     flag2 = (2*flag+i);                                                 \
     sprintf(flags, "%s%s%s%s%s", (flag2 & 1)?"-":"", (flag2 & 2)?"#":"", (flag2 & 4)?"+":"", (flag2 & 8)?" ":"", (flag2 & 16)?"0":""); \
-    sprintf(format, "|%%%s%d.*%c| %%ln %%s |%%%s%d.*%c| %%ln %%s", flags, width[w], sollya_modifier[v], flags, width[w], sollya_modifier[v]); \
+    sprintf(format, "|%%%s%.0d.*%c| %%ln %%s |%%%s%.0d.*%c| %%ln %%s", flags, width[w], sollya_modifier[v], flags, width[w], sollya_modifier[v]); \
     clean_simple_tab(test1[1]); clean_simple_tab(test2[1]); clean_buffer(result[1]); \
     r[1] = sollya_lib_sprintf(result[1], format, prec[p], *((cast *)(a[v])), (long int *)(test1[1]+9), str, prec[p], *((cast *)(a[v])), (long int *)(test2[1]+9), str); \
     /* 4 is for long int conversion in %n */                            \
@@ -530,6 +542,7 @@ int main(void) {
   mpfi_t tmp2;
   mpq_t tmp3;
   sollya_obj_t tmp4, tmp5;
+  sollya_obj_t tmp_sollya_obj;
 
   /*  mpfi_t x[2]; */
 
@@ -578,16 +591,20 @@ int main(void) {
   }
   printf("Performed %d tests.\n", counter);
 
-  tmp4 = sollya_lib_hexadecimal(); sollya_lib_set_display(tmp4); sollya_lib_clear_obj(tmp4);
-
-  mpfr_init2(tmp1, 53); mpfr_set_ui(tmp1, 42, GMP_RNDN); a[0] = (void *)(&tmp1);
-  mpfi_init2(tmp2, 53); mpfi_set_ui(tmp2, 17); a[1] = (void *)(&tmp2);
-  mpq_init(tmp3); 
+  mpfr_init2(tmp1, 53); mpfr_set_d(tmp1, 3.141592653589793, GMP_RNDN); a[0] = (void *)(&tmp1);
+  mpfi_init2(tmp2, 53); mpfi_const_pi(tmp2); a[1] = (void *)(&tmp2);
+  mpq_init(tmp3);
   mpq_set_ui(tmp3, 2, 3); a[2] = (void *)(&tmp3);
   tmp4 = sollya_lib_build_list(SOLLYA_COS(SOLLYA_ADD(SOLLYA_X_, SOLLYA_CONST(42))), NULL); a[3] = (void *)(&tmp4);
   tmp5 = SOLLYA_CONST(17); a[4] = (void *)(&tmp5);
 
+  tmp_sollya_obj = sollya_lib_on();
+  sollya_lib_set_midpointmode(tmp_sollya_obj);
+  sollya_lib_clear_obj(tmp_sollya_obj);
+
+  prec[3] = 5;
   for(v=0; v<5; v++) {
+    if(v==4) { tmp_sollya_obj = sollya_lib_hexadecimal(); sollya_lib_set_display(tmp_sollya_obj); sollya_lib_clear_obj(tmp_sollya_obj); }
     for(w=0;w<4;w++) {
       for(p=0;p<4;p++) {
         for(i=0;i<2;i++) {
@@ -607,17 +624,14 @@ int main(void) {
 
 
   /* Testing what happens when snprintf must stop just at the beginning of a conversion */
-  w=17;
-  a[4] = (void *)(&w);
-  sollya_modifier[4] = 'd';
+  mpfr_set_ui(tmp1, 17, GMP_RNDN);
+  mpfi_set_ui(tmp2, 17);
+
+  w=17; a[4] = (void *)(&w); sollya_modifier[4] = 'd';
   for(v=0; v<5; v++) {
     for(i=0;i<6; i++) {
           switch(v) {
-          case 0:   clean_buffer(result[0]); r[0] = -1; r[1] = -1;                        
-            sprintf(format, "Hello|%%-25%c| %%n|%%d|", sollya_modifier[v]);       
-            r[1] = sollya_lib_snprintf(result[0], positions[i], format, *((mpfr_t *)(a[v])), &r[0], 42); 
-            sollya_lib_printf("%s [value stored in %%n: %d; returned value: %d]\n", result[0], r[0], r[1]); 
-            break;
+          case 0: DO_SPECIAL_TESTS(mpfr_t) break;
           case 1: DO_SPECIAL_TESTS(mpfi_t) break;
           case 2: DO_SPECIAL_TESTS(mpq_t) break;
           case 3: DO_SPECIAL_TESTS(sollya_obj_t) break;
@@ -630,6 +644,22 @@ int main(void) {
   /* Miscellanous tests */
   sollya_lib_printf("%b (should be NULL)\n", NULL);
   sollya_lib_printf("%% (should display the character percent)\n", NULL);
+
+  sollya_lib_clear_obj(tmp4);
+  tmp4 = sollya_lib_build_list(sollya_lib_string("Hello\nyou"), NULL);
+  sollya_lib_printf("%b\n", tmp4);
+
+  sollya_lib_clear_obj(tmp4);
+  tmp4 = sollya_lib_build_list(sollya_lib_string("Hello\012you"), NULL);
+  sollya_lib_printf("%b\n", tmp4);
+
+  sollya_lib_clear_obj(tmp4);
+  tmp4 = sollya_lib_parse_string("[|\"Hello\\012you\"|]");
+  sollya_lib_printf("%b\n", tmp4);
+
+  sollya_lib_clear_obj(tmp4);
+  tmp4 = sollya_lib_build_list(sollya_lib_string("Hello\0you"), NULL);
+  sollya_lib_printf("%b\n", tmp4);
 
   mpfr_clear(tmp1);
   mpfi_clear(tmp2);
