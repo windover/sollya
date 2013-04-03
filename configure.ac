@@ -492,8 +492,8 @@ CPPFLAGS="$AM_CPPFLAGS $CPPFLAGS"
 LDFLAGS="$AM_LDFLAGS $LDFLAGS"
 AC_LANG_PUSH([C++])
 AC_MSG_CHECKING([if libfplll is found at runtime])
-LDFLAGS_BAK="$LDFLAGS"
-LDFLAGS="$LDFLAGS $SO_PATH"
+LD_LIB_PATH_BAK="$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$SO_LIB_PATH"
 if test "x${FPLLLSPECIALINCLUDE}y" == "xyesy"
 then
   AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
@@ -501,16 +501,16 @@ then
                                  [[#include <gmp.h>]],
                                  [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
 	        [AC_MSG_RESULT(yes)],
-                [AC_MSG_ERROR([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+                [AC_MSG_WARN([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
 else
   AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>]]
                                  [[#include <fplll.h>]]
                                  [[#include <gmp.h>]],
                                  [[ZZ_mat<mpz_t> * M; M = new ZZ_mat<mpz_t>(3,3); if(M!=NULL) exit(0); else exit(1);]])],
 	        [AC_MSG_RESULT(yes)],
-                [AC_MSG_ERROR([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+                [AC_MSG_WARN([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
 fi
-LDFLAGS="$LDFLAGS_BAK"
+export LD_LIBRARY_PATH="$LD_LIB_PATH_BAK"
 AC_LANG_POP([C++])
 CFLAGS="$OLDCFLAGS"
 CPPFLAGS="$OLDCPPFLAGS"
