@@ -496,8 +496,7 @@ LD_LIB_PATH_BAK="$LD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$SO_LIB_PATH"
 if test "x${FPLLLSPECIALINCLUDE}y" == "xyesy"
 then
-  AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <iostream>]]
-                                 [[#undef malloc]]
+  AC_RUN_IFELSE([AC_LANG_PROGRAM([[#undef malloc]]
                                  [[#undef realloc]]
                                  [[#include <fplll/fplll.h>]]
                                  [[#include <gmp.h>]]
@@ -506,8 +505,7 @@ then
 	        [AC_MSG_RESULT(yes)],
                 [AC_MSG_WARN([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
 else
-  AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <iostream>]]
-                                 [[#undef malloc]]
+  AC_RUN_IFELSE([AC_LANG_PROGRAM([[#undef malloc]]
                                  [[#undef realloc]]
                                  [[#include <fplll.h>]]
                                  [[#include <gmp.h>]]
