@@ -1902,7 +1902,7 @@ int flag_double_rounding = 0;
 int set_flag_on_problem(sollya_msg_t msg) {
   switch(sollya_lib_get_msg_id(msg)) {
     case SOLLYA_MSG_DOUBLE_ROUNDING_ON_CONVERSION:
-      flag  = 1;
+      flag_double_rounding  = 1;
   }
   return 1;
 }

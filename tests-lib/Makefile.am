@@ -203,6 +203,7 @@ tmantissa_and_exponent.c \
 tmax.c \
 tmid.c \
 tmin.c \
+tmsg_callback_functions.c \
 tmul.c \
 tname_free_variable.c \
 tnearestint.c \
