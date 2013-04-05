@@ -197,7 +197,7 @@ int  getDisplayColor();
 void setDisplayColor(int);
 int installMessageCallback(int (*msgHandler) (sollya_msg_t, void *), void *);
 int uninstallMessageCallback();
-int (*getMessageCallback())(sollya_msg_t, void *);
+void getMessageCallback(int (**)(sollya_msg_t, void *), void **);
 int initializeLibraryMode(void *(*)(size_t),
 			  void *(*)(size_t, size_t),
 			  void *(*)(void *, size_t),

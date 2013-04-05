@@ -137,8 +137,8 @@ int sollya_lib_uninstall_msg_callback() {
   return uninstallMessageCallback();
 }
 
-int (*sollya_lib_get_msg_callback())(sollya_msg_t, void *) {
-  return getMessageCallback();
+void sollya_lib_get_msg_callback(int (**fptr)(sollya_msg_t, void *), void **data) {
+  getMessageCallback(fptr, data);
 }
 
 int sollya_lib_get_msg_id(sollya_msg_t msg) {

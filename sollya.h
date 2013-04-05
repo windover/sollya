@@ -238,7 +238,7 @@ extern "C" {
   */
   int sollya_lib_install_msg_callback(int (*) (sollya_msg_t, void *), void *);
   int sollya_lib_uninstall_msg_callback();
-  int (*sollya_lib_get_msg_callback())(sollya_msg_t, void *);
+  void sollya_lib_get_msg_callback(int (**)(sollya_msg_t, void *), void **);
 
   /* A function to get a numerical message id out of the opaque
      sollya_msg_t object

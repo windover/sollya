@@ -712,8 +712,17 @@ int installMessageCallback(int (*msgHandler) (sollya_msg_t, void *), void *data)
   return 1;
 }
 
-int (*getMessageCallback())(sollya_msg_t, void *) {
-  return messageCallback;
+void getMessageCallback(int (**fptr)(sollya_msg_t, void *), void **data) {
+  if (fptr != NULL) {
+    *fptr = messageCallback;
+  }
+  if (data != NULL) {
+    if (messageCallback != NULL) {
+      *data = messageCallbackData;
+    } else {
+      *data = NULL;
+    }
+  }
 }
 
 int uninstallMessageCallback() {
