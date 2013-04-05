@@ -28,6 +28,11 @@ table {
   margin-left:auto;
   margin-right: auto;
 }
+
+dl { counter-reset: item -1; }
+dd:before { content: counter(item) ". "; counter-increment: item; }
+dd.omit:before { content: "\00a0\00a0\00a0\00a0"; }
+
  --></style>
 </head>
 <body>
@@ -1701,7 +1706,7 @@ As a result of a call to <code>sollya_lib_decompose_libraryfunction</code>, the 
 assume that <code>g</code> represents an expression f<sub>0</sub>(f<sub>1</sub>) where f<sub>0</sub> is a procedure function. Then, f<sub>0</sub> is the n-th derivative (for some n) of a function provided within Sollya via a procedure <code>proc(X, n, p) {...}</code>.<br>
 As a result of a call to <code>sollya_lib_decompose_procedurefunction</code>, the value n is stored at the address referred to by <code>deriv</code>, a Sollya object representing the procedure is stored at the address referred to by <code>f</code>, a Sollya object representing f<sub>1</sub> is stored at the address referred to by <code>e</code>. Please notice that the objects stored in <code>f</code> and <code>e</code> must manually be cleared once it becomes useless. Upon success, a boolean integer representing true is returned. If <code>g</code> is not a procedure function object, nothing happens and false is returned.</li>
   <li> <code>int sollya_lib_decompose_libraryconstant(void (**f)(mpfr_t, mp_prec_t),</code><br>
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>sollya_obj_t c)</code>:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>sollya_obj_t c)</code>:<br>
 assume that <code>c</code> is a constant provided via an external C function <code>void func(mpfr_t, mp_prec_t)</code>. As a result of a call to <code>sollya_lib_decompose_libraryconstant</code>, a pointer to <code>func</code> is stored at the addresse referred to by <code>f</code> and a boolean integer representing true is returned. Otherwise, nothing happens and false is returned.</li>
 </ul>
 
@@ -1720,13 +1725,13 @@ Let us suppose that <code>f</code> is a functional expression and <code>a</code>
 <p>
 In the former, the argument <code>a</code> is any <code>sollya_obj_t</code> containing a numerical constant or a constant expression, while in the latter <code>a</code> is a constant already stored in a <code>mpfr_t</code>. These functions store the result in <code>res</code> and return a <code>sollya_fp_result_t</code> which is an enum type described in Table&nbsp;<a href="#list_of_sollya_fp_result_t">List of values defined in type <code>sollya_fp_result_t</code></a>). In order to understand the role of the <code>cutoff</code> parameter and the value returned by the function, it is necessary to describe the algorithm in a nutshell:
 <div style="width:100%; border-bottom: 1px solid black; margin-top: 15px;"></div>
-<ol>
-  <li><strong>Input:</strong> a functional expression <code>f</code>, a constant expression <code>a</code>, a target precision q, a parameter epsilon.</li>
-  <li> Choose an initial working precision p.</li>
-  <li> Evaluate <code>a</code> with interval arithmetic, performing the computations at precision p.</li>
-  <li> Replace the occurrences of the free variable in <code>f</code> by the interval obtained at step 2. Evaluate the resulting expression with interval arithmetic, performing the computations at precision p. This yields an interval I = [x,y].</li>
-  <li> Examine the following cases successively (RN denotes rounding to nearest at precision&nbsp;q):
-    <ol>
+<dl>
+  <dd class="omit"><strong>Input:</strong> a functional expression <code>f</code>, a constant expression <code>a</code>, a target precision q, a parameter epsilon.</dd>
+  <dd>Choose an initial working precision p.</dd>
+  <dd>Evaluate <code>a</code> with interval arithmetic, performing the computations at precision p.</dd>
+  <dd>Replace the occurrences of the free variable in <code>f</code> by the interval obtained at step 2. Evaluate the resulting expression with interval arithmetic, performing the computations at precision p. This yields an interval I = [x,y].</dd>
+  <dd>Examine the following cases successively (RN denotes rounding to nearest at precision&nbsp;q):
+    <ol style="list-style-type: lower-alpha;">
       <li> If RN(x) = RN(y), set <code>res</code> to that value and return.</li>
       <li> If I does not contain any floating-point number at precision q, set <code>res</code> to one of both floating-point numbers enclosing I and return.</li>
       <li> If I contains exactly one floating-point number at precision q, set <code>res</code> to that number and return.</li>
@@ -1734,8 +1739,8 @@ In the former, the argument <code>a</code> is any <code>sollya_obj_t</code> cont
       <li> If p has already been increased many times, then set <code>res</code> to the middle of I and return.</li>
       <li> Otherwise, increase p and go back to step 2.</li>
     </ol>
-  </li>
-</ol>
+  </dd>
+</dl>
 <div style="width:100%; border-bottom: 1px solid black; margin-bottom: 15px;"></div>
 <p>
 The target precision q is chosen to be the precision of the <code>mpfr_t</code> variable <code>res</code>. The parameter epsilon corresponds to the parameter <code>cutoff</code>. The reason why <code>cutoff</code> is a pointer is that, most of the time, the user may not want to provide it, and using a pointer makes it possible to pass <code>NULL</code> instead. So, if <code>NULL</code> is given, epsilon is set to 0. If <code>cutoff</code> is not <code>NULL</code>, the absolute value of <code>*cutoff</code> is used as value for epsilon. Using a non-zero value for epsilon can be useful when one does not care about the precise value of f(a) whenever its absolute value is below a given threshold. Typically, if one wants to compute the maximum of |f(a<sub>1</sub>)|, ..., |f(a<sub>n</sub>)|, it is not necessary to spend too much effort on the computation of |f(a<sub>i</sub>)| if one already knows that it is smaller than epsilon = max {|f(a<sub>1</sub>)|,...,|f(a<sub>i-1</sub>)|}.
@@ -1889,7 +1894,7 @@ int flag_double_rounding = 0;<br>
 int set_flag_on_problem(sollya_msg_t msg) {<br>
 &nbsp;&nbsp;switch(sollya_lib_get_msg_id(msg)) {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_MSG_DOUBLE_ROUNDING_ON_CONVERSION:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flag&nbsp;&nbsp;= 1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flag_double_rounding&nbsp;&nbsp;= 1;<br>
 &nbsp;&nbsp;}<br>
 &nbsp;&nbsp;return 1;<br>
 }<br>
