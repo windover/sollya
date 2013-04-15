@@ -1082,7 +1082,7 @@ As a special exception to these rules, [0]^[0] returns [1].
 The header file of the <span class="sollya">Sollya</span> library is <code>sollya.h</code>. Its inclusion may provoke the inclusion of other header files, such as <code>gmp.h</code>, <code>mpfr.h</code> or <code>mpfi.h</code>.
 
 <p>
-The library provides a virtual <span class="sollya">Sollya</span> session that is perfectly similar to an interactive session: environment variables such as <code>verbosity</code>, <code>prec</code>, <code>display</code>, <code>midpointmode</code>, etc. are maintained and affect the behavior of the library, warning messages are displayed when something is not exact, etc. Please notice that the <span class="sollya">Sollya</span> library currently is <strong>not</strong> re-entrant and can only be opened once. A process using the library must hence not be multi-threaded and is limited to one single virtual <span class="sollya">Sollya</span> session.
+The library provides a virtual <span class="sollya">Sollya</span> session that is perfectly similar to an interactive session: global variables such as <code>verbosity</code>, <code>prec</code>, <code>display</code>, <code>midpointmode</code>, etc. are maintained and affect the behavior of the library, warning messages are displayed when something is not exact, etc. Please notice that the <span class="sollya">Sollya</span> library currently is <strong>not</strong> re-entrant and can only be opened once. A process using the library must hence not be multi-threaded and is limited to one single virtual <span class="sollya">Sollya</span> session.
 
 <p>
 In order to get started with the <span class="sollya">Sollya</span> library, the first thing to do is hence to initialize this virtual session. This is performed with the <code>sollya_lib_init</code> function. Accordingly, one should close the session at the end of the program (which has the effect of releasing all the memory used by <span class="sollya">Sollya</span>). Please notice that <span class="sollya">Sollya</span> uses its own allocation functions and registers them to <code>GMP</code> using the custom allocation functions provided by <code>GMP</code>. Particular precautions should hence be taken when using the <span class="sollya">Sollya</span> library in a program that also registers its own functions to <code>GMP</code>: in that case <code>sollya_lib_init_with_custom_memory_functions</code> should be used instead of <code>sollya_lib_init</code> for initializing the library. This is discussed in <a href="#customMemoryFunctions">a specific section.</a>
@@ -1114,13 +1114,13 @@ Suppose that this code is saved in a file called <code>foo.c</code>. The compila
 The library provides a single data type called <code>sollya_obj_t</code> that can contain any <span class="sollya">Sollya</span> object (a <span class="sollya">Sollya</span> object is anything that can be stored in a variable within the interactive tool. See Section <a href="#sec:data_types">Data Types</a> of the present documentation for details). Please notice that <code>sollya_obj_t</code> is in fact a pointer type; this has two consequences:
 <ul>
   <li> <code>NULL</code> is a placeholder that can be used as a <code>sollya_obj_t</code> in some contexts. This placeholder is particularly useful as an end marker for functions with a variable number of arguments (see Sections <a href="#creating_lists">Lists</a> and <a href="#library_commands_and_functions">Commands and functions.</a></li>
-  <li> An assignment with the &ldquo;=&rdquo; sign does not copy an object but only copies the reference to it. To perform a (deep) copy, the <code>sollya_lib_copy_obj()</code> function is available.</li>
+  <li> An assignment with the &ldquo;=&rdquo; sign does not copy an object but only copies the reference to it. In order to perform a (deep) copy, the <code>sollya_lib_copy_obj()</code> function is available.</li>
 </ul>
 <p>
 Except for a few functions for which the contrary is explicitly specified, the following conventions are used:
 <ul>
   <li>  A function does not touch its arguments. Hence if <code>sollya_lib_foo</code> is a function of the library, a call to <code>sollya_lib_foo(a)</code> leaves the object referenced by <code>a</code> unchanged (the notable exceptions to that rule are the functions containing <code>build</code> in their name, e.g., <code>sollya_lib_build_foo</code>).</li>
-  <li> A function that returns a <code>sollya_obj_t</code> creates a new object (this means that memory is dynamically allocated for that object). The memory allocated for that object should manually be cleared when the object is no longer used and all references to it (on the stack) get out of reach, e.g. on a function return: this is performed by the <code>sollya_lib_clear_obj()</code> function. By convenience <code>sollya_lib_clear_obj(NULL)</code> is a valid call, that just does nothing.</li>
+  <li> A function that returns a <code>sollya_obj_t</code> creates a new object (this means that memory is dynamically allocated for that object). The memory allocated for that object should manually be cleared when the object is no longer used and all references to it (on the stack) get out of reach, e.g. on a function return: this is performed by the <code>sollya_lib_clear_obj()</code> function. By convenience <code>sollya_lib_clear_obj(NULL)</code> is a valid call, which just does nothing.</li>
 </ul>
 <p>
 In general, except if the user perfectly knows what they are doing, the following rules should be applied (here <code>a</code> and <code>b</code> are C variables of type <code>sollya_obj_t</code>, and <code>sollya_lib_foo</code> and <code>sollya_lib_bar</code> are functions of the library):
@@ -1160,11 +1160,11 @@ A universal function allows the user to execute any expression, as if it were gi
 <p>
 <h2>10.3 - Conventions in use in the library</h2>
 <p>
-The library follows some conventions that it is useful to remember:
+The library follows some conventions that are useful to remember:
 <ul>
-  <li> When a function is a direct transposition of a command or function available in the interactive tool, it returns a <code>sollya_obj_t</code>. This is true, even when it would sound natural to return, e.g. an <code>int</code>. For instance <code>sollya_lib_get_verbosity()</code> returns a <code>sollya_obj_t</code>, which integer value must then be recovered with <code>sollya_lib_get_constant_as_int</code>. This forces the user to declare (and clear afterwards) a temporary <code>sollya_obj_t</code> to store the value, but this is the price of homogeneity in the library.</li>
+  <li> When a function is a direct transposition of a command or function available in the interactive tool, it returns a <code>sollya_obj_t</code>. This is true, even when it would sound natural to return, e.g. an <code>int</code>. For instance <code>sollya_lib_get_verbosity()</code> returns a <code>sollya_obj_t</code>, whose integer value must then be recovered with <code>sollya_lib_get_constant_as_int</code>. This forces the user to declare (and clear afterwards) a temporary <code>sollya_obj_t</code> to store the value, but this is the price of homogeneity in the library.</li>
   <li> When a function returns an integer, this integer generally is a boolean in the usual C meaning, i.e. 0 represents false and any non-zero value represents true. In many cases, the integer returned by the function indicates a status of success or failure: the convention is &ldquo;false means failure&rdquo; and &ldquo;true means success&rdquo;. In case of failure, the convention is that the function did not touch any of its arguments.</li>
-  <li> When a function would need to return several things, or when a function would need to return something together with a status of failure or success, the convention is that pointers are given as the first arguments of the function. These pointers shall point to valid addresses where the function will store the results. This can sometimes give obscure signatures, when the function morally returns a pointer and actually takes as argument a pointer to a pointer (this typically happens when the function allocates a segment of memory and should return a pointer to that segment of memory).</li>
+  <li> When a function would need to return several things, or when a function would need to return something together with a status of failure or success, the convention is that pointers are given as the first arguments of the function. These pointers shall point to valid addresses where the function will store the results. This can sometimes give obscure signatures, when the function would in principle returns a pointer and actually takes as argument a pointer to a pointer (this typically happens when the function allocates a segment of memory and should return a pointer to that segment of memory).</li>
 </ul>
 
 <h2>10.4 - Displaying <span class="sollya">Sollya</span> objects and numerical values</h2>
@@ -1194,7 +1194,7 @@ Flag characters (e.g., &lsquo;<code>#</code>&rsquo;, &lsquo;<code>0</code>&rsquo
 As a special (and sometimes convenient) case, <code>%b</code> accepts that its corresponding <code>sollya_obj_t</code> argument be <code>NULL</code>: in this particular case, the string &ldquo;NULL&rdquo; is used in the displayed string. Please notice that, except for the particular case of <code>NULL</code>, the behavior of <code>sollya_lib_printf</code> is completely undefined if the argument of <code>%b</code> is not a valid <span class="sollya">Sollya</span> object.
 <p>
 The <code>sollya_lib_printf</code> functions return an integer with the same meaning as the traditional <code>printf</code> functions. It indicates the number of characters that have been output (excluding the final <code>\0</code> character). Similarly, the conversion specifier <code>%n</code> can be used, even together with the <span class="sollya">Sollya</span> conversion specifiers <code>%b</code>, <code>%v</code>, <code>%w</code> and <code>%r</code>. The functions <code>sollya_lib_snprintf</code> and <code>sollya_lib_v_snprintf</code> will
-never write more characters than indicated by their size argument (including the final <code>\0</code> character). If the output gets truncated due to this limit, they will return the number of characters (excluding the final <code>\0</code> character) that would have been output if there had not been any trunctation. In case of error, all <code>sollya_lib_printf</code> functions return a negative value.
+never write more characters than indicated by their size argument (including the final <code>\0</code> character). If the output gets truncated due to this limit, they will return the number of characters (excluding the final <code>\0</code> character) that would have been output if there had not been any truncation. In case of error, all <code>sollya_lib_printf</code> functions return a negative value.
 
 <h2>10.5 Creating <span class="sollya">Sollya</span> objects</h2>
 <p>
@@ -1413,7 +1413,7 @@ Please note that in the interactive tool, <code>D</code> either denotes the disc
 <a name="creating_lists"></a>
 <h3>10.5.5 - Lists</h3>
 <p>
-There are actually two kinds of lists: regular lists (such as, e.g., <code>[|1, 2, 3|]</code>) and semi-infinite lists (such as, e.g. <code>[|1, 2, ...|]</code>). Withing the interactive tool, the ellipsis &ldquo;<code>...</code>&rdquo; can sometimes be used as a shortcut to define regular lists, e.g. <code>[|1, 2, ..., 10|]</code>.
+There are actually two kinds of lists: regular lists (such as, e.g., <code>[|1, 2, 3|]</code>) and semi-infinite lists (such as, e.g. <code>[|1, 2...|]</code>). Withing the interactive tool, the ellipsis &ldquo;<code>...</code>&rdquo; can sometimes be used as a shortcut to define regular lists, e.g. <code>[|1, 2, ..., 10|]</code>.
 <p>
 In the library, there is no symbol for the ellipsis, and there are two distinct types: one for regular lists and one for semi-infinite lists (called end-elliptic). Defining a regular list with an ellipsis is not possible in the library (except of course with <code>sollya_lib_parse_string</code>).
 <p>
@@ -1704,10 +1704,10 @@ As a result of a call to <code>sollya_lib_decompose_libraryfunction</code>, the 
   <li> <code>int sollya_lib_decompose_procedurefunction(sollya_obj_t *f, int *deriv,</code><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>sollya_obj_t *e, sollya_obj_t g)</code>:<br>
 assume that <code>g</code> represents an expression f<sub>0</sub>(f<sub>1</sub>) where f<sub>0</sub> is a procedure function. Then, f<sub>0</sub> is the n-th derivative (for some n) of a function provided within Sollya via a procedure <code>proc(X, n, p) {...}</code>.<br>
-As a result of a call to <code>sollya_lib_decompose_procedurefunction</code>, the value n is stored at the address referred to by <code>deriv</code>, a Sollya object representing the procedure is stored at the address referred to by <code>f</code>, a Sollya object representing f<sub>1</sub> is stored at the address referred to by <code>e</code>. Please notice that the objects stored in <code>f</code> and <code>e</code> must manually be cleared once it becomes useless. Upon success, a boolean integer representing true is returned. If <code>g</code> is not a procedure function object, nothing happens and false is returned.</li>
+As a result of a call to <code>sollya_lib_decompose_procedurefunction</code>, the value n is stored at the address referred to by <code>deriv</code>, a Sollya object representing the procedure is stored at the address referred to by <code>f</code>, a Sollya object representing f<sub>1</sub> is stored at the address referred to by <code>e</code>. Please notice that the objects stored in <code>f</code> and <code>e</code> must manually be cleared once they become useless. Upon success, a boolean integer representing true is returned. If <code>g</code> is not a procedure function object, nothing happens and false is returned.</li>
   <li> <code>int sollya_lib_decompose_libraryconstant(void (**f)(mpfr_t, mp_prec_t),</code><br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>sollya_obj_t c)</code>:<br>
-assume that <code>c</code> is a constant provided via an external C function <code>void func(mpfr_t, mp_prec_t)</code>. As a result of a call to <code>sollya_lib_decompose_libraryconstant</code>, a pointer to <code>func</code> is stored at the addresse referred to by <code>f</code> and a boolean integer representing true is returned. Otherwise, nothing happens and false is returned.</li>
+assume that <code>c</code> is a constant provided via an external C function <code>void func(mpfr_t, mp_prec_t)</code>. As a result of a call to <code>sollya_lib_decompose_libraryconstant</code>, a pointer to <code>func</code> is stored at the address referred to by <code>f</code> and a boolean integer representing true is returned. Otherwise, nothing happens and false is returned.</li>
 </ul>
 
 <h2>10.13 - Faithfully evaluate a functional expression</h2>
@@ -1736,7 +1736,7 @@ In the former, the argument <code>a</code> is any <code>sollya_obj_t</code> cont
       <li> If I does not contain any floating-point number at precision q, set <code>res</code> to one of both floating-point numbers enclosing I and return.</li>
       <li> If I contains exactly one floating-point number at precision q, set <code>res</code> to that number and return.</li>
       <li> If all numbers in I are smaller than epsilon in absolute value, then set <code>res</code> to 0 and return.</li>
-      <li> If p has already been increased many times, then set <code>res</code> to the middle of I and return.</li>
+      <li> If p has already been increased many times, then set <code>res</code> to some value in I and return.</li>
       <li> Otherwise, increase p and go back to step 2.</li>
     </ol>
   </dd>
@@ -1755,9 +1755,9 @@ The target precision q is chosen to be the precision of the <code>mpfr_t</code> 
     <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_CUTOFF_IS_NAN</code> </td> <td style="padding-bottom: 15px;" align="left"> <code>cutoff</code> was not <code>NULL</code> and the value of <code>*cutoff</code> is NaN.</td> </tr>
     <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_INFINITY</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (a) with I of the form [+infinity, +infinity] or [-infinity, -infinity]. Hence f(a) is proved to be an exact infinity.</td> </tr>
     <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_PROVEN_EXACT</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (a) with a finite value and x = RN(x) = RN(y) = y.</td> </tr>
-    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (b) with a finite value. and <code>res</code> &lt;= x &lt;= y or x &lt;= y &lt;= <code>res</code>.</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (b) with a finite value and <code>res</code> &lt; x &lt;= y or x &lt;= y &lt; <code>res</code>.</td> </tr>
     <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_CORRECTLY_ROUNDED</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (a) with a finite value and x &lt;= <code>res</code> &lt;= y. (Please notice that this means that the algorithm did not manage to conclude whether the result is exact or not. However, it might have been able to conclude if the working precision had been increased.)</td> </tr>
-    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_FAITHFUL_PROVEN_INEXACT</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (b) with a finite value.</td> </tr>
+    <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_FAITHFUL_PROVEN_INEXACT</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (b) with a finite value and <code>res</code> &lt; x &lt;= y or x &lt;= y &lt; <code>res</code>.</td> </tr>
     <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_FAITHFUL</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (c) with a finite value. (again, the algorithm did not manage to conclude whether the result is exact or not, but it might have been able to conclude with a larger working precision).</td> </tr>
     <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_BELOW_CUTOFF</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (d).</td> </tr>
     <tr><td style="padding-bottom: 15px;" align="left"><code>SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD</code> </td> <td style="padding-bottom: 15px;" align="left"> The algorithm ended up at step (e) and I was of the form [-delta1, delta2] where 0 &lt; delta1, delta2 &lt;&lt; 1 (below some threshold of the algorithm). This typically happens when f(a) exactly equals zero, but the algorithm does not manage to prove this exact equality.</td> </tr>
@@ -1791,7 +1791,7 @@ There are some commands and functions available in interactive mode which, for s
  resp. <code>sollya_obj_t sollya_lib_v_apply(sollya_obj_t obj1, sollya_obj_t obj2, va_list)</code>.</li>
 </ul>
 <p>
-A particular point is worth mentioning: some functions of the tool such as <code>remez</code> for instance have a variable number of arguments. For instance, one might call <code>remez(exp(x), 4, [0,1])</code> or <code>remez(1, 4, [0,1], 1/exp(x))</code>. This feature is rendered in the C library by the use of variadic functions (functions with an arbitrary number of arguments), as they are permitted by the C standard. The notable difference is that there must <strong>always be an explicit NULL argument</strong> at the end of the function call. Hence one can write <code>sollya_lib_remez(a, b, c, NULL)</code> or <code>sollya_lib_remez(a, b, c, d, NULL)</code>. It is very easy to forget the <code>NULL</code> argument and use for instance <code>sollya_lib_remez(a, b, c)</code>. This is <strong>completely wrong</strong> because the memory will be read until a <code>NULL</code> pointer is found. In the best case, this will lead to an error or a result obviously wrong, but it could also lead to subtle, not-easy-to-debug errors. The user is advised to be particularly careful with respect to this point.
+A particular point is worth mentioning: some functions of the tool such as <code>remez</code> for instance have a variable number of arguments. For instance, one might call <code>remez(exp(x), 4, [0,1])</code> or <code>remez(1, 4, [0,1], 1/exp(x))</code>. This feature is rendered in the C library by the use of variadic functions (functions with an arbitrary number of arguments), as they are permitted by the C standard. The notable difference is that there must <strong>always be an explicit NULL argument</strong> at the end of the function call. Hence one can write <code>sollya_lib_remez(a, b, c, NULL)</code> or <code>sollya_lib_remez(a, b, c, d, NULL)</code>. It is very easy to forget the <code>NULL</code> argument and to use for instance <code>sollya_lib_remez(a, b, c)</code>. This is <strong>completely wrong</strong> because the memory will be read until a <code>NULL</code> pointer is found. In the best case, this will lead to an error or a result obviously wrong, but it could also lead to subtle, not-easy-to-debug errors. The user is advised to be particularly careful with respect to this point.
 <p>
 Each command or function accepting a variable number of arguments comes in a <code>sollya_lib_v_</code> version accepting a <code>va_list</code> parameter containing the list of optional arguments. For instance, one might write a function that takes as arguments a function f, an interval I, optionally a weight function w, optionally a quality parameter q. That function would display the minimax obtained when approximating f over I (possibly with weight w and quality q) by polynomials of degree n=2 to 20. So, that function would get a variable number of arguments (i.e. a <code>va_list</code> in fact) and pass them straight to remez. In that case, one needs to use the <code>v_remez</code> version, as the following code shows:
 
@@ -1830,18 +1830,20 @@ Before describing the principle of the message callback, it seems appropriate to
   <li> If the verbosity level of the message if greater than the value of the environment variable <code>verbosity</code>, it is filtered.</li>
   <li> If the environment variable <code>roundingwarnings</code> is set to <code>off</code> and if the message informs the user that a rounding occurred, it is filtered.</li>
   <li> If the id of the message has been registered with the <code>suppressmessage</code> command, the message is filtered.</li>
-  <li> If a message callback has been installed and if the message has not been previously filtered, it is handled by the callback, which decides to filter it or display it.</li>
+  <li> If a message callback has been installed and if the message has not been previously filtered, it is handled by the callback, which decides to filter it or to permit its displaying.</li>
 </ol>
 <p>
-A message callback is a function of the form <code>int my_callback(sollya_msg_t msg)</code>. It receives as input an object representing the message, performs whatever treatment seems appropriate and returns an integer interpreted as a boolean. If the returned value is false, the message is not displayed. If, on the contrary, the returned value is true, the message is displayed as usual. By default, no callback is installed and all messages are displayed. To install a callback, use <code>sollya_lib_install_msg_callback(my_callback)</code>. Please remember that, if a message is filtered because of one of the three other mechanisms, it will never be transmitted to the callback. Hence, in library mode, if one wants to catch every single message through the callback, one should set the value of <code>verbosity</code> to <code>MAX_INT</code>, set <code>roundingwarnings</code> to <code>on</code> (this is the default anyway) and one should not use the <code>suppressmessage</code> mechanism.
+A message callback is a function of the form <code>int my_callback(sollya_msg_t msg, void *data)</code>. It receives as input an object representing the message and a user-defined pointer. It performs whatever treatment seems appropriate and returns an integer interpreted as a boolean. If the returned value is false, the message is not displayed. If, on the contrary, the returned value is true, the message is displayed as usual. By default, no callback is installed and all messages are displayed. To install a callback, use <code>sollya_lib_install_msg_callback(my_callback, data)</code>. The <code>(void *)</code> pointer <code>data</code> is arbitrary (it can be <code>NULL</code>) and is simply transmitted as second argument at each call of the callback. It can be used, e.g., to point to a segment of memory where some information should be stored from a call of the callback to another.
 <p>
-It is possible to come back to the default behavior, using <code>sollya_lib_uninstall_msg_callback()</code>. Please notice that callbacks do not stack over each other: i.e., if some callback <code>callback1</code> is already installed, and one installs another one <code>callback2</code>, then the effect of <code>sollya_lib_uninstall_msg_callback()</code> is to come back to the default behavior, <strong>and not</strong> to come back to callback <code>callback1</code>.
+Please remember that, if a message is filtered because of one of the three other mechanisms, it will never be transmitted to the callback. Hence, in library mode, if one wants to catch every single message through the callback, one should set the value of <code>verbosity</code> to <code>MAX_INT</code>, set <code>roundingwarnings</code> to <code>on</code> (this is the default anyway) and one should not use the <code>suppressmessage</code> mechanism.
+<p>
+It is possible to come back to the default behavior, using <code>sollya_lib_uninstall_msg_callback()</code>. Please notice that callbacks do not stack over each other: i.e., if some callback <code>callback1</code> is installed, and if one installs another one <code>callback2</code>, then the effect of <code>sollya_lib_uninstall_msg_callback()</code> is to come back to the default behavior, <strong>and not</strong> to come back to callback <code>callback1</code>.
 <p>
 Both <code>sollya_lib_install_msg_callback</code> and <code>sollya_lib_uninstall_msg_callback</code> return an integer interpreted as a boolean: false means failure and true means success.
 <p>
-It is possible to get the currently installed callback using <code>sollya_lib_get_msg_callback()</code>. This function returns a function pointer to the current callback &ndash; i.e., a <code>int (*)(sollya_msg_t)</code> &ndash; if a callback is installed, or <code>NULL</code> if no callback is currently installed.
+It is possible to get the currently installed callback using <code>sollya_lib_get_msg_callback(cb_ptr, data_ptr)</code>. This stores the current callback at the address referred to by <code>cb_ptr</code> (the type of <code>cb_ptr</code> is hence <code>int (**)(sollya_msg_t, void *)</code>) and stores the current data pointer at the address referred to by <code>data_ptr</code> (which has hence <code>(void **)</code> type). The arguments <code>cb_ptr</code> and <code>data_ptr</code> can be <code>NULL</code> in which case the corresponding argument is not retrieved (please take care of the difference between <code>data_ptr</code> being <code>NULL</code> and <code>data_ptr</code> pointing to a <code>(void *)</code> pointer which value is <code>NULL</code>). If no callback is currently installed, the <code>NULL</code> value is stored at the addresses referred to by <code>cb_ptr</code> and <code>data_ptr</code>.
 <p>
-Currently the type <code>sollya_msg_t</code> has only two accessors:
+The type <code>sollya_msg_t</code> is indeed a pointer and its content is only accessible during the callback call: it does not make sense to keep it for further use after the callback call. Currently the type has only two accessors:
 <ul>
   <li> <code>int sollya_lib_get_msg_id(sollya_msg_t msg)</code> returns an integer that identifies the type of the message. The message types are listed in the file <code>sollya-messages.h</code>. Please note that this file not only lists the possible identifiers but only defines meaningful names to each possible message number (e.g., <code>SOLLYA_MSG_UNDEFINED_ERROR</code> is an alias for the number 2 but is more meaningful to understand what the message is about). It is recommended to use these names instead of numerical values.</li>
   <li> <code>char *sollya_lib_msg_to_text(sollya_msg_t msg)</code> returns a generic string briefly summarizing the contents of the message. Please note that this <code>char *</code> is dynamically allocated on the heap and should manually be cleared with <code>sollya_lib_free</code> when it becomes useless.</li>
@@ -1852,7 +1854,7 @@ As an illustration let us give a few examples of possible use of callbacks:
 <p>
 <strong>Example 1:</strong> A callback that filters everything.
 <div class="divExample">
-int hide_everything(sollya_msg_t msg) {<br>
+int hide_everything(sollya_msg_t msg, void *data) {<br>
 &nbsp;&nbsp;return 0;<br>
 }<br>
 </div>
@@ -1860,7 +1862,7 @@ int hide_everything(sollya_msg_t msg) {<br>
 <p>
 <strong>Example 2:</strong> filter everything but the messages indicating that a comparison is uncertain.
 <div class="divExample">
-int keep_comparison_warnings(sollya_msg_t msg) {<br>
+int keep_comparison_warnings(sollya_msg_t msg, void *data) {<br>
 &nbsp;&nbsp;switch(sollya_lib_get_msg_id(msg)) {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_THAT_IS_NOT_FAITHFUL:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT:<br>
@@ -1877,24 +1879,22 @@ int keep_comparison_warnings(sollya_msg_t msg) {<br>
 <strong>Example 3:</strong> ensuring perfect silence for a particular function call (uses the callback defined in Example&nbsp;1).
 <div class="divExample">
 ...<br>
-int (*)(sollya_msg_t) old_callback = sollya_lib_get_msg_callback();<br>
-sollya_lib_uninstall_msg_callback();<br>
-sollya_lib_install_msg_callback(hide_everything);<br>
+int (*old_callback)(sollya_msg_t, void *);<br>
+void *old_data;<br>
+sollya_lib_get_msg_callback(&amp;old_callback, &amp;old_data);<br>
+sollya_lib_install_msg_callback(hide_everything, NULL);<br>
 &nbsp;&nbsp;/* Here takes place the function call that must be completely silent */<br>
-sollya_lib_uninstall_msg_callback();<br>
-if (old_callback) sollya_lib_install_msg_callback(old_callback);<br>
+if (old_callback) sollya_lib_install_msg_callback(old_callback, old_data);<br>
 ...<br>
 </div>
 
 <p>
-<strong>Example 4:</strong> changing the value of some flag when some message is emitted.
+<strong>Example 4:</strong> using the <code>(void *)</code> data argument to store information from a call to another.
 <div class="divExample">
-int flag_double_rounding = 0;<br>
-<br>
-int set_flag_on_problem(sollya_msg_t msg) {<br>
+int set_flag_on_problem(sollya_msg_t msg, void *data) {<br>
 &nbsp;&nbsp;switch(sollya_lib_get_msg_id(msg)) {<br>
 &nbsp;&nbsp;&nbsp;&nbsp;case SOLLYA_MSG_DOUBLE_ROUNDING_ON_CONVERSION:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;flag_double_rounding&nbsp;&nbsp;= 1;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*((int *)(data)) = 1;<br>
 &nbsp;&nbsp;}<br>
 &nbsp;&nbsp;return 1;<br>
 }<br>
@@ -1902,15 +1902,16 @@ int set_flag_on_problem(sollya_msg_t msg) {<br>
 ...<br>
 <br>
 int main() {<br>
+&nbsp;&nbsp;int flag_double_rounding = 0;<br>
 &nbsp;&nbsp;...<br>
 &nbsp;&nbsp;sollya_lib_init();<br>
-&nbsp;&nbsp;sollya_lib_install_msg_callback(set_flag_on_problem);<br>
+&nbsp;&nbsp;sollya_lib_install_msg_callback(set_flag_on_problem, &amp;flag_double_rounding);<br>
 &nbsp;&nbsp;...<br>
 }<br>
 </div>
 
 <p>
-More involved examples are possible: for instance, instead of setting a flag, it is possible to keep in some variable what the last message was. One may even implement a stack mechanism and store the messages in a stack, in order to handle them later. One may also decide to raise an exception flag on a particular message, etc.
+More involved examples are possible: for instance, instead of setting a flag, it is possible to keep in some variable what the last message was. One may even implement a stack mechanism and store the messages in a stack, in order to handle them later. (Please remember however that <code>sollya_msg_t</code> is a pointer type and that the <code>sollya_msg_t</code> object received as argument of a callback call has no more meaning once the callback call returned. If a stack mechanism is implemented it should store information such as the message ID, or the message text, as given by <code>sollya_lib_get_msg_id</code> and <code>sollya_lib_msg_to_text</code>, but not the <code>sollya_msg_t</code> object itself.)
 
 <a name="customMemoryFunctions"></a>
 <h2>10.17 - Using <span class="sollya">Sollya</span> in a program that has its own allocation functions</h2>

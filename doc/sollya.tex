@@ -1058,7 +1058,7 @@ As a special exception to these rules, $[0]^{[0]}$ returns $[1]$.
  \subsection{Introduction}
 The header file of the \sollya library is \texttt{sollya.h}. Its inclusion may provoke the inclusion of other header files, such as \texttt{gmp.h}, \texttt{mpfr.h} or \texttt{mpfi.h}.
 
-The library provides a virtual \sollya session that is perfectly similar to an interactive session: environment variables such as \texttt{verbosity}, \texttt{prec}, \texttt{display}, \texttt{midpointmode}, etc. are maintained and affect the behavior of the library, warning messages are displayed when something is not exact, etc. Please notice that the \sollya library currently is \textbf{not} re-entrant and can only be opened once. A process using the library must hence not be multi-threaded and is limited to one single virtual \sollya session.
+The library provides a virtual \sollya session that is perfectly similar to an interactive session: global variables such as \texttt{verbosity}, \texttt{prec}, \texttt{display}, \texttt{midpointmode}, etc. are maintained and affect the behavior of the library, warning messages are displayed when something is not exact, etc. Please notice that the \sollya library currently is \textbf{not} re-entrant and can only be opened once. A process using the library must hence not be multi-threaded and is limited to one single virtual \sollya session.
 
 In order to get started with the \sollya library, the first thing to do is hence to initialize this virtual session. This is performed with the \verb|sollya_lib_init| function. Accordingly, one should close the session at the end of the program (which has the effect of releasing all the memory used by \sollya). Please notice that \sollya uses its own allocation functions and registers them to \verb|GMP| using the custom allocation functions provided by \verb|GMP|. Particular precautions should hence be taken when using the \sollya library in a program that also registers its own functions to \verb|GMP|: in that case \verb|sollya_lib_init_with_custom_memory_functions| should be used instead of \verb|sollya_lib_init| for initializing the library. This is discussed in Section~\ref{customMemoryFunctions}.
 
@@ -1089,12 +1089,12 @@ Suppose that this code is saved in a file called \texttt{foo.c}. The compilation
 The library provides a single data type called \texttt{sollya\_obj\_t} that can contain any \sollya object (a \sollya object is anything that can be stored in a variable within the interactive tool. See Section~\ref{sec:data_types} of the present documentation for details). Please notice that \texttt{sollya\_obj\_t} is in fact a pointer type; this has two consequences:
 \begin{itemize}
 \item \texttt{NULL} is a placeholder that can be used as a \texttt{sollya\_obj\_t} in some contexts. This placeholder is particularly useful as an end marker for functions with a variable number of arguments (see Sections~\ref{creating_lists} and~\ref{library_commands_and_functions}).
-\item An assignment with the ``='' sign does not copy an object but only copies the reference to it. To perform a (deep) copy, the \texttt{sollya\_lib\_copy\_obj()} function is available.
+\item An assignment with the ``='' sign does not copy an object but only copies the reference to it. In order to perform a (deep) copy, the \texttt{sollya\_lib\_copy\_obj()} function is available.
 \end{itemize}
 Except for a few functions for which the contrary is explicitly specified, the following conventions are used:
 \begin{itemize}
 \item  A function does not touch its arguments. Hence if \texttt{sollya\_lib\_foo} is a function of the library, a call to \texttt{sollya\_lib\_foo(a)} leaves the object referenced by \texttt{a} unchanged (the notable exceptions to that rule are the functions containing \verb|build| in their name, e.g., \texttt{sollya\_lib\_build\_foo}).
-\item A function that returns a \texttt{sollya\_obj\_t} creates a new object (this means that memory is dynamically allocated for that object). The memory allocated for that object should manually be cleared when the object is no longer used and all references to it (on the stack) get out of reach, e.g. on a function return: this is performed by the \texttt{sollya\_lib\_clear\_obj()} function. By convenience \verb|sollya_lib_clear_obj(NULL)| is a valid call, that just does nothing.
+\item A function that returns a \texttt{sollya\_obj\_t} creates a new object (this means that memory is dynamically allocated for that object). The memory allocated for that object should manually be cleared when the object is no longer used and all references to it (on the stack) get out of reach, e.g. on a function return: this is performed by the \texttt{sollya\_lib\_clear\_obj()} function. By convenience \verb|sollya_lib_clear_obj(NULL)| is a valid call, which just does nothing.
 \end{itemize}
 
 In general, except if the user perfectly knows what they are doing, the following rules should be applied (here \texttt{a} and \texttt{b} are C variables of type \texttt{sollya\_obj\_t}, and \texttt{sollya\_lib\_foo} and \texttt{sollya\_lib\_bar} are functions of the library):
@@ -1133,11 +1133,11 @@ int main(void) {
 A universal function allows the user to execute any expression, as if it were given at the prompt of the \sollya tool, and to get a \texttt{sollya\_obj\_t} containing the result of the evaluation: this function is \texttt{sollya\_lib\_parse\_string("some expression here")}. This is very convenient, and indeed, any script written in the \sollya language, could easily be converted into a C program by intensively using \texttt{sollya\_lib\_parse\_string}. However, this should not be the preferred way if efficiency is targeted because (as its name suggests) this function uses a parser to decompose its argument, then constructs intermediate data structures to store the abstract interpretation of the expression, etc. Low-level functions are provided for efficiently creating \sollya objects; they are detailed in the next Section.
 
 \subsection{Conventions in use in the library}
-The library follows some conventions that it is useful to remember:
+The library follows some conventions that are useful to remember:
 \begin{itemize}
-\item When a function is a direct transposition of a command or function available in the interactive tool, it returns a \verb|sollya_obj_t|. This is true, even when it would sound natural to return, e.g. an \verb|int|. For instance \verb|sollya_lib_get_verbosity()| returns a \verb|sollya_obj_t|, which integer value must then be recovered with \verb|sollya_lib_get_constant_as_int|. This forces the user to declare (and clear afterwards) a temporary \verb|sollya_obj_t| to store the value, but this is the price of homogeneity in the library.
+\item When a function is a direct transposition of a command or function available in the interactive tool, it returns a \verb|sollya_obj_t|. This is true, even when it would sound natural to return, e.g. an \verb|int|. For instance \verb|sollya_lib_get_verbosity()| returns a \verb|sollya_obj_t|, whose integer value must then be recovered with \verb|sollya_lib_get_constant_as_int|. This forces the user to declare (and clear afterwards) a temporary \verb|sollya_obj_t| to store the value, but this is the price of homogeneity in the library.
 \item When a function returns an integer, this integer generally is a boolean in the usual C meaning, i.e. $0$ represents false and any non-zero value represents true. In many cases, the integer returned by the function indicates a status of success or failure: the convention is ``false means failure'' and ``true means success''. In case of failure, the convention is that the function did not touch any of its arguments.
-\item When a function would need to return several things, or when a function would need to return something together with a status of failure or success, the convention is that pointers are given as the first arguments of the function. These pointers shall point to valid addresses where the function will store the results. This can sometimes give obscure signatures, when the function morally returns a pointer and actually takes as argument a pointer to a pointer (this typically happens when the function allocates a segment of memory and should return a pointer to that segment of memory).
+\item When a function would need to return several things, or when a function would need to return something together with a status of failure or success, the convention is that pointers are given as the first arguments of the function. These pointers shall point to valid addresses where the function will store the results. This can sometimes give obscure signatures, when the function would in principle returns a pointer and actually takes as argument a pointer to a pointer (this typically happens when the function allocates a segment of memory and should return a pointer to that segment of memory).
 \end{itemize}
 
 \subsection{Displaying \sollya objects and numerical values}
@@ -1164,7 +1164,7 @@ Flag characters (e.g., `\verb|#|', `\verb|0|', etc.) are allowed but have no eff
 As a special (and sometimes convenient) case, \verb|%b| accepts that its corresponding \verb|sollya_obj_t| argument be \verb|NULL|: in this particular case, the string ``NULL'' is used in the displayed string. Please notice that, except for the particular case of \verb|NULL|, the behavior of \verb|sollya_lib_printf| is completely undefined if the argument of \verb|%b| is not a valid \sollya object.
 
 The \verb|sollya_lib_printf| functions return an integer with the same meaning as the traditional \verb|printf| functions. It indicates the number of characters that have been output (excluding the final \verb|\0| character). Similarly, the conversion specifier \verb|%n| can be used, even together with the \sollya conversion specifiers \verb|%b|, \verb|%v|, \verb|%w| and \verb|%r|. The functions \verb|sollya_lib_snprintf| and \verb|sollya_lib_v_snprintf| will
-never write more characters than indicated by their size argument (including the final \verb|\0| character). If the output gets truncated due to this limit, they will return the number of characters (excluding the final \verb|\0| character) that would have been output if there had not been any trunctation. In case of error, all \verb|sollya_lib_printf| functions return a negative value.
+never write more characters than indicated by their size argument (including the final \verb|\0| character). If the output gets truncated due to this limit, they will return the number of characters (excluding the final \verb|\0| character) that would have been output if there had not been any truncation. In case of error, all \verb|sollya_lib_printf| functions return a negative value.
 
 \subsection{Creating \sollya objects}
 \sollya objects conceptually fall into one of five categories: numerical constants (e.g. $1$ or $1.5$), functional expressions (they might contain numerical constants, e.g., $\sin(\cos(x+1.5))$), other simple objects (intervals, strings, built-in constants such as \texttt{dyadic}, etc.), lists of objects (e.g., \texttt{[|1, "Hello"|]}) and structures (e.g., \verb|{.a = 1; .b = "Hello"}|).
@@ -1399,7 +1399,7 @@ Please note that in the interactive tool, \texttt{D} either denotes the discrete
 
 \subsubsection{Lists}
 \label{creating_lists}
-There are actually two kinds of lists: regular lists (such as, e.g., \verb#[|1, 2, 3|]#) and semi-infinite lists (such as, e.g. \verb#[|1, 2, ...|]#). Withing the interactive tool, the ellipsis ``\texttt{...}'' can sometimes be used as a shortcut to define regular lists, e.g. \verb#[|1, 2, ..., 10|]#.
+There are actually two kinds of lists: regular lists (such as, e.g., \verb#[|1, 2, 3|]#) and semi-infinite lists (such as, e.g. \verb#[|1, 2...|]#). Withing the interactive tool, the ellipsis ``\texttt{...}'' can sometimes be used as a shortcut to define regular lists, e.g. \verb#[|1, 2, ..., 10|]#.
 
 In the library, there is no symbol for the ellipsis, and there are two distinct types: one for regular lists and one for semi-infinite lists (called end-elliptic). Defining a regular list with an ellipsis is not possible in the library (except of course with \texttt{sollya\_lib\_parse\_string}).
 
@@ -1708,10 +1708,10 @@ As a result of a call to \verb|sollya_lib_decompose_libraryfunction|, the value 
 \item \verb|int sollya_lib_decompose_procedurefunction(sollya_obj_t *f, int *deriv,|\\
 \phantom{\texttt{int sollya\_lib\_decompose\_procedurefunction( }}\verb|sollya_obj_t *e, sollya_obj_t g)|:\\
 assume that \verb|g| represents an expression $f_0(f_1)$ where $f_0$ is a procedure function. Then, $f_0$ is the $n$-th derivative (for some $n$) of a function provided within Sollya via a procedure \verb|proc(X, n, p) {...}|.\\
-As a result of a call to \verb|sollya_lib_decompose_procedurefunction|, the value $n$ is stored at the address referred to by \verb|deriv|, a Sollya object representing the procedure is stored at the address referred to by \verb|f|, a Sollya object representing $f_1$ is stored at the address referred to by \verb|e|. Please notice that the objects stored in \verb|f| and \verb|e| must manually be cleared once it becomes useless. Upon success, a boolean integer representing true is returned. If \verb|g| is not a procedure function object, nothing happens and false is returned.
+As a result of a call to \verb|sollya_lib_decompose_procedurefunction|, the value $n$ is stored at the address referred to by \verb|deriv|, a Sollya object representing the procedure is stored at the address referred to by \verb|f|, a Sollya object representing $f_1$ is stored at the address referred to by \verb|e|. Please notice that the objects stored in \verb|f| and \verb|e| must manually be cleared once they become useless. Upon success, a boolean integer representing true is returned. If \verb|g| is not a procedure function object, nothing happens and false is returned.
 \item \verb|int sollya_lib_decompose_libraryconstant(void (**f)(mpfr_t, mp_prec_t),|\\
 \phantom{\texttt{int sollya\_lib\_decompose\_libraryconstant( }}\verb|sollya_obj_t c)|:\\
-assume that \verb|c| is a constant provided via an external C function \verb|void func(mpfr_t, mp_prec_t)|. As a result of a call to \verb|sollya_lib_decompose_libraryconstant|, a pointer to \verb|func| is stored at the addresse referred to by \verb|f| and a boolean integer representing true is returned. Otherwise, nothing happens and false is returned.
+assume that \verb|c| is a constant provided via an external C function \verb|void func(mpfr_t, mp_prec_t)|. As a result of a call to \verb|sollya_lib_decompose_libraryconstant|, a pointer to \verb|func| is stored at the address referred to by \verb|f| and a boolean integer representing true is returned. Otherwise, nothing happens and false is returned.
 \end{itemize}
 \subsection{Faithfully evaluate a functional expression}
 Let us suppose that \verb|f| is a functional expression and \verb|a| is a numerical value or a constant expression. One of the very convenient features of the interactive tool is that the user can simply write \verb|f(a)| at the prompt: the tool automatically adapts its internal precision in order to compute a value that is a faithful rounding (at the current tool precision) of the true value $f(a)$. Sometimes it does not achieve to find a faithful rounding, but in any case, if the result is not proved to be exact, a warning is displayed explaining how confident one should be with respect to the returned value. This feature is made available within the library with the two following functions:
@@ -1737,7 +1737,7 @@ In the former, the argument \verb|a| is any \verb|sollya_obj_t| containing a num
   \item If $I$ does not contain any floating-point number at precision $q$, set \verb|res| to one of both floating-point numbers enclosing $I$ and return.
   \item If $I$ contains exactly one floating-point number at precision $q$, set \verb|res| to that number and return.
   \item If all numbers in $I$ are smaller than $\varepsilon$ in absolute value, then set \verb|res| to $0$ and return.
-  \item If $p$ has already been increased many times, then set \verb|res| to the middle of $I$ and return.
+  \item If $p$ has already been increased many times, then set \verb|res| to some value in $I$ and return.
   \item Otherwise, increase $p$ and go back to step 2.
   \end{enumerate}
 \end{enumerate}
@@ -1760,9 +1760,9 @@ The target precision $q$ is chosen to be the precision of the \verb|mpfr_t| vari
   \verb|SOLLYA_FP_CUTOFF_IS_NAN| & \verb|cutoff| was not \verb|NULL| and the value of \verb|*cutoff| is NaN.\\[0.3cm]
   \verb|SOLLYA_FP_INFINITY| & The algorithm ended up at step (a) with $I$ of the form $[+\infty, +\infty]$ or $[-\infty, -\infty]$. Hence $f(a)$ is proved to be an exact infinity.\\[0.3cm]
   \verb|SOLLYA_FP_PROVEN_EXACT| & The algorithm ended up at step (a) with a finite value and $x = \mathrm{RN}(x) = \mathrm{RN}(y)=y$.\\[0.3cm]
-  \verb|SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT| & The algorithm ended up at step (b) with a finite value. and $\mathtt{res} \le x \le y$ or $x \le y \le \mathtt{res}$.\\[0.3cm]
+  \verb|SOLLYA_FP_CORRECTLY_ROUNDED_PROVEN_INEXACT| & The algorithm ended up at step (b) with a finite value and $\mathtt{res} < x \le y$ or $x \le y < \mathtt{res}$.\\[0.3cm]
   \verb|SOLLYA_FP_CORRECTLY_ROUNDED| & The algorithm ended up at step (a) with a finite value and $x \le \mathtt{res} \le y$.$~^a$\footnotetext[1]{Please notice that this means that the algorithm did not manage to conclude whether the result is exact or not. However, it might have been able to conclude if the working precision had been increased.}\\[0.3cm]
-  \verb|SOLLYA_FP_FAITHFUL_PROVEN_INEXACT| & The algorithm ended up at step (b) with a finite value.\\[0.3cm]
+  \verb|SOLLYA_FP_FAITHFUL_PROVEN_INEXACT| & The algorithm ended up at step (b) with a finite value and $\mathtt{res} < x \le y$ or $x \le y < \mathtt{res}$.\\[0.3cm]
   \verb|SOLLYA_FP_FAITHFUL| & The algorithm ended up at step (c) with a finite value.$~^a$\\[0.3cm]
   \verb|SOLLYA_FP_BELOW_CUTOFF| & The algorithm ended up at step (d).\\[0.3cm]
   \verb|SOLLYA_FP_NOT_FAITHFUL_ZERO_CONTAINED_BELOW_THRESHOLD| & The algorithm ended up at step (e) and $I$ was of the form $[-\delta_1,\,\delta_2]$ where $0 < \delta_i \ll 1$ (below some threshold of the algorithm). This typically happens when $f(a)$ exactly equals zero, but the algorithm does not manage to prove this exact equality.\\[0.3cm]
@@ -1797,7 +1797,7 @@ There are some commands and functions available in interactive mode which, for s
  resp. \texttt{sollya\_obj\_t sollya\_lib\_v\_apply(sollya\_obj\_t obj1, sollya\_obj\_t obj2, va\_list)}.
 \end{itemize}
 
-A particular point is worth mentioning: some functions of the tool such as \texttt{remez} for instance have a variable number of arguments. For instance, one might call \texttt{remez(exp(x), 4, [0,1])} or \texttt{remez(1, 4, [0,1], 1/exp(x))}. This feature is rendered in the C library by the use of variadic functions (functions with an arbitrary number of arguments), as they are permitted by the C standard. The notable difference is that there must \textbf{always be an explicit NULL argument} at the end of the function call. Hence one can write \texttt{sollya\_lib\_remez(a, b, c, NULL)} or \texttt{sollya\_lib\_remez(a, b, c, d, NULL)}. It is very easy to forget the \texttt{NULL} argument and use for instance \texttt{sollya\_lib\_remez(a, b, c)}. This is \textbf{completely wrong} because the memory will be read until a \texttt{NULL} pointer is found. In the best case, this will lead to an error or a result obviously wrong, but it could also lead to subtle, not-easy-to-debug errors. The user is advised to be particularly careful with respect to this point.
+A particular point is worth mentioning: some functions of the tool such as \texttt{remez} for instance have a variable number of arguments. For instance, one might call \texttt{remez(exp(x), 4, [0,1])} or \texttt{remez(1, 4, [0,1], 1/exp(x))}. This feature is rendered in the C library by the use of variadic functions (functions with an arbitrary number of arguments), as they are permitted by the C standard. The notable difference is that there must \textbf{always be an explicit NULL argument} at the end of the function call. Hence one can write \texttt{sollya\_lib\_remez(a, b, c, NULL)} or \texttt{sollya\_lib\_remez(a, b, c, d, NULL)}. It is very easy to forget the \texttt{NULL} argument and to use for instance \texttt{sollya\_lib\_remez(a, b, c)}. This is \textbf{completely wrong} because the memory will be read until a \texttt{NULL} pointer is found. In the best case, this will lead to an error or a result obviously wrong, but it could also lead to subtle, not-easy-to-debug errors. The user is advised to be particularly careful with respect to this point.
 
 Each command or function accepting a variable number of arguments comes in a \texttt{sollya\_lib\_v\_} version accepting a \texttt{va\_list} parameter containing the list of optional arguments. For instance, one might write a function that takes as arguments a function $f$, an interval $I$, optionally a weight function $w$, optionally a quality parameter $q$. That function would display the minimax obtained when approximating $f$ over $I$ (possibly with weight $w$ and quality $q$) by polynomials of degree $n=2$ to $20$. So, that function would get a variable number of arguments (i.e. a \texttt{va\_list} in fact) and pass them straight to remez. In that case, one needs to use the \texttt{v\_remez} version, as the following code shows:
 
@@ -1835,18 +1835,20 @@ Before describing the principle of the message callback, it seems appropriate to
 \item If the verbosity level of the message if greater than the value of the environment variable \verb|verbosity|, it is filtered.
 \item If the environment variable \verb|roundingwarnings| is set to \verb|off| and if the message informs the user that a rounding occurred, it is filtered.
 \item If the id of the message has been registered with the \verb|suppressmessage| command, the message is filtered.
-\item If a message callback has been installed and if the message has not been previously filtered, it is handled by the callback, which decides to filter it or display it.
+\item If a message callback has been installed and if the message has not been previously filtered, it is handled by the callback, which decides to filter it or to permit its displaying.
 \end{enumerate}
 
-A message callback is a function of the form \verb|int my_callback(sollya_msg_t msg)|. It receives as input an object representing the message, performs whatever treatment seems appropriate and returns an integer interpreted as a boolean. If the returned value is false, the message is not displayed. If, on the contrary, the returned value is true, the message is displayed as usual. By default, no callback is installed and all messages are displayed. To install a callback, use \verb|sollya_lib_install_msg_callback(my_callback)|. Please remember that, if a message is filtered because of one of the three other mechanisms, it will never be transmitted to the callback. Hence, in library mode, if one wants to catch every single message through the callback, one should set the value of \verb|verbosity| to \verb|MAX_INT|, set \verb|roundingwarnings| to \verb|on| (this is the default anyway) and one should not use the \verb|suppressmessage| mechanism.
+A message callback is a function of the form \verb|int my_callback(sollya_msg_t msg, void *data)|. It receives as input an object representing the message and a user-defined pointer. It performs whatever treatment seems appropriate and returns an integer interpreted as a boolean. If the returned value is false, the message is not displayed. If, on the contrary, the returned value is true, the message is displayed as usual. By default, no callback is installed and all messages are displayed. To install a callback, use \verb|sollya_lib_install_msg_callback(my_callback, data)|. The \verb|(void *)| pointer \verb|data| is arbitrary (it can be \verb|NULL|) and is simply transmitted as second argument at each call of the callback. It can be used, e.g., to point to a segment of memory where some information should be stored from a call of the callback to another.
 
-It is possible to come back to the default behavior, using \verb|sollya_lib_uninstall_msg_callback()|. Please notice that callbacks do not stack over each other: i.e., if some callback \verb|callback1| is already installed, and one installs another one \verb|callback2|, then the effect of \verb|sollya_lib_uninstall_msg_callback()| is to come back to the default behavior, \textbf{and not} to come back to callback \verb|callback1|.
+Please remember that, if a message is filtered because of one of the three other mechanisms, it will never be transmitted to the callback. Hence, in library mode, if one wants to catch every single message through the callback, one should set the value of \verb|verbosity| to \verb|MAX_INT|, set \verb|roundingwarnings| to \verb|on| (this is the default anyway) and one should not use the \verb|suppressmessage| mechanism.
+
+It is possible to come back to the default behavior, using \verb|sollya_lib_uninstall_msg_callback()|. Please notice that callbacks do not stack over each other: i.e., if some callback \verb|callback1| is installed, and if one installs another one \verb|callback2|, then the effect of \verb|sollya_lib_uninstall_msg_callback()| is to come back to the default behavior, \textbf{and not} to come back to callback \verb|callback1|.
 
 Both \verb|sollya_lib_install_msg_callback| and \verb|sollya_lib_uninstall_msg_callback| return an integer interpreted as a boolean: false means failure and true means success.
 
-It is possible to get the currently installed callback using \verb|sollya_lib_get_msg_callback()|. This function returns a function pointer to the current callback --- i.e., a \verb|int (*)(sollya_msg_t)| --- if a callback is installed, or \verb|NULL| if no callback is currently installed.
+It is possible to get the current callback using \verb|sollya_lib_get_msg_callback(cb_ptr, data_ptr)|. This stores the current callback at the address referred to by \verb|cb_ptr| (the type of \verb|cb_ptr| is hence \verb|int (**)(sollya_msg_t, void *)|) and stores the current data pointer at the address referred to by \verb|data_ptr| (which has hence \verb|(void **)| type). The arguments \verb|cb_ptr| and \verb|data_ptr| can be \verb|NULL| in which case the corresponding argument is not retrieved (please take care of the difference between \verb|data_ptr| being \verb|NULL| and \verb|data_ptr| pointing to a \verb|(void *)| pointer which value is \verb|NULL|). If no callback is currently installed, the \verb|NULL| value is stored at the addresses referred to by \verb|cb_ptr| and \verb|data_ptr|.
 
-Currently the type \verb|sollya_msg_t| has only two accessors:
+The type \verb|sollya_msg_t| is indeed a pointer and its content is only accessible during the callback call: it does not make sense to keep it for further use after the callback call. Currently the type has only two accessors:
 \begin{itemize}
 \item \verb|int sollya_lib_get_msg_id(sollya_msg_t msg)| returns an integer that identifies the type of the message. The message types are listed in the file \verb|sollya-messages.h|. Please note that this file not only lists the possible identifiers but only defines meaningful names to each possible message number (e.g., \verb|SOLLYA_MSG_UNDEFINED_ERROR| is an alias for the number $2$ but is more meaningful to understand what the message is about). It is recommended to use these names instead of numerical values.
 \item \verb|char *sollya_lib_msg_to_text(sollya_msg_t msg)| returns a generic string briefly summarizing the contents of the message. Please note that this \verb|char *| is dynamically allocated on the heap and should manually be cleared with \verb|sollya_lib_free| when it becomes useless.
@@ -1857,7 +1859,7 @@ As an illustration let us give a few examples of possible use of callbacks:
 \paragraph{Example 1:} A callback that filters everything.
 \begin{center}
 \begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-int hide_everything(sollya_msg_t msg) {
+int hide_everything(sollya_msg_t msg, void *data) {
   return 0;
 }
 \end{Verbatim}
@@ -1866,7 +1868,7 @@ int hide_everything(sollya_msg_t msg) {
 \paragraph{Example 2:} filter everything but the messages indicating that a comparison is uncertain.
 \begin{center}
 \begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-int keep_comparison_warnings(sollya_msg_t msg) {
+int keep_comparison_warnings(sollya_msg_t msg, void *data) {
   switch(sollya_lib_get_msg_id(msg)) {
     case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT_THAT_IS_NOT_FAITHFUL:
     case SOLLYA_MSG_TEST_RELIES_ON_FP_RESULT:
@@ -1884,25 +1886,23 @@ int keep_comparison_warnings(sollya_msg_t msg) {
 \begin{center}
 \begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 ...
-int (*)(sollya_msg_t) old_callback = sollya_lib_get_msg_callback();
-sollya_lib_uninstall_msg_callback();
-sollya_lib_install_msg_callback(hide_everything);
+int (*old_callback)(sollya_msg_t, void *);
+void *old_data;
+sollya_lib_get_msg_callback(&old_callback, &old_data);
+sollya_lib_install_msg_callback(hide_everything, NULL);
   /* Here takes place the function call that must be completely silent */
-sollya_lib_uninstall_msg_callback();
-if (old_callback) sollya_lib_install_msg_callback(old_callback);
+if (old_callback) sollya_lib_install_msg_callback(old_callback, old_data);
 ...
 \end{Verbatim}
 \end{minipage}\end{center}
 
-\paragraph{Example 4:} changing the value of some flag when some message is emitted.
+\paragraph{Example 4:} using the \verb|(void *)| data argument to store information from a call to another.
 \begin{center}
 \begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-int flag_double_rounding = 0;
-
-int set_flag_on_problem(sollya_msg_t msg) {
+int set_flag_on_problem(sollya_msg_t msg, void *data) {
   switch(sollya_lib_get_msg_id(msg)) {
     case SOLLYA_MSG_DOUBLE_ROUNDING_ON_CONVERSION:
-      flag_double_rounding  = 1;
+      *((int *)(data)) = 1;
   }
   return 1;
 }
@@ -1910,16 +1910,16 @@ int set_flag_on_problem(sollya_msg_t msg) {
 ...
 
 int main() {
+  int flag_double_rounding = 0;
   ...
   sollya_lib_init();
-  sollya_lib_install_msg_callback(set_flag_on_problem);
+  sollya_lib_install_msg_callback(set_flag_on_problem, &flag_double_rounding);
   ...
 }
-
 \end{Verbatim}
 \end{minipage}\end{center}
 
-More involved examples are possible: for instance, instead of setting a flag, it is possible to keep in some variable what the last message was. One may even implement a stack mechanism and store the messages in a stack, in order to handle them later. One may also decide to raise an exception flag on a particular message, etc.
+More involved examples are possible: for instance, instead of setting a flag, it is possible to keep in some variable what the last message was. One may even implement a stack mechanism and store the messages in a stack, in order to handle them later. (Please remember however that \verb|sollya_msg_t| is a pointer type and that the \verb|sollya_msg_t| object received as argument of a callback call has no more meaning once the callback call returned. If a stack mechanism is implemented it should store information such as the message ID, or the message text, as given by \verb|sollya_lib_get_msg_id| and \verb|sollya_lib_msg_to_text|, but not the \verb|sollya_msg_t| object itself.)
 
 \subsection{Using \sollya in a program that has its own allocation functions}
 \label{customMemoryFunctions}
