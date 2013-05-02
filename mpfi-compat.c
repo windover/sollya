@@ -93,6 +93,19 @@ void sollya_mpfi_nan_normalize(sollya_mpfi_t rop) {
   if (sollya_mpfi_has_nan(rop)) sollya_mpfi_set_nan(rop);
 }
 
+void sollya_mpfi_zero_sign_normalize(sollya_mpfi_t op) {
+  /* HACK ALERT: For performance reasons, we will access the internals
+     of an mpfi_t !!!
+  */
+  if (mpfr_zero_p(&(op->left))) {
+    mpfr_mul(&(op->left), &(op->left), &(op->left), GMP_RNDN); /* (+/- 0)^2 = +0 */
+  } 
+  if (mpfr_zero_p(&(op->right))) { 
+    mpfr_mul(&(op->right), &(op->right), &(op->right), GMP_RNDN); /* (+/- 0)^2 = +0 */   
+    mpfr_neg(&(op->right), &(op->right), GMP_RNDN); /* - (+0) = -0 */
+  }
+}
+
 int sollya_mpfi_is_empty(sollya_mpfi_t op) {
   /* HACK ALERT: For performance reasons, we will access the internals
      of an mpfi_t !!!
@@ -459,6 +472,7 @@ define_trig_func(tan, sollya_mpfi_set_full_range(rop))
           res = MPFI_FLAGS_BOTH_ENDPOINTS_EXACT;                        \
         else                                                            \
           res = MPFI_FLAGS_RIGHT_ENDPOINT_INEXACT;                      \
+	sollya_mpfi_zero_sign_normalize(rop);                           \
       }                                                                 \
     }                                                                   \
     else res = mpfi_##f (rop,op);                                       \
@@ -570,6 +584,7 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
         res = MPFI_FLAGS_BOTH_ENDPOINTS_EXACT;
       else
         res = MPFI_FLAGS_LEFT_ENDPOINT_INEXACT;
+      sollya_mpfi_zero_sign_normalize(rop);
     }
     else { /* Case v<=0 and op2=[0,b] */
       mpfr_set_inf(&(rop->left),-1);
@@ -577,6 +592,7 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
         res = MPFI_FLAGS_BOTH_ENDPOINTS_EXACT;
       else
         res = MPFI_FLAGS_RIGHT_ENDPOINT_INEXACT;
+      sollya_mpfi_zero_sign_normalize(rop);
     }
   }
   else { /* Case op2=[a,0]... */
@@ -586,6 +602,7 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
         res = MPFI_FLAGS_BOTH_ENDPOINTS_EXACT;
       else
         res = MPFI_FLAGS_RIGHT_ENDPOINT_INEXACT;
+      sollya_mpfi_zero_sign_normalize(rop);
     }
     else { /* case v<=0 */
       mpfr_set_inf(&(rop->right),1);
@@ -593,6 +610,7 @@ int sollya_mpfi_div(sollya_mpfi_t rop, sollya_mpfi_t op1, sollya_mpfi_t op2) {
         res = MPFI_FLAGS_BOTH_ENDPOINTS_EXACT;
       else
         res = MPFI_FLAGS_LEFT_ENDPOINT_INEXACT;
+      sollya_mpfi_zero_sign_normalize(rop);
     }
   }
 

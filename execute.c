@@ -15178,11 +15178,16 @@ int evaluateFormatsListForFPminimax(chain **res, node *list, int n, int mode) {
   return 1;
 }
 
-
+void mpfr_zero_sign_normalize(mpfr_t op) {
+  if (mpfr_zero_p(op)) {
+    mpfr_mul(op,op,op,GMP_RNDN); /* (+/- 0)^2 = +0 */
+  }
+}
 
 int evaluateArgumentForExternalProc(void **res, node *argument, int type) {
   int retVal;
   mpfr_t a, b;
+  chain *curr;
 
   switch (type) {
   case VOID_TYPE:
@@ -15192,6 +15197,7 @@ int evaluateArgumentForExternalProc(void **res, node *argument, int type) {
     *res = safeMalloc(sizeof(mpfr_t));
     mpfr_init2(*((mpfr_t *) (*res)), tools_precision);
     retVal = evaluateThingToConstant(*((mpfr_t *) (*res)), argument, NULL, 0,0);
+    mpfr_zero_sign_normalize(*((mpfr_t *) (*res)));
     if (!retVal) {
       mpfr_clear(*((mpfr_t *) (*res)));
       safeFree(*res);
@@ -15237,8 +15243,12 @@ int evaluateArgumentForExternalProc(void **res, node *argument, int type) {
     if (evaluateThingToEmptyList(argument)) {
       *((chain **) res) = NULL;
       retVal = 1;
-    } else
+    } else {
       retVal = evaluateThingToConstantList((chain **) res, argument);
+      for (curr=*((chain **) res); curr != NULL; curr = curr->next) {
+	mpfr_zero_sign_normalize(*((mpfr_t *) curr->value)); 
+      }
+    }
     break;
   case FUNCTION_LIST_TYPE:
     if (evaluateThingToEmptyList(argument)) {
@@ -19227,7 +19237,7 @@ node *evaluateThingInnerst(node *tree) {
       sollya_mpfi_init2(tempIA,pTemp);
       sollya_mpfi_interv_fr(tempIA,*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value));
       mpfi_init2(tempID,tools_precision);
-      copy->libFun->code(tempID, tempIA, copy->libFunDeriv);
+      copy->libFun->code(tempID, tempIA, copy->libFunDeriv); 
       sollya_init_and_convert_interval(tempIC, tempID);
       mpfi_clear(tempID);
       freeThing(copy);

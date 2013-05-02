@@ -366,6 +366,9 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
       mpfr_add(x, x, perturb, GMP_RNDN);
     }
 
+    if (mpfr_zero_p(x)) {
+      mpfr_mul(x,x,x,GMP_RNDN); /* (+/- 0)^2 = + 0 */
+    }
     (*myFunction)(temp,x);
     evaluateFaithful(y, func, x,prec);
     mpfr_sub(temp, temp, y, GMP_RNDN);
