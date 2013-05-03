@@ -1,21 +1,17 @@
 Changes from version 3.0 to 4.0:
 ================================
 Critical bug fixes:
-  2013-02-08 10:53 [#15363]
-  2013-02-08 09:45 [apparent side of #15363]
-  2013-01-11 12:39 [#14811]
-  2013-01-11 12:24 [#13944]
-  2013-01-11 10:50 [non regression test for #13943]
-  2013-01-11 10:33 [#15250]
-  2013-01-09 09:18 [#15249]
-  2012-12-04 14:41 [non regression test for #15162 patched @1864]
-  2012-11-30 16:02 [#15147]
-  2012-11-22 14:51 [#14259]
-  2012-11-21 18:36 [#15109]
-  2012-10-26 09:02 [#15015]
-  2012-02-29 15:09 [#13943]
-  2012-02-24 11:56 [#13930]
-  2012-02-17 15:48 [non regression test for #13902]
+  * Fixed a bug in rationalapprox leading to possible segmentation fault (bug #13943).
+  * Fixed a bug in horner with expressions containing NaNs leading the tool to exit (bug #15249).
+  * Patched segfaulting behavior of comparisons of accesses to structures (bug #15162).
+  * Avoided GMP overflow on simplification of powers on 64-bit machines (bug #14259).
+  * Fixed a bug in simplification of some polynomials that resulted in a crash of the tool (bug #13930).
+
+Major bug fixes:
+  * Fixed hornerization algorithm to run in linear time in most cases (bug #15363).
+  * Patched: the first tail operation on a list passed in argument of a procedure reverts the list (bug #15147).
+  * Faithful rounding on evaluation of point intervals done too lower precisions as it should (bug #13902).
+
   2012-02-15 16:51 [#9821]
   2012-02-07 11:12 [non regression test for bug patched @1596]
   2012-01-09 15:14 [#13702]
@@ -32,6 +28,8 @@ Critical bug fixes:
   2011-06-15 15:28 [output getting mixed up when remez fails and warning are redirected into a pipe]
   2012-11-06 17:26 [printsingle on armv6l devices]
   2012-11-08 08:34 [avoid a bug in GMP when the same variable is used as argument and result]
+#14428
+#13859
 
 Changes of syntax and output:
   2013-02-26 14:19 [parenthezation for prepends]
