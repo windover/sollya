@@ -6,43 +6,25 @@ Critical bug fixes:
   * Patched segfaulting behavior of comparisons of accesses to structures (bug #15162).
   * Avoided GMP overflow on simplification of powers on 64-bit machines (bug #14259).
   * Fixed a bug in simplification of some polynomials that resulted in a crash of the tool (bug #13930).
+  * Fixed a bug when comparing unevaluated apply statements with themselves, possibly yielding to a segmentation fault.
 
 Major bug fixes:
   * Fixed hornerization algorithm to run in linear time in most cases (bug #15363).
   * Patched: the first tail operation on a list passed in argument of a procedure reverts the list (bug #15147).
   * Faithful rounding on evaluation of point intervals done too lower precisions as it should (bug #13902).
+  * Patched a bug in supnorm that could yield to completely wrong results.
+  * Patched: error-free simplification of divisions might yield incorrect answers if the denominator is 0 but cannot be proven to be so.
+  * Patched: substitution of one polynomial into another could yield a completely wrong result, as constant coefficients could be omitted at some places.
 
-  2012-02-15 16:51 [#9821]
-  2012-02-07 11:12 [non regression test for bug patched @1596]
-  2012-01-09 15:14 [#13702]
-  2011-07-25 15:19 [non regression test for bug patched @1425]
-  2012-12-04 10:48 [Patched a bug with comparisons of structure accesses]
-  2012-11-13 14:40 [Patched a bug in readfile]
-  2012-10-26 11:49 [Fixed a possible silent rounding bug]
-  2012-05-22 15:28 [avoid a bug in old versions of mpfi_sub_fr by reimplementing it]
-  2012-02-09 22:29 [pretty huge bug: d = [sin(pi/6)*(1-1b-40)] used to give only 40 correct bits]
-  2011-07-25 13:35 [bug in supnorm found by F2D]
-  2011-07-21 10:54 [bug in error-free simplification of a/b when a=b=0, but b undecidable]
-  2011-07-19 13:18 [segfault on rare occasions due to a missing break]
-  2011-07-07 14:57 [nasty bug with substitution of a polynomial into another]
-  2011-06-15 15:28 [output getting mixed up when remez fails and warning are redirected into a pipe]
-  2012-11-06 17:26 [printsingle on armv6l devices]
-  2012-11-08 08:34 [avoid a bug in GMP when the same variable is used as argument and result]
-#14428
-#13859
 
 Changes of syntax and output:
-  2013-02-26 14:19 [parenthezation for prepends]
-  2013-01-31 09:29 [void vs ()]
-  2013-01-30 20:11 [behavior of parse/parse_string with characters in excess]
-  2012-02-29 17:09 [error message for rationalapprox with targetprec <= 1]
-  2012-02-29 16:32 [unify behavior of diff for acos, asin, tan and tanh]
-  2012-02-08 16:12 [changed messaging of comparisons]
-  2012-02-07 12:56 [avoid spurious warnings in min and max]
-  2012-02-02 16:37 [when comparisons is uncertain, concludes as equality]
-  2011-11-14 17:16 [guessdegree takes a bound integer]
-  2011-10-20 13:27 [bug in printMessage with va_start. Related to Contact-with-Houston-lost]
-  2011-08-31 12:05 [_x_]
+  * Implicit parenthezation of .: operator has changed. a.:b.:c now reads a.:(b.:c).
+  * () is now always allowed when (void) is.
+  * parse and parse_string do no longer accept non-blank characters in excess (but one single occurrence of ';').
+  * The derivative of acos, asin, tan and tanh now all use squares.
+  * When a comparison is hard to decide or undecidable, result now produced is the one that would be produced if both members of the comparison were equal.
+  * Introduced a default name for the free mathematical variable. _x_ is a permanent placeholder for the free variable.
+
   2011-06-22 15:48 [remez takes a sixth parameter to conclude earlier]
   2012-11-12 11:44 [when faitful rounding is performed, the precision used is displayed]
   2012-11-06 13:54 [double and single precision NaN bitwise compatible on all systems]
@@ -67,6 +49,7 @@ Major new functionnalities:
   2011-07-21 13:38 [faithful evaluation of f(a) where a constant now is computed as evaluate(f, a)]
 
 Minor new functionnalities:
+  2011-11-14 17:16 [guessdegree takes a bound integer]
   2013-02-26 14:59 [behavior of end-elliptic lists when they need to be expanded]
   2012-11-22 12:42 [sollya compiles with icc]
   2012-11-06 15:17 [getsuppressedmessages]
