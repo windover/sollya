@@ -17,6 +17,12 @@ Major bug fixes:
   * Patched: substitution of one polynomial into another could yield a completely wrong result, as constant coefficients could be omitted at some places.
 
 
+Major bug fixes:
+
+  * Nothing
+
+ 
+
 Changes of syntax and output:
   * Implicit parenthezation of .: operator has changed. a.:b.:c now reads a.:(b.:c).
   * () is now always allowed when (void) is.
