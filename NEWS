@@ -17,12 +17,6 @@ Major bug fixes:
   * Patched: substitution of one polynomial into another could yield a completely wrong result, as constant coefficients could be omitted at some places.
 
 
-Major bug fixes:
-
-  * Nothing
-
- 
-
 Changes of syntax and output:
   * Implicit parenthezation of .: operator has changed. a.:b.:c now reads a.:(b.:c).
   * () is now always allowed when (void) is.
@@ -30,31 +24,22 @@ Changes of syntax and output:
   * The derivative of acos, asin, tan and tanh now all use squares.
   * When a comparison is hard to decide or undecidable, result now produced is the one that would be produced if both members of the comparison were equal.
   * Introduced a default name for the free mathematical variable. _x_ is a permanent placeholder for the free variable.
-
-  2011-06-22 15:48 [remez takes a sixth parameter to conclude earlier]
-  2012-11-12 11:44 [when faitful rounding is performed, the precision used is displayed]
-  2012-11-06 13:54 [double and single precision NaN bitwise compatible on all systems]
-  2012-01-24 12:44 [the outside-looking interface of Sollya (library, library functions, external procedures) use mpfi_t instead of sollya_mpfi_t]
-  2012-01-16 13:43 [Added check in configure that tries to avoid the case when FPLLL is just a header file and just a static version of libsollya is built]
-  2011-07-13 08:57 [Improved behavior of general function building up polynomial trees from an array of MPFR coefficients. The sparsity of the polynomials is now taken into account.]
+  * Remez function now accepts a sixth parameter that allows the user to stop the computation as soon as a given accuracy is reached, or on the contrary, as soon as it may be proven that a given accuracy is unreachable.
+  * The warning message displayed when a faithful rounding is performed now displays the precision the result is rounded at.
+  * In cases when an evaluation is unable to perform faithful rounding because the real value of an expression is too close to 0, the returned value is now 0.
 
 Major new functionnalities:
-  2012-11-14 17:55 [internal precision of supnorm improved]
-  2012-11-12 23:34 [round avoid double rounding]
-  2012-05-03 09:21 [chebmodels]
-  2012-04-13 09:04 [improved faithful rounding]
-  2012-03-29 08:31 [corrected huge (sic) mistakes in faithful rounding]
-  2012-03-28 14:01 [evaluatefaithful favors correctrounding and tries to be unbiased]
-  2012-03-27 13:40 [evaluate returns 0 when uncertain but smaller than a threshold]
-  2012-02-27 15:15 [new library]
-  2011-08-25 09:53 [remez and fpminimax can take any basis of function. Returns a non-hornerized poly]
-  2011-07-12 14:49 [new command composepolynomials]
-  2011-07-19 12:47 [new command bind]
-  2013-01-03 14:12 [Improved performance on repeated evaluation of constant expressions]
-  2011-07-22 09:53 [substitute try to evaluate expressions that would become constant and replace them by their value when representable]
-  2011-07-21 13:38 [faithful evaluation of f(a) where a constant now is computed as evaluate(f, a)]
-
+  * New Sollya library, with a real interface. This interface will be officially supported and maintained in the future.
+  * The round command now provides correct rounding of any constant expression given as argument, avoiding double-rounding (the previous behavior consisted in rounding it first faithfully to the current precision of the tool, and then rounding correctly that value at the required precision).
+  * New chebyshevform command for computing Chebyshev Models (see documentation for details).
+  * The commands remez and fpminimax can now take any list of base functions, and not only monomials.
+  * Partial application of procedures is now available through the bind command (see documentation for details).
+  
 Minor new functionnalities:
+  2011-07-22 09:53 [substitute try to evaluate expressions that would become constant and replace them by their value when representable]
+  2013-01-03 14:12 [Improved performance on repeated evaluation of constant expressions]
+  2011-07-12 14:49 [new command composepolynomials]
+  2012-03-28 14:01 [evaluatefaithful favors correctrounding and tries to be unbiased]
   2011-11-14 17:16 [guessdegree takes a bound integer]
   2013-02-26 14:59 [behavior of end-elliptic lists when they need to be expanded]
   2012-11-22 12:42 [sollya compiles with icc]
@@ -79,6 +64,9 @@ Minor new functionnalities:
   2012-12-07 13:41 [--enable-legacy-management]
   2012-02-07 15:58 [Improved behavior of evaluations when expression evaluation ends up with inf]
   2013-01-09 16:15 [Improved the usefulness of a warning message / added extra-pessimist code to constant term memref'ed interval pre-evaluation]
+  2012-01-24 12:44 [the outside-looking interface of Sollya (library, library functions, external procedures) use mpfi_t instead of sollya_mpfi_t]
+  2012-01-16 13:43 [Added check in configure that tries to avoid the case when FPLLL is just a header file and just a static version of libsollya is built]
+  2011-07-13 08:57 [Improved behavior of general function building up polynomial trees from an array of MPFR coefficients. The sparsity of the polynomials is now taken into account.]
 
 Improvements in internal handling:
   2013-02-27 09:30 [nop(n)]
