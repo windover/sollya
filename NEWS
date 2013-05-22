@@ -41,24 +41,19 @@ Minor new functionnalities:
   * New optional argument to guessdegree indicating the maximum degree the algorithm should allow (see documentation for details).
   * Sollya now compiles with icc.
   * New commands suppressmessage, unsuppressmessage, getsuppressedmessages and showmessagenumbers allowing for particular messages to be suppressed.
-  2013-01-09 16:15 [Improved the usefulness of a warning message / added extra-pessimist code to constant term memref'ed interval pre-evaluation]
-  2012-01-24 12:44 [the outside-looking interface of Sollya (library, library functions, external procedures) use mpfi_t instead of sollya_mpfi_t]
-  2012-01-16 13:43 [Added check in configure that tries to avoid the case when FPLLL is just a header file and just a static version of libsollya is built]
-  2011-07-13 08:57 [Improved behavior of general function building up polynomial trees from an array of MPFR coefficients. The sparsity of the polynomials is now taken into account.]
 
 Improvements in internal handling:
   * Various algorithms have been optimized for performance.
-  2013-02-27 09:30 [nop(n)]
-  2013-02-26 15:42 [optimLists]
-  2013-02-12 14:27 [optimLists]
-  2013-02-11 16:46 [optimLists]
-  2012-12-10 16:36 [tmp names for *plot*]
-  2012-12-10 16:32 [tmp names for *plot*]
-  2012-10-24 16:13 [memoryopt]
-  2012-10-24 15:30 [memoryopt]
-  2012-10-24 13:21 [memoryopt]
-  2012-10-23 13:59 [memoryopt]
-  2012-12-07 13:41 [--enable-legacy-management]
+  * Memory usage of the tool has been improved a lot. In particular:
+      - Copies of sollya object now use reference counting.
+      - Useless repeated evaluations are now detected and avoided.
+      - Constant expressions are not evaluated again if some previous evaluation at a higher precision has already been performed.
+      - For debugging purposes, a new configure option --enable-legacy-management allows the user to compile Sollya without these new optimizations. This option is for the developers of Sollya and is useless for the users of the tool (in particular, it is *expected* that 'make check' fails if this option is enabled).
+  * Performance of handling lists has been optimized a lot:
+      - The following instructions have now O(1) complexity in most cases: head(L), L=tail(L), L=a.:L where 'L' is a list and 'a' is some sollya object (notice that the same variable 'L' is used at both sides of the assignments).
+      - Random read access to an element of a list has now O(1) complexity (except maybe the first access).
+  * The definition of nop(n) has been changed so as to improve the stability of timings using it accross different architectures.
+  * The temporary files used for the plot and externalplot commands now use unique names so as to avoid conflicts with other instances of the tool running at the same time.
 
 Others:
 
