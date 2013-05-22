@@ -16,7 +16,6 @@ Major bug fixes:
   * Patched: error-free simplification of divisions might yield incorrect answers if the denominator is 0 but cannot be proven to be so.
   * Patched: substitution of one polynomial into another could yield a completely wrong result, as constant coefficients could be omitted at some places.
 
-
 Changes of syntax and output:
   * Implicit parenthezation of .: operator has changed. a.:b.:c now reads a.:(b.:c).
   * () is now always allowed when (void) is.
@@ -27,6 +26,7 @@ Changes of syntax and output:
   * Remez function now accepts a sixth parameter that allows the user to stop the computation as soon as a given accuracy is reached, or on the contrary, as soon as it may be proven that a given accuracy is unreachable.
   * The warning message displayed when a faithful rounding is performed now displays the precision the result is rounded at.
   * In cases when an evaluation is unable to perform faithful rounding because the real value of an expression is too close to 0, the returned value is now 0.
+  * The behavior of expansion of end-elliptic lists has changed (see Section "Data Types > Lists" of the documentation for details).
 
 Major new functionnalities:
   * New Sollya library, with a real interface. This interface will be officially supported and maintained in the future.
@@ -34,41 +34,20 @@ Major new functionnalities:
   * New chebyshevform command for computing Chebyshev Models (see documentation for details).
   * The commands remez and fpminimax can now take any list of base functions, and not only monomials.
   * Partial application of procedures is now available through the bind command (see documentation for details).
-  
+
 Minor new functionnalities:
-  2011-07-22 09:53 [substitute try to evaluate expressions that would become constant and replace them by their value when representable]
-  2013-01-03 14:12 [Improved performance on repeated evaluation of constant expressions]
-  2011-07-12 14:49 [new command composepolynomials]
-  2012-03-28 14:01 [evaluatefaithful favors correctrounding and tries to be unbiased]
-  2011-11-14 17:16 [guessdegree takes a bound integer]
-  2013-02-26 14:59 [behavior of end-elliptic lists when they need to be expanded]
-  2012-11-22 12:42 [sollya compiles with icc]
-  2012-11-06 15:17 [getsuppressedmessages]
-  2012-11-05 09:30 [unsuppressmessage]
-  2012-11-02 13:16 [suppressmessage]
-  2012-10-31 12:08 [showmessagenumbers]
-  2012-01-13 15:59 [suppressmessage, unsuppressmessage, getsuppressedmessages, showmessagenumbers]
-  2012-01-13 09:28 [showmessagenumbers]
-  2012-01-12 15:14 [bitfields. Allow for an implementation of suppresswarningnumber]
-  2012-10-30 12:35 [improved degree to handle degrees larger than MAXINT]
-  2012-10-30 10:42 [improved hornerization of sparse high-degrees polynomials]
-  2012-10-29 13:50 [optimization for extracting the i-th coeff of some poly]
-  2012-10-26 16:54 [optimization for extracting the i-th coeff of some poly]
-  2012-10-26 15:46 [handling sparse high-degrees polynomials]
-  2012-10-26 14:42 [diff of sparse high-degrees polynomials]
-  2012-03-01 13:34 [rationalapprox returns a smaller fraction whenever possible]
-  2012-02-29 18:04 [rationalapprox now works fine even with small target precicsions]
-  2012-02-07 13:59 [improved "in" when trivial evaluation allows to conclude]
-  2012-01-30 17:15 [*plot* use terminal size of stdout]
-  2012-01-05 12:12 [improved signal handling]
-  2012-12-07 13:41 [--enable-legacy-management]
-  2012-02-07 15:58 [Improved behavior of evaluations when expression evaluation ends up with inf]
+  * Faithful evaluation has been optimized (in particular, it now favors correct rounding whenever possible at low cost).
+  * New command composepolynomials (see documentation for details).
+  * New optional argument to guessdegree indicating the maximum degree the algorithm should allow (see documentation for details).
+  * Sollya now compiles with icc.
+  * New commands suppressmessage, unsuppressmessage, getsuppressedmessages and showmessagenumbers allowing for particular messages to be suppressed.
   2013-01-09 16:15 [Improved the usefulness of a warning message / added extra-pessimist code to constant term memref'ed interval pre-evaluation]
   2012-01-24 12:44 [the outside-looking interface of Sollya (library, library functions, external procedures) use mpfi_t instead of sollya_mpfi_t]
   2012-01-16 13:43 [Added check in configure that tries to avoid the case when FPLLL is just a header file and just a static version of libsollya is built]
   2011-07-13 08:57 [Improved behavior of general function building up polynomial trees from an array of MPFR coefficients. The sparsity of the polynomials is now taken into account.]
 
 Improvements in internal handling:
+  * Various algorithms have been optimized for performance.
   2013-02-27 09:30 [nop(n)]
   2013-02-26 15:42 [optimLists]
   2013-02-12 14:27 [optimLists]
@@ -79,6 +58,7 @@ Improvements in internal handling:
   2012-10-24 15:30 [memoryopt]
   2012-10-24 13:21 [memoryopt]
   2012-10-23 13:59 [memoryopt]
+  2012-12-07 13:41 [--enable-legacy-management]
 
 Others:
 
