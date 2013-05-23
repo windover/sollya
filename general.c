@@ -211,7 +211,7 @@ void (*oldGMPFree)(void *, size_t) = NULL;
 
 /* END OF GLOBAL VARIABLES FOR THE MEMORY ALLOCATION FUNCTIONS */
 
-extern int yyparse(); 
+extern int yyparse(void *); 
 extern void yylex_destroy(void *);
 extern int yylex_init(void **);
 extern int yylex(void *);
