@@ -14,8 +14,11 @@
    element in the \sollya language that finally does not produce any
    result or side-effect.
 
-\item The command \textbf{nop} may take an optional positive integer argument \emph{n}. The argument controls how much (useless) integer additions \sollya performs while doing nothing. 
-   With this behaviour, \textbf{nop} can be used for calibration of timing tests.
+\item The command \textbf{nop} may take an optional positive integer argument
+   \emph{n}. The argument controls how much (useless) multiprecision
+   floating-point multiplications \sollya performs while doing nothing.
+   With this behaviour, \textbf{nop} can be used for calibration of timing
+   tests.
 
 \item The keyword \textbf{nop} is implicit in some procedure
    definitions. Procedures without imperative body get parsed as if they

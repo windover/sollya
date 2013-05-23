@@ -18,8 +18,11 @@
 <li>The command <?php linkTo("command","nop","nop");?> does nothing. This means it is an explicit parse 
 element in the Sollya language that finally does not produce any 
 result or side-effect. 
-</li><li>The command <?php linkTo("command","nop","nop");?> may take an optional positive integer argument <span class="arg">n</span>. The argument controls how much (useless) integer additions Sollya performs while doing nothing.  
-With this behaviour, <?php linkTo("command","nop","nop");?> can be used for calibration of timing tests. 
+</li><li>The command <?php linkTo("command","nop","nop");?> may take an optional positive integer argument 
+<span class="arg">n</span>. The argument controls how much (useless) multiprecision 
+floating-point multiplications Sollya performs while doing nothing. 
+With this behaviour, <?php linkTo("command","nop","nop");?> can be used for calibration of timing 
+tests. 
 </li><li>The keyword <?php linkTo("command","nop","nop");?> is implicit in some procedure 
 definitions. Procedures without imperative body get parsed as if they 
 had an imperative body containing one <?php linkTo("command","nop","nop");?> statement. 

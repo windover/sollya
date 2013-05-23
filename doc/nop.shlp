@@ -14,8 +14,11 @@ element in the $SOLLYA language that finally does not produce any
 result or side-effect.
 
 #DESCRIPTION
-The command $COMMAND may take an optional positive integer argument <n>. The argument controls how much (useless) integer additions $SOLLYA performs while doing nothing. 
-With this behaviour, $COMMAND can be used for calibration of timing tests.
+The command $COMMAND may take an optional positive integer argument
+<n>. The argument controls how much (useless) multiprecision
+floating-point multiplications $SOLLYA performs while doing nothing.
+With this behaviour, $COMMAND can be used for calibration of timing
+tests.
 
 #DESCRIPTION
 The keyword $COMMAND is implicit in some procedure
