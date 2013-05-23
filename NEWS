@@ -37,7 +37,7 @@ Changes of syntax and output:
   * parse and parse_string do no longer accept non-blank characters in
     excess (but one single occurrence of ';').
   * The derivative of acos, asin, tan and tanh now all use squares.
-  * When a comparison is hard to decide or undecidable, result now
+  * When a comparison is hard to decide or undecidable, the result now
     produced is the one that would be produced if both members of the
     comparison were equal.
   * Introduced a default name for the free mathematical variable.
@@ -85,7 +85,7 @@ Minor new functionnalities:
 Improvements in internal handling:
   * Various algorithms have been optimized for performance.
   * Memory usage of the tool has been improved a lot. In particular:
-      - Copies of sollya object now use reference counting.
+      - Copies of sollya objects now use reference counting.
       - Useless repeated evaluations are now detected and avoided.
       - Constant expressions are not evaluated again if some previous
         evaluation at a higher precision has already been performed.
