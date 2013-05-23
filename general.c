@@ -196,41 +196,41 @@ void *wrapSafeRealloc(void *ptr, size_t old_size, size_t new_size);
 void wrapSafeFree(void *ptr, size_t size);
 
 void *(*actualCalloc)(size_t, size_t) = calloc;
-                                      void *(*actualMalloc)(size_t) = malloc;
-                                                                    void (*actualFree)(void *) = free;
-                                                                    void *(*actualRealloc)(void *, size_t) = realloc;
-                                                                    void (*actualFreeWithSize)(void *, size_t) = wrapSafeFree;
-                                                                    void *(*actualReallocWithSize)(void *, size_t, size_t) = wrapSafeRealloc;
+void *(*actualMalloc)(size_t) = malloc;
+void (*actualFree)(void *) = free;
+void *(*actualRealloc)(void *, size_t) = realloc;
+void (*actualFreeWithSize)(void *, size_t) = wrapSafeFree;
+void *(*actualReallocWithSize)(void *, size_t, size_t) = wrapSafeRealloc;
 
-                                                                    void *(*oldGMPMalloc)(size_t) = NULL;
-                                                                                                  void *(*oldGMPRealloc)(void *, size_t, size_t) = NULL;
-                                                                                                  void (*oldGMPFree)(void *, size_t) = NULL;
+void *(*oldGMPMalloc)(size_t) = NULL;
+void *(*oldGMPRealloc)(void *, size_t, size_t) = NULL;
+void (*oldGMPFree)(void *, size_t) = NULL;
 
-                                                                                                  /* END OF GLOBAL VARIABLES FOR THE MEMORY ALLOCATION FUNCTIONS */
+/* END OF GLOBAL VARIABLES FOR THE MEMORY ALLOCATION FUNCTIONS */
 
-                                                                                                  extern int yyparse();
-                                                                                                  extern void yylex_destroy(void *);
-                                                                                                  extern int yylex_init(void **);
-                                                                                                  extern int yylex(void *);
-                                                                                                  extern void yyset_in(FILE *, void *);
-                                                                                                  extern int parserCheckEof();
+extern int yyparse(); 
+extern void yylex_destroy(void *);
+extern int yylex_init(void **);
+extern int yylex(void *);
+extern void yyset_in(FILE *, void *);
+extern int parserCheckEof();
 
 #define BACKTRACELENGTH 100
 
-                                                                                                  void freeTool();
+void freeTool();
 
-                                                                                                  void makeToolDie() {
-                                                                                                    freeTool();
+void makeToolDie() {
+	freeTool();
 
-                                                                                                    if (!eliminatePromptBackup) sollyaPrintf("\n");
+	if (!eliminatePromptBackup) sollyaPrintf("\n");
 
-                                                                                                    if (inputFileOpened) {
-                                                                                                      fclose(inputFile);
-                                                                                                      inputFileOpened = 0;
-                                                                                                    }
+	if (inputFileOpened) {
+	  fclose(inputFile);
+	  inputFileOpened = 0;
+	}
 
-                                                                                                    exit(2);
-                                                                                                  }
+	exit(2);
+}
 
 void considerDyingOnError() {
   if (!dieOnErrorMode) return;
