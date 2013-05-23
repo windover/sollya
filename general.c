@@ -76,6 +76,9 @@
 #include "remez.h"
 #include "infnorm.h"
 #include "assignment.h"
+
+#define YYPARSE_PARAM scanner
+
 #include "parser.h"
 #include <termios.h>
 #include <sys/time.h>

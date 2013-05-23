@@ -63,6 +63,9 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 #include "chain.h"
 #include "general.h"
 #include "execute.h"
+
+#define YYPARSE_PARAM scanner
+
 #include "parser.h"
 #include "library.h"
 #include "help.h"
@@ -87,7 +90,6 @@ extern void parserFree(void *);
 /* End of the malloc mess */
 
 #define YYERROR_VERBOSE 1
-#define YYPARSE_PARAM scanner
 #define YYLEX_PARAM   scanner
 #define YYFPRINTF sollyaFprintf
 
