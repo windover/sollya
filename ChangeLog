@@ -1,3 +1,41 @@
+2013-05-24 14:52  clauter
+
+	* doc/chebyshevform.shlp, doc/chebyshevform.tex, doc/sollya.pdf,
+	  doc/taylorform.shlp, doc/taylorform.tex,
+	  doc/www/chebyshevform.php, doc/www/taylorform.php, help.h:
+	  Reformatted the documentation a little bit.
+
+2013-05-23 15:17  clauter
+
+	* general.c: A small change to the parser inclusion structure.
+
+2013-05-23 15:17  clauter
+
+	* general.c, parser.y: A small change to the parser inclusion
+	  structure.
+
+2013-05-23 15:00  clauter
+
+	* configure.ac, doc/bashevaluate.tex, doc/bashexecute.tex,
+	  doc/remez.tex, doc/sollya.pdf, doc/sollya.tex, doc/time.tex,
+	  doc/timing.tex, doc/www/bashevaluate.php,
+	  doc/www/bashexecute.php, doc/www/remez.php, doc/www/sollya.php,
+	  doc/www/time.php, doc/www/timing.php, general.c, help.h: Updated
+	  revision number and recompiled the whole documentation.
+
+2013-05-23 13:25  schevill
+
+	* doc/remez.shlp, doc/remez.tex, doc/sollya.pdf, doc/www/remez.php,
+	  help.h: * Updated remez documentation with the new 6th argument.
+
+2013-05-23 12:51  clauter
+
+	* ChangeLog: Updated the Changelog file.
+
+2013-05-23 12:50  clauter
+
+	* NEWS: Corrected two typos in the new NEWS file.
+
 2013-05-23 12:42  schevill
 
 	* NEWS: * Final (?) NEWS file.
