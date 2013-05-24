@@ -1,5 +1,7 @@
 #NAME $CHEBYSHEVFORM
-#QUICK_DESCRIPTION computes a rigorous polynomial approximation (polynomial, interval error bound) for a function, based on Chebyshev interpolants.
+#QUICK_DESCRIPTION computes a rigorous polynomial approximation 
+(polynomial, interval error bound) for a function, based on 
+Chebyshev interpolants.
 
 #CALLING $COMMAND(<f>, <n>, <I>)
 #TYPE ($FUNCTION_TYPE, $INTEGER_TYPE, $RANGE_TYPE) -> $LIST_TYPE
@@ -10,34 +12,46 @@
 
 #DESCRIPTION 
 $COMMAND computes an approximation polynomial and an interval error bound
-for function §§f§$f$§§. More precisely, it returns a list §§L=[p, coeffErrors, Delta, chebCoeffs]§$L = \left[p, \textrm{coeffErrors},\Delta,\textrm{chebCoeffs} \right]$§§
+for a given function §§f§$f$§§. 
+§§ §\\§§
+More precisely, it returns a list §§L=[p, coeffErrors, Delta, chebCoeffs]§$L = \left[p, \textrm{coeffErrors},\Delta,\textrm{chebCoeffs} \right]$§§
 where:
 §§ §\begin{itemize}§§
-§§  -§\item§§ §§p§$p$§§ is an approximation polynomial of degree §§n§$n$§§ which is roughly speaking
-a numerical Chebyshev interpolation polynomial of §§f§$f$§§ over §§I§$I$§§ represented in monomial basis.
-§§  -§\item§§ coeffsErrors is a list of §§n+1§$n+1$§§ intervals. Each interval coeffsErrors[§§i§$i$§§]
-contains an enclosure of all the errors accumulated when computing the §§i-th§$i$-th§§
-coefficient of §§p§$p$§§.
-§§  -§\item§§ §§Delta§$\Delta$§§ is an interval that provides a bound for the approximation error
-between §§p§$p$§§ and §§f§$f$§§. See details below.
-§§  -§\item§§ §§chebCoeffs§$\textrm{chebCoeffs}$§§ is a list of §§n+1§$n+1$§§ intervals. These are the interval coefficients obtained for the representation of interpolation polynomial considered in Chebyshev basis. See details below.
+§§  -§\item§§ §§p§$p$§§ is an approximation polynomial of degree §§n§$n$§§ 
+which is roughly speaking a numerical Chebyshev interpolation polynomial 
+of §§f§$f$§§ over §§I§$I$§§ represented in monomial basis.
+§§  -§\item§§ coeffsErrors is a list of §§n+1§$n+1$§§ intervals. Each 
+interval coeffsErrors[§§i§$i$§§] contains an enclosure of all the 
+errors accumulated when computing the §§i-th§$i$-th§§ coefficient of §§p§$p$§§.
+§§  -§\item§§ §§Delta§$\Delta$§§ is an interval that provides a bound for the 
+approximation error between §§p§$p$§§ and §§f§$f$§§. See details below.
+§§  -§\item§§ §§chebCoeffs§$\textrm{chebCoeffs}$§§ is a list of 
+§§n+1§$n+1$§§ intervals. These are the interval coefficients obtained for 
+the representation of interpolation polynomial considered in Chebyshev 
+basis. See details below.
 §§ §\end{itemize}§§
 
 #DESCRIPTION 
-The polynomial §§p§$p$§§ and the bound  §§Delta§$\Delta$§§ are obtained using Chebyshev Models
-principles.
+The polynomial §§p§$p$§§ and the bound §§Delta§$\Delta$§§ are obtained
+using Chebyshev Models principles.
 
 #DESCRIPTION 
 More formally, the mathematical property ensured by the algorithm may be
 stated as follows:
 §§ §\\§§
-Using monomial basis representation given by §§p§$p$§§: there exist (small) values §§eps[i] in coeffsErrors[i]§$\varepsilon_i \in \textrm{coeffsErrors}[i]$§§ such that:
+Using monomial basis representation given by §§p§$p$§§: there exist 
+(small) values §§eps[i] in coeffsErrors[i]§$\varepsilon_i \in \textrm{coeffsErrors}[i]$§§ 
+such that:
 §§for all x in I, there exists delta in Delta such§$\forall x \in I, \exists \delta \in \Delta,\,$§§
 §§that f(x) - p(x) = sum{i=0...n} eps[i]*x^i + delta§$f(x)-p(x) = \sum\limits_{i=0}^{n} \varepsilon_i\, x^i + \delta$§§.
 §§ §\\§§
-Using Chebyshev basis representation given by §§chebCoeffs§$\textrm{chebCoeffs}$§§: there exist values §§alpha[i] in chebCoeffs[i]§$\alpha_i \in \textrm{chebCoeffs}[i]$§§ such that:
- §§for all x in I, there exists delta in Delta such§$\forall x \in I, \exists \delta \in \Delta,\,$§§
-§§that f(x) - sum{i=0...n} alfa[i]*T_i(y) =delta§$f(x)-\sum\limits_{i=0}^{n} \alpha_i\, T_i(y)= \delta$§§, where §§[a,b]=I, y=(2*x-b-a)/(b-a)§$[a,b]=I, y=(2x-b-a)/(b-a)$§§ and  §§T_i(y)§$T_i(y)$§§ is the ith Chebyshev polynomial over  §§[-1,1]§$[-1,1]$§§.
+Using Chebyshev basis representation given by §§chebCoeffs§$\textrm{chebCoeffs}$§§: 
+there exist values §§alpha[i] in chebCoeffs[i]§$\alpha_i \in \textrm{chebCoeffs}[i]$§§ 
+such that:
+§§for all x in I, there exists delta in Delta such§$\forall x \in I, \exists \delta \in \Delta,\,$§§
+§§that f(x) - sum{i=0...n} alfa[i]*T_i(y) =delta§$f(x)-\sum\limits_{i=0}^{n} \alpha_i\, T_i(y)= \delta$§§, 
+where §§[a,b]=I, y=(2*x-b-a)/(b-a)§$[a,b]=I, y=(2x-b-a)/(b-a)$§§ and  §§T_i(y)§$T_i(y)$§§ 
+is the §§i-th§$i$-th§§ Chebyshev polynomial over §§[-1,1]§$[-1,1]$§§.
 
 #DESCRIPTION 
 The algorithm does not guarantee that by increasing the degree of the

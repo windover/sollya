@@ -33,7 +33,9 @@ entirely.
 
 #DESCRIPTION
 $COMMAND computes an approximation polynomial and an interval error
-bound for function §§f§$f$§§. More precisely, it returns a list
+bound for function §§f§$f$§§. 
+
+More precisely, it returns a list
 §§L=[p, coeffErrors, Delta]§$L = \left[p, \textrm{coeffErrors},\Delta \right]$§§ where:
 §§ §\begin{itemize}§§
 §§  -§\item§§ §§p§$p$§§ is an approximation polynomial of degree §§n§$n$§§ such that §§p(x-x0)§$p(x-x_0)$§§ is

@@ -1,7 +1,7 @@
 \subsection{chebyshevform}
 \label{labchebyshevform}
 \noindent Name: \textbf{chebyshevform}\\
-\phantom{aaa}computes a rigorous polynomial approximation (polynomial, interval error bound) for a function, based on Chebyshev interpolants.\\[0.2cm]
+\phantom{aaa}computes a rigorous polynomial approximation \\[0.2cm]
 \noindent Usage: 
 \begin{center}
 \textbf{chebyshevform}(\emph{f}, \emph{n}, \emph{I}) : (\textsf{function}, \textsf{integer}, \textsf{range}) $\rightarrow$ \textsf{list}\\
@@ -15,32 +15,44 @@ Parameters:
 \noindent Description: \begin{itemize}
 
 \item \textbf{chebyshevform} computes an approximation polynomial and an interval error bound
-   for function $f$. More precisely, it returns a list $L = \left[p, \textrm{coeffErrors},\Delta,\textrm{chebCoeffs} \right]$
+   for a given function $f$. 
+   \\
+   More precisely, it returns a list $L = \left[p, \textrm{coeffErrors},\Delta,\textrm{chebCoeffs} \right]$
    where:
    \begin{itemize}
-   \item $p$ is an approximation polynomial of degree $n$ which is roughly speaking
-   a numerical Chebyshev interpolation polynomial of $f$ over $I$ represented in monomial basis.
-   \item coeffsErrors is a list of $n+1$ intervals. Each interval coeffsErrors[$i$]
-   contains an enclosure of all the errors accumulated when computing the $i$-th
-   coefficient of $p$.
-   \item $\Delta$ is an interval that provides a bound for the approximation error
-   between $p$ and $f$. See details below.
-   \item $\textrm{chebCoeffs}$ is a list of $n+1$ intervals. These are the interval coefficients obtained for the representation of interpolation polynomial considered in Chebyshev basis. See details below.
+   \item $p$ is an approximation polynomial of degree $n$ 
+   which is roughly speaking a numerical Chebyshev interpolation polynomial 
+   of $f$ over $I$ represented in monomial basis.
+   \item coeffsErrors is a list of $n+1$ intervals. Each 
+   interval coeffsErrors[$i$] contains an enclosure of all the 
+   errors accumulated when computing the $i$-th coefficient of $p$.
+   \item $\Delta$ is an interval that provides a bound for the 
+   approximation error between $p$ and $f$. See details below.
+   \item $\textrm{chebCoeffs}$ is a list of 
+   $n+1$ intervals. These are the interval coefficients obtained for 
+   the representation of interpolation polynomial considered in Chebyshev 
+   basis. See details below.
    \end{itemize}
 
-\item The polynomial $p$ and the bound  $\Delta$ are obtained using Chebyshev Models
-   principles.
+\item The polynomial $p$ and the bound $\Delta$ are obtained
+   using Chebyshev Models principles.
 
 \item More formally, the mathematical property ensured by the algorithm may be
    stated as follows:
    \\
-   Using monomial basis representation given by $p$: there exist (small) values $\varepsilon_i \in \textrm{coeffsErrors}[i]$ such that:
+   Using monomial basis representation given by $p$: there exist 
+   (small) values $\varepsilon_i \in \textrm{coeffsErrors}[i]$ 
+   such that:
    $\forall x \in I, \exists \delta \in \Delta,\,$
    $f(x)-p(x) = \sum\limits_{i=0}^{n} \varepsilon_i\, x^i + \delta$.
    \\
-   Using Chebyshev basis representation given by $\textrm{chebCoeffs}$: there exist values $\alpha_i \in \textrm{chebCoeffs}[i]$ such that:
-    $\forall x \in I, \exists \delta \in \Delta,\,$
-   $f(x)-\sum\limits_{i=0}^{n} \alpha_i\, T_i(y)= \delta$, where $[a,b]=I, y=(2x-b-a)/(b-a)$ and  $T_i(y)$ is the ith Chebyshev polynomial over  $[-1,1]$.
+   Using Chebyshev basis representation given by $\textrm{chebCoeffs}$: 
+   there exist values $\alpha_i \in \textrm{chebCoeffs}[i]$ 
+   such that:
+   $\forall x \in I, \exists \delta \in \Delta,\,$
+   $f(x)-\sum\limits_{i=0}^{n} \alpha_i\, T_i(y)= \delta$, 
+   where $[a,b]=I, y=(2x-b-a)/(b-a)$ and  $T_i(y)$ 
+   is the $i$-th Chebyshev polynomial over $[-1,1]$.
 
 \item The algorithm does not guarantee that by increasing the degree of the
    approximation, the remainder bound will become smaller. Moreover, it may 

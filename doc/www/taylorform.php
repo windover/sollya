@@ -36,7 +36,8 @@ completely straightforward to use either. In order to be sure to use it
 correctly, the reader is invited to carefully read this documentation 
 entirely. 
 </li><li><?php linkTo("command","taylorform","taylorform");?> computes an approximation polynomial and an interval error 
-bound for function f. More precisely, it returns a list 
+bound for function f.  
+More precisely, it returns a list 
 L=[p, coeffErrors, Delta] where: 
 <ul> 
 <li> p is an approximation polynomial of degree n such that p(x-x0) is 
