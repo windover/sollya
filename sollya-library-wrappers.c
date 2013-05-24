@@ -332,24 +332,6 @@ void sollya_lib_printexpansion(sollya_obj_t obj1) {
   freeThing(thingToExecute);
 }
 
-void sollya_lib_implementconst(sollya_obj_t obj1, ...) {
-  node *thingToExecute;
-  MAKE_THINGLIST_DECLS(thinglist);
-  MAKE_THINGLIST_FROM_VARIADIC(obj1);
-  thingToExecute = makeImplementConst(thinglist);
-  executeCommand(thingToExecute);
-  freeThing(thingToExecute);
-}
-
-void sollya_lib_v_implementconst(sollya_obj_t obj1, va_list varlist) {
-  node *thingToExecute;
-  MAKE_THINGLIST_DECLS_FROM_VA_LIST(thinglist);
-  MAKE_THINGLIST_FROM_VA_LIST(obj1,varlist);
-  thingToExecute = makeImplementConst(thinglist);
-  executeCommand(thingToExecute);
-  freeThing(thingToExecute);
-}
-
 void sollya_lib_bashexecute(sollya_obj_t obj1) {
   node *thingToExecute;
   thingToExecute = makeBashExecute(copyThing(obj1));

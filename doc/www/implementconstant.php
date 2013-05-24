@@ -5,6 +5,9 @@
 </span> 
 </div> 
 <div class="divLibraryName"> 
+<h2 class="libraryname">Library names:</h2> 
+<span class="commandline type">void sollya_lib_implementconstant(sollya_obj_t, ...);</span> 
+<span class="commandline type">void sollya_lib_v_implementconstant(sollya_obj_t, va_list);</span> 
 </div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 

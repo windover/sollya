@@ -7,6 +7,10 @@
 
 #PARAMETERS <activation value> represents $ON or $OFF, i.e. activation or deactivation
 
+#LIBRARYNAME void sollya_lib_set_fullparentheses_and_print(sollya_obj_t);
+#LIBRARYNAME void sollya_lib_set_fullparentheses(sollya_obj_t);
+#LIBRARYNAME sollya_obj_t sollya_lib_get_fullparentheses();
+
 #DESCRIPTION 
 An assignment $COMMAND = <activation value>, where <activation value>
 is one of $ON or $OFF, activates respectively deactivates the output

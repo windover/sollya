@@ -7,6 +7,10 @@
 #CALLING $COMMAND(<expr>,<filename>,<functionname>)
 #TYPE ($CONSTANT_TYPE, $STRING_TYPE, $STRING_TYPE) -> $VOID_TYPE
 
+#LIBRARYNAME void sollya_lib_implementconstant(sollya_obj_t, ...);
+#LIBRARYNAME void sollya_lib_v_implementconstant(sollya_obj_t, va_list);
+
+
 #DESCRIPTION 
 The command $COMMAND implements the constant expression <expr> in 
 arbitrary precision. More precisely, it generates the source code (written

@@ -10,6 +10,9 @@ Chebyshev interpolants.
 #PARAMETERS <n> is the degree of the polynomial that must approximate <f>.
 #PARAMETERS <I> is the interval over which the function is to be approximated. This interval cannot be a point interval, i.e. its endpoints have to be different.
 
+#LIBRARYNAME sollya_obj_t sollya_lib_chebyshevform(sollya_obj_t, sollya_obj_t, 
+#LIBRARYNAME (CONTINUED)                           sollya_obj_t); 
+
 #DESCRIPTION 
 $COMMAND computes an approximation polynomial and an interval error bound
 for a given function §§f§$f$§§. 

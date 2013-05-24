@@ -314,8 +314,6 @@ extern "C" {
   void sollya_lib_printdouble(sollya_obj_t);
   void sollya_lib_printsingle(sollya_obj_t);
   void sollya_lib_printexpansion(sollya_obj_t);
-  void sollya_lib_implementconst(sollya_obj_t, ...);
-  void sollya_lib_v_implementconst(sollya_obj_t, va_list);
   void sollya_lib_bashexecute(sollya_obj_t);
   void sollya_lib_externalplot(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, ...);
   void sollya_lib_v_externalplot(sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, sollya_obj_t, va_list);
