@@ -4706,7 +4706,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- roundcoefficients\n");
 			    sollyaPrintf("- roundcorrectly\n");
 			    sollyaPrintf("- roundingwarnings\n");
-			    sollyaPrintf("- safesimplify\n");
+			    sollyaPrintf("- simplifysafe\n");
 			    sollyaPrintf("- searchgal\n");
 			    sollyaPrintf("- showmessagenumbers\n");
 			    sollyaPrintf("- simplify\n");
