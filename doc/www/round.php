@@ -35,6 +35,15 @@ floating-point format <span class="arg">format</span>, according to rounding-mod
 <?php linkTo("command","round","round");?> does not take any exponent range into consideration, 
 i.e. typically uses the full exponent range of the underlying MPFR 
 library. 
+</li><li>It is worth mentionning that the result of <?php linkTo("command","round","round");?> does not depend on 
+the current global precision of Sollya, unless a warning is 
+displayed. As a matter of fact, <?php linkTo("command","round","round");?> rounds the given constant or 
+constant expression <span class="arg">x</span> applying all rules of IEEE 754 correct 
+rounding, unless a warning is displayed. The result of <?php linkTo("command","round","round");?> is 
+hence the floating-point value of the given precision <span class="arg">n</span> or format 
+<span class="arg">format</span> that is nearest (resp. just below or just above, depending on 
+<span class="arg">mode</span>), computed as if infinite precision were used for evaluating 
+the constant <span class="arg">x</span>, unless a warning is displayed. 
 </ul> 
 </div> 
 <div class="divExamples"> 
