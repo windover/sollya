@@ -72,6 +72,17 @@
    void, constant, function, range, integer, string, boolean, list of constant,
    list of function, list of range, list of integer, list of string, list of boolean.
 
+   It is worth mentionning that the difference between the data and
+   result type function and the type object is minimal and due to
+   support of legacy Sollya code. Both Sollya functions and Sollya
+   objects are transferred from and to the external procedure thru the
+   C type sollya_obj_t. The difference is that Sollya will check that
+   a certain object is a mathematical function when function is used
+   as a type, and will skip this test if the object type is
+   used. Similarly, Sollya relies on an object produced by the
+   external procedure to be a mathematical function when function is
+   used and will not make this assumption for object.
+   
    The C function foo is supposed to return an integer indicating success.
    It returns its result depending on its sollya result type as follows:
 

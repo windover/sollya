@@ -29,6 +29,17 @@ Parameters:
    \textbf{string}, \textbf{boolean}, \textbf{list of} \textbf{constant}, \textbf{list of} \textbf{function}, \textbf{list of} \textbf{object},
    \textbf{list of} \textbf{range}, \textbf{list of} \textbf{integer}, \textbf{list of} \textbf{string}, \textbf{list of} \textbf{boolean}.
     
+   It is worth mentionning that the difference between the data and
+   result type \textbf{function} and the type \textbf{object} is minimal and due to
+   support of legacy \sollya code. Both \sollya functions and \sollya
+   objects are transferred from and to the external procedure thru the C
+   type \texttt{sollya\_obj\_t}. The difference is that
+   \sollya will check that a certain object is a mathematical function
+   when \textbf{function} is used as a type, and will skip this test if the
+   \textbf{object} type is used. Similarly, \sollya relies on an object produced
+   by the external procedure to be a mathematical function when \textbf{function}
+   is used and will not make this assumption for \textbf{object}.
+    
    If upon a usage of a procedure bound to an external procedure the type of the
    actual parameters given or its number is not correct, \sollya produces a type
    error. An external function not applied to arguments represents itself and
@@ -103,7 +114,7 @@ Parameters:
    In both directions (argument and result values), empty lists are represented
    by \texttt{NULL} pointers.
     
-   In contrast to internal procedures, externally bounded procedures can be
+   Similarly to internal procedures, externally bounded procedures can be
    considered to be objects inside \sollya that can be assigned to other
    variables, stored in list etc.
 \end{itemize}

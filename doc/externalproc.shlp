@@ -22,6 +22,17 @@ has a third parameter <argumenttype> §§->§\texttt{->}§§ <resulttype>. Both 
 $STRING, $BOOLEAN, $LISTOF $CONSTANT, $LISTOF $FUNCTION, $LISTOF $OBJECT,
 $LISTOF $RANGE, $LISTOF $INTEGER, $LISTOF $STRING, $LISTOF $BOOLEAN.
 §§ § §§
+It is worth mentionning that the difference between the data and
+result type $FUNCTION and the type $OBJECT is minimal and due to
+support of legacy $SOLLYA code. Both $SOLLYA functions and $SOLLYA
+objects are transferred from and to the external procedure thru the C
+type §§sollya_obj_t§\texttt{sollya\_obj\_t}§§. The difference is that
+$SOLLYA will check that a certain object is a mathematical function
+when $FUNCTION is used as a type, and will skip this test if the
+$OBJECT type is used. Similarly, $SOLLYA relies on an object produced
+by the external procedure to be a mathematical function when $FUNCTION
+is used and will not make this assumption for $OBJECT.
+§§ § §§
 If upon a usage of a procedure bound to an external procedure the type of the
 actual parameters given or its number is not correct, $SOLLYA produces a type
 error. An external function not applied to arguments represents itself and
@@ -97,7 +108,7 @@ array argument §§void **§\texttt{void **}§§.
 In both directions (argument and result values), empty lists are represented
 by §§NULL§\texttt{NULL}§§ pointers.
 §§ § §§
-In contrast to internal procedures, externally bounded procedures can be
+Similarly to internal procedures, externally bounded procedures can be
 considered to be objects inside $SOLLYA that can be assigned to other
 variables, stored in list etc.
 

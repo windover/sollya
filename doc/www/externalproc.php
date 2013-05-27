@@ -36,6 +36,17 @@ has a third parameter <span class="arg">argumenttype</span> -&gt; <span class="a
 <?php linkTo("command","string","string");?>, <?php linkTo("command","boolean","boolean");?>, <?php linkTo("command","listof","list of");?> <?php linkTo("command","constant","constant");?>, <?php linkTo("command","listof","list of");?> <?php linkTo("command","function","function");?>, <?php linkTo("command","listof","list of");?> <?php linkTo("command","object","object");?>, 
 <?php linkTo("command","listof","list of");?> <?php linkTo("command","range","range");?>, <?php linkTo("command","listof","list of");?> <?php linkTo("command","integer","integer");?>, <?php linkTo("command","listof","list of");?> <?php linkTo("command","string","string");?>, <?php linkTo("command","listof","list of");?> <?php linkTo("command","boolean","boolean");?>. 
 <br><br> 
+It is worth mentionning that the difference between the data and 
+result type <?php linkTo("command","function","function");?> and the type <?php linkTo("command","object","object");?> is minimal and due to 
+support of legacy Sollya code. Both Sollya functions and Sollya 
+objects are transferred from and to the external procedure thru the C 
+type sollya_obj_t. The difference is that 
+Sollya will check that a certain object is a mathematical function 
+when <?php linkTo("command","function","function");?> is used as a type, and will skip this test if the 
+<?php linkTo("command","object","object");?> type is used. Similarly, Sollya relies on an object produced 
+by the external procedure to be a mathematical function when <?php linkTo("command","function","function");?> 
+is used and will not make this assumption for <?php linkTo("command","object","object");?>. 
+<br><br> 
 If upon a usage of a procedure bound to an external procedure the type of the 
 actual parameters given or its number is not correct, Sollya produces a type 
 error. An external function not applied to arguments represents itself and 
@@ -110,7 +121,7 @@ array argument void **.
 In both directions (argument and result values), empty lists are represented 
 by NULL pointers. 
 <br><br> 
-In contrast to internal procedures, externally bounded procedures can be 
+Similarly to internal procedures, externally bounded procedures can be 
 considered to be objects inside Sollya that can be assigned to other 
 variables, stored in list etc. 
 </ul> 
