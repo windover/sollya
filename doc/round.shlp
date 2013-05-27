@@ -37,9 +37,9 @@ displayed. As a matter of fact, $COMMAND rounds the given constant or
 constant expression <x> applying all rules of IEEE 754 correct
 rounding, unless a warning is displayed. The result of $COMMAND is
 hence the floating-point value of the given precision <n> or format
-<format> that is nearest (resp. just below or just above, depending on
-<mode>), computed as if infinite precision were used for evaluating
-the constant <x>, unless a warning is displayed.
+<format> that is nearest to <x> (resp. just below or just above,
+depending on <mode>), computed as if infinite precision were used for
+evaluating the constant <x>, unless a warning is displayed.
 
 #EXAMPLE
 display=binary!;
