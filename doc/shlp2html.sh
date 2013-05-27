@@ -139,12 +139,15 @@ processLibraryName() {
  then return
  fi
 
+ printf "<div class=\"divLibraryName\">\n" >> $target
  if [ $nLines -eq 1 ]
    then printf "<h2 class=\"libraryname\">Library name:</h2>\n" >> $target
    else printf "<h2 class=\"libraryname\">Library names:</h2>\n" >> $target
  fi
 
  grep "#LIBRARYNAME" $tempfile | sed -n 's/#LIBRARYNAME \(.*\)/<span class="commandline type">\1<\/span>/;p' | sed -n 's/(CONTINUED)/\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;\&nbsp;/;p' |sed -n 's/  /\&nbsp;\&nbsp;/g;p' | sed -n 's/\&nbsp; /\&nbsp;\&nbsp;/g;p' >> $target
+
+ printf "</div>\n" >> $target
 }
 
 processQuickDescription() {
@@ -419,9 +422,7 @@ processFile() {
   processQuickDescription
   printf "</div>\n" >> $target
 
-  printf "<div class=\"divLibraryName\">\n" >> $target
   processLibraryName
-  printf "</div>\n" >> $target
 
   processCallingAndTypes
   processParameters
