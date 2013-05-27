@@ -4553,6 +4553,16 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- ==\n");
 			    sollyaPrintf("- >\n");
 			    sollyaPrintf("- @\n");
+			    sollyaPrintf("- {\n");
+			    sollyaPrintf("- [|\n");
+			    sollyaPrintf("- |]\n");
+			    sollyaPrintf("- ||\n");
+			    sollyaPrintf("- }\n");
+			    sollyaPrintf("- ~\n");
+			    sollyaPrintf("- [\n");
+			    sollyaPrintf("- ]\n");
+			    sollyaPrintf("- ^\n");
+			    sollyaPrintf("- _x_\n");
 			    sollyaPrintf("- D\n");
 			    sollyaPrintf("- DD\n");
 			    sollyaPrintf("- DE\n");
@@ -4563,9 +4573,6 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- RZ\n");
 			    sollyaPrintf("- SG\n");
 			    sollyaPrintf("- TD\n");
-			    sollyaPrintf("- [\n");
-			    sollyaPrintf("- ]\n");
-			    sollyaPrintf("- ^\n");
 			    sollyaPrintf("- abs\n");
 			    sollyaPrintf("- absolute\n");
 			    sollyaPrintf("- accurateinfnorm\n");
@@ -4581,6 +4588,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- bashexecute\n");
 			    sollyaPrintf("- begin\n");
 			    sollyaPrintf("- binary\n");
+			    sollyaPrintf("- bind\n");
 			    sollyaPrintf("- boolean\n");
 			    sollyaPrintf("- by\n");
 			    sollyaPrintf("- canonical\n");
@@ -4588,6 +4596,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- chebyshevform\n");
 			    sollyaPrintf("- checkinfnorm\n");
 			    sollyaPrintf("- coeff\n");
+			    sollyaPrintf("- composepolynomials\n");
 			    sollyaPrintf("- constant\n");
 			    sollyaPrintf("- cos\n");
 			    sollyaPrintf("- cosh\n");
@@ -4743,12 +4752,6 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- worstcase\n");
 			    sollyaPrintf("- write\n");
 			    sollyaPrintf("- zerodenominators\n");
-			    sollyaPrintf("- {\n");
-			    sollyaPrintf("- [|\n");
-			    sollyaPrintf("- |]\n");
-			    sollyaPrintf("- ||\n");
-			    sollyaPrintf("- }\n");
-			    sollyaPrintf("- ~\n");
 			    sollyaPrintf("\n");
                           }
 ;
