@@ -111,13 +111,13 @@
    of size equal to the arity of the function where each entry (of C type void *) represents
    a value with a C type depending on the corresponding sollya type:
 
-   * constant:     the C type the void * is to be cast to is mpfr_t *
-   * function:     the C type the void * is to be cast to is sollya_obj_t
-   * object:       the C type the void * is to be cast to is sollya_obj_t
-   * range:        the C type the void * is to be cast to is mpfi_t *
-   * integer:      the C type the void * is to be cast to is int *
-   * string:       the C type the void * is to be cast to is char *
-   * boolean:      the C type the void * is to be cast to is int *
+   * constant:     the C type the void * is to be cast to mpfr_t *
+   * function:     the C type the void * is to be cast to sollya_obj_t
+   * object:       the C type the void * is to be cast to sollya_obj_t
+   * range:        the C type the void * is to be cast to mpfi_t *
+   * integer:      the C type the void * is to be cast to int *
+   * string:       the C type the void * is to be cast to char *
+   * boolean:      the C type the void * is to be cast to int *
    * list of type: the C type the void * is to be cast to a list of a
    type depending on the type of the list argument.
    For a list of

@@ -4,7 +4,7 @@
 \phantom{aaa}binds an external code to a \sollya procedure\\[0.2cm]
 \noindent Usage: 
 \begin{center}
-\textbf{externalproc}(\emph{identifier}, \emph{filename}, \emph{argumenttype} $->$ \emph{resulttype}) : (\textsf{identifier type}, \textsf{string}, \textsf{type type}, \textsf{type type}) $\rightarrow$ \textsf{void}\\
+\textbf{externalproc}(\emph{identifier}, \emph{filename}, \emph{argumenttype} \texttt{->} \emph{resulttype}) : (\textsf{identifier type}, \textsf{string}, \textsf{type type}, \textsf{type type}) $\rightarrow$ \textsf{void}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -15,90 +15,96 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item \textbf{externalproc} allows for binding the \sollya identifier
-   \emph{identifier} to an external code.  After this binding, when \sollya
-   encounters \emph{identifier} applied to a list of actual parameters, it
-   will evaluate these parameters and call the external code with these
-   parameters. If the external code indicated success, it will receive
-   the result produced by the external code, transform it to \sollya's
-   internal representation and return it.
+\item \textbf{externalproc} allows for binding the \sollya identifier \emph{identifier} to an
+   external code. After this binding, when \sollya encounters \emph{identifier}
+   applied to a list of actual parameters, it will evaluate these parameters and
+   call the external code with these parameters. If the external code indicated
+   success, it will receive the result produced by the external code, transform
+   it to \sollya's internal representation and return it.
     
-   In order to allow correct evaluation and typing of the data in
-   parameter and in result to be passed to and received from the external
-   code, \textbf{externalproc} has a third parameter \emph{argumenttype} $->$ \emph{resulttype}.
-   Both \emph{argumenttype} and \emph{resulttype} are one of \textbf{void}, \textbf{constant},
-   \textbf{function}, \textbf{range}, \textbf{integer}, \textbf{string}, \textbf{boolean}, \textbf{list of} \textbf{constant}, \textbf{list of} \textbf{function}, 
+   In order to allow correct evaluation and typing of the data in parameter and
+   in result to be passed to and received from the external code, \textbf{externalproc}
+   has a third parameter \emph{argumenttype} \texttt{->} \emph{resulttype}. Both \emph{argumenttype} and
+   \emph{resulttype} are one of \textbf{void}, \textbf{constant}, \textbf{function}, \textbf{object}, \textbf{range}, \textbf{integer},
+   \textbf{string}, \textbf{boolean}, \textbf{list of} \textbf{constant}, \textbf{list of} \textbf{function}, \textbf{list of} \textbf{object},
    \textbf{list of} \textbf{range}, \textbf{list of} \textbf{integer}, \textbf{list of} \textbf{string}, \textbf{list of} \textbf{boolean}.
     
-   If upon a usage of a procedure bound to an external procedure the type
-   of the actual parameters given or its number is not correct, \sollya
-   produces a type error. An external function not applied to arguments
-   represents itself and prints out with its argument and result types.
+   If upon a usage of a procedure bound to an external procedure the type of the
+   actual parameters given or its number is not correct, \sollya produces a type
+   error. An external function not applied to arguments represents itself and
+   prints out with its argument and result types.
     
-   The external function is supposed to return an integer indicating
-   success.  It returns its result depending on its \sollya result type
-   as follows. Here, the external procedure is assumed to be implemented
-   as a C function.
+   The external function is supposed to return an integer indicating success. It
+   returns its result depending on its \sollya result type as follows. Here, the
+   external procedure is assumed to be implemented as a C function.\begin{itemize}
+     \item If the \sollya result type is void, the C function has no pointer
+        argument for the result.
+     \item If the \sollya result type is \textbf{constant}, the first argument of the
+        C function is of C type \texttt{mpfr\_t *}, the result is returned by affecting
+        the MPFR variable.
+     \item If the \sollya result type is \textbf{function}, the first argument of the
+        C function is of C type \texttt{sollya\_obj\_t *}, the result is returned by
+        affecting the \texttt{sollya\_obj\_t} variable.
+     \item If the \sollya result type is \textbf{object}, the first argument of the
+        C function is of C type \texttt{sollya\_obj\_t *}, the result is returned by
+        affecting the \texttt{sollya\_obj\_t} variable.
+     \item If the \sollya result type is \textbf{range}, the first argument of the C function
+        is of C type \texttt{mpfi\_t *}, the result is returned by affecting the MPFI
+        variable.
+     \item If the \sollya result type is \textbf{integer}, the first argument of the
+        C function is of C type \texttt{int *}, the result is returned by affecting the
+        int variable.
+     \item If the \sollya result type is \textbf{string}, the first argument of the
+        C function is of C type \texttt{char **}, the result is returned by the \texttt{char *}
+        pointed with a new \texttt{char *}.
+     \item If the \sollya result type is \textbf{boolean}, the first argument of the
+        C function is of C type \texttt{int *}, the result is returned by affecting the
+        int variable with a boolean value.
+     \item If the \sollya result type is \textbf{list of} type, the first argument of the
+        C function is of a C type depending on the \sollya return type:\begin{itemize}
+          \item For a list of \textbf{constant}: \verb|sollya_constant_list_t *|
+          \item For a list of \textbf{function}: \verb|sollya_obj_list_t *|
+          \item For a list of \textbf{object}: \verb|sollya_obj_list_t *|
+          \item For a list of \textbf{range}: \verb|sollya_constant_list_t *|
+          \item For a list of \textbf{integer}: \verb|sollya_int_list_t *|
+          \item For a list of \textbf{string}: \verb|sollya_string_list_t *|
+          \item For a list of \textbf{boolean}: \verb|sollya_boolean_list_t *| \end{itemize}
+   \end{itemize}
+   The external procedure affects its possible pointer argument if and only if
+   it succeeds. This means, if the function returns an integer indicating
+   failure, it does not leak any memory to the encompassing environment.
     
-   If the \sollya result type is void, the C function has no pointer
-   argument for the result.  If the \sollya result type is \textbf{constant}, the
-   first argument of the C function is of C type \texttt{mpfr\_t *}, the result is
-   returned by affecting the MPFR variable.  If the \sollya result type
-   is \textbf{function}, the first argument of the C function is of C type \texttt{node **},
-   the result is returned by the \texttt{node *} pointed with a new \texttt{node *}.
-   If the \sollya result type is \textbf{range}, the first argument of the C
-   function is of C type \texttt{mpfi\_t *}, the result is returned by affecting
-   the interval-arithmetic variable.  If the \sollya result type is \textbf{integer}, the first
-   argument of the C function is of C type \texttt{int *}, the result is returned
-   by affecting the int variable.  If the \sollya result type is \textbf{string},
-   the first argument of the C function is of C type \texttt{char **}, the result
-   is returned by the \texttt{char *} pointed with a new \texttt{char *}.  If the \sollya
-   result type is \textbf{boolean}, the first argument of the C function is of C
-   type \texttt{int *}, the result is returned by affecting the int variable with
-   a boolean value.  If the \sollya result type is \textbf{list of} type, the
-   first argument of the C function is of C type \texttt{chain **}, the result is
-   returned by the \texttt{chain *} pointed with a new \texttt{chain *}.  This chain
-   contains for \sollya type \textbf{constant} pointers \texttt{mpfr\_t *} to new MPFR
-   variables, for \sollya type \textbf{function} pointers \texttt{node *} to new nodes, for
-   \sollya type \textbf{range} pointers \texttt{mpfi\_t *}  to new interval-arithmetic variables, for
-   \sollya type \textbf{integer} pointers \texttt{int *} to new int variables for \sollya
-   type \textbf{string} pointers \texttt{char *} to new \texttt{char *} variables and for \sollya
-   type \textbf{boolean} pointers \texttt{int *} to new int variables representing boolean
-   values.
-    	       
-   The external procedure affects its possible pointer argument if and
-   only if it succeeds.  This means, if the function returns an integer
-   indicating failure, it does not leak any memory to the encompassing
-   environment.
+   The external procedure receives its arguments as follows: If the \sollya
+   argument type is \textbf{void}, no argument array is given. Otherwise the C function
+   receives a C \texttt{void **} argument representing an array of size equal to the
+   arity of the function where each entry (of C type \texttt{void *}) represents a value
+   with a C type depending on the corresponding \sollya type.\begin{itemize}
+     \item If the \sollya type is \textbf{constant}, the \texttt{void *} is to be cast to \texttt{mpfr\_t *}.
+     \item If the \sollya type is \textbf{function}, the \texttt{void *} is to be cast to
+        \texttt{sollya\_obj\_t}.
+     \item If the \sollya type is \textbf{object}, the \texttt{void *} is to be cast to \texttt{sollya\_obj\_t}.
+     \item If the \sollya type is \textbf{range}, the \texttt{void *} is to be cast to \texttt{mpfi\_t *}.
+     \item If the \sollya type is \textbf{integer}, the \texttt{void *} is to be cast to \texttt{int *}.
+     \item If the \sollya type is \textbf{string}, the \texttt{void *} is to be cast to \texttt{char *}.
+     \item If the \sollya type is \textbf{boolean}, the \texttt{void *} is to be cast to \texttt{int *}.
+     \item If the \sollya type is \textbf{list of} type, the \texttt{void *} is to be cast to a list
+        of a type depending on the type of the list argument:\begin{itemize}
+          \item For a list of \textbf{constant}: \verb|sollya_constant_list_t|
+          \item For a list of \textbf{function}: \verb|sollya_obj_list_t|
+          \item For a list of \textbf{object}: \verb|sollya_obj_list_t|
+          \item For a list of \textbf{range}: \verb|sollya_interval_list_t|
+          \item For a list of \textbf{integer}: \verb|sollya_int_list_t|
+          \item For a list of \textbf{string}: \verb|sollya_string_list_t|
+          \item For a list of \textbf{boolean}: \verb|sollya_boolean_list_t| \end{itemize}
+   \end{itemize}
+   The external procedure is not supposed to alter the memory pointed by its
+   array argument \texttt{void **}.
     
-   The external procedure receives its arguments as follows: If the
-   \sollya argument type is \textbf{void}, no argument array is given.  Otherwise
-   the C function receives a C \texttt{void **} argument representing an array of
-   size equal to the arity of the function where each entry (of C type
-   \texttt{void *}) represents a value with a C type depending on the
-   corresponding \sollya type. If the \sollya type is \textbf{constant}, the C
-   type the \texttt{void *} is to be casted to is \texttt{mpfr\_t *}.  If the \sollya type
-   is \textbf{function}, the C type the \texttt{void *} is to be casted to is \texttt{node *}.  If
-   the \sollya type is \textbf{range}, the C type the \texttt{void *} is to be casted to is
-   \texttt{mpfi\_t *}.  If the \sollya type is \textbf{integer}, the C type the \texttt{void *} is to
-   be casted to is \texttt{int *}.  If the \sollya type is \textbf{string}, the C type the
-   \texttt{void *} is to be casted to is \texttt{char *}.  If the \sollya type is \textbf{boolean},
-   the C type the \texttt{void *} is to be casted to is \texttt{int *}.  If the \sollya
-   type is \textbf{list of} type, the C type the \texttt{void *} is to be casted to is
-   \texttt{chain *}.  Here depending on type, the values in the chain are to be
-   casted to \texttt{mpfr\_t *}  for \sollya type \textbf{constant}, \texttt{node *} for \sollya type
-   \textbf{function}, \texttt{mpfi\_t *} for \sollya type \textbf{range}, \texttt{int *} for \sollya type
-   \textbf{integer}, \texttt{char *} for \sollya type \textbf{string} and \texttt{int *} for \sollya type
-   \textbf{boolean}.
+   In both directions (argument and result values), empty lists are represented
+   by \texttt{NULL} pointers.
     
-   The external procedure is not supposed to alter the memory pointed by
-   its array argument \texttt{void **}.
-    
-   In both directions (argument and result values), empty lists are
-   represented by \texttt{chain * NULL} pointers.
-    
-   In contrast to internal procedures, externally bounded procedures can
-   be considered to be objects inside \sollya that can be assigned to other
+   In contrast to internal procedures, externally bounded procedures can be
+   considered to be objects inside \sollya that can be assigned to other
    variables, stored in list etc.
 \end{itemize}
 \noindent Example 1: 
