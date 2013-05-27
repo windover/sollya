@@ -1,3 +1,69 @@
+2013-05-27 14:08  clauter
+
+	* configure.ac, doc/round.shlp, doc/round.tex, doc/sollya.pdf,
+	  doc/sollya.tex, doc/www/round.php, doc/www/sollya.php, help.h:
+	  Added a section in documentation for round.
+
+2013-05-27 13:06  schevill
+
+	* doc/chebyshevform.shlp, doc/chebyshevform.tex, doc/sollya.pdf,
+	  doc/www/chebyshevform.php, help.h: * Updated doc of chebyshevform
+
+2013-05-27 13:04  clauter
+
+	* doc/externalproc.shlp, doc/externalproc.tex, doc/sollya.pdf,
+	  doc/www/externalproc.php, externalproc.c, help.h: Updated
+	  externalproc documentation.
+
+2013-05-27 12:47  schevill
+
+	* doc/externalproc.shlp, doc/externalproc.tex, doc/publishwww.sh,
+	  doc/sollya.pdf, doc/www/externalproc.php, externalproc.c, help.h:
+	  * doc of externalproc should be up-to-date.
+
+2013-05-27 10:13  clauter
+
+	* doc/sollya.pdf: Recompiled the documentation.
+
+2013-05-27 10:12  clauter
+
+	* doc/CommandsAndFunctions.tex, doc/boolean.shlp, doc/boolean.tex,
+	  doc/constant.shlp, doc/constant.tex, doc/externalproc.shlp,
+	  doc/externalproc.tex, doc/function.shlp, doc/function.tex,
+	  doc/integer.shlp, doc/integer.tex, doc/keywords.def,
+	  doc/listof.shlp, doc/listof.tex, doc/object.shlp, doc/object.tex,
+	  doc/range.shlp, doc/string.shlp, doc/string.tex,
+	  doc/taylorform.shlp, doc/taylorform.tex,
+	  doc/www/ListOfCommands.php, doc/www/boolean.php,
+	  doc/www/constant.php, doc/www/function.php, doc/www/integer.php,
+	  doc/www/listof.php, doc/www/object.php, doc/www/string.php,
+	  doc/www/taylorform.php, help.h: Added documentation for object
+	  and added some SEEALSOs
+
+2013-05-27 09:53  clauter
+
+	* parser.y: Added some entries to help help list.
+
+2013-05-24 16:28  clauter
+
+	* doc/chebyshevform.shlp, doc/chebyshevform.tex,
+	  doc/fullparentheses.shlp, doc/fullparentheses.tex,
+	  doc/implementconstant.shlp, doc/implementconstant.tex,
+	  doc/sollya.pdf, doc/www/chebyshevform.php,
+	  doc/www/fullparentheses.php, doc/www/implementconstant.php,
+	  help.h, sollya-library-wrappers.c, sollya.h: Removed a doubled
+	  function name in sollya.h and implementation, added library
+	  function names for chebyshevform, fullparentheses and
+	  implementconstant.
+
+2013-05-24 15:26  clauter
+
+	* parser.y: Corrected help help.
+
+2013-05-24 15:12  clauter
+
+	* ChangeLog: New Changelog file.
+
 2013-05-24 14:52  clauter
 
 	* doc/chebyshevform.shlp, doc/chebyshevform.tex, doc/sollya.pdf,
