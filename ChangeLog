@@ -1,3 +1,29 @@
+2013-05-27 15:18  clauter
+
+	* /trunk/ChangeLog, /trunk/doc/bashevaluate.tex,
+	  /trunk/doc/bashexecute.tex, /trunk/doc/range.tex,
+	  /trunk/doc/remez.tex, /trunk/doc/sollya.pdf, /trunk/doc/time.tex,
+	  /trunk/doc/timing.tex, /trunk/doc/www/accurateinfnorm.php,
+	  /trunk/doc/www/bashevaluate.php, /trunk/doc/www/bashexecute.php,
+	  /trunk/doc/www/bind.php, /trunk/doc/www/boolean.php,
+	  /trunk/doc/www/constant.php, /trunk/doc/www/d.php,
+	  /trunk/doc/www/dd.php, /trunk/doc/www/de.php,
+	  /trunk/doc/www/execute.php, /trunk/doc/www/externalproc.php,
+	  /trunk/doc/www/hp.php, /trunk/doc/www/integer.php,
+	  /trunk/doc/www/isbound.php, /trunk/doc/www/isevaluable.php,
+	  /trunk/doc/www/listof.php, /trunk/doc/www/nop.php,
+	  /trunk/doc/www/object.php, /trunk/doc/www/print.php,
+	  /trunk/doc/www/proc.php, /trunk/doc/www/procedure.php,
+	  /trunk/doc/www/qd.php, /trunk/doc/www/quit.php,
+	  /trunk/doc/www/range.php, /trunk/doc/www/readfile.php,
+	  /trunk/doc/www/remez.php, /trunk/doc/www/restart.php,
+	  /trunk/doc/www/return.php, /trunk/doc/www/sg.php,
+	  /trunk/doc/www/string.php, /trunk/doc/www/td.php,
+	  /trunk/doc/www/time.php, /trunk/doc/www/timing.php,
+	  /trunk/doc/www/var.php, /trunk/doc/www/write.php, /trunk/help.h:
+	  Recompiled the whole documentation, published its html version
+	  and updated the Changelog file.
+
 2013-05-27 14:26  schevill
 
 	* /dev/Memo-release.txt, /trunk/doc/shlp2html.sh: * New MemoRelease
