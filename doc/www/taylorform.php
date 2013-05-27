@@ -161,5 +161,5 @@ The same difference exists between commands <?php linkTo("command","diff","diff"
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","diff","diff");?>, <?php linkTo("command","autodiff","autodiff");?>, <?php linkTo("command","taylor","taylor");?>, <?php linkTo("command","remez","remez");?> 
+<span class="category">See also: </span><?php linkTo("command","diff","diff");?>, <?php linkTo("command","autodiff","autodiff");?>, <?php linkTo("command","taylor","taylor");?>, <?php linkTo("command","remez","remez");?>, <?php linkTo("command","chebyshevform","chebyshevform");?> 
 </div> 

@@ -24,5 +24,5 @@ particular, they cannot be assigned to variables.
 <div class="divExamples"> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","externalproc","externalproc");?>, <?php linkTo("command","boolean","boolean");?>, <?php linkTo("command","function","function");?>, <?php linkTo("command","integer","integer");?>, <?php linkTo("command","listof","list of");?>, <?php linkTo("command","range","range");?>, <?php linkTo("command","string","string");?> 
+<span class="category">See also: </span><?php linkTo("command","externalproc","externalproc");?>, <?php linkTo("command","boolean","boolean");?>, <?php linkTo("command","function","function");?>, <?php linkTo("command","integer","integer");?>, <?php linkTo("command","listof","list of");?>, <?php linkTo("command","range","range");?>, <?php linkTo("command","string","string");?>, <?php linkTo("command","object","object");?> 
 </div> 

@@ -1,10 +1,10 @@
-#NAME $INTEGER
-#QUICK_DESCRIPTION keyword representing a machine integer type 
+#NAME $OBJECT
+#QUICK_DESCRIPTION keyword representing a $SOLLYA object type 
 #CALLING $COMMAND
 #TYPE $TYPE_TYPE
 
 #DESCRIPTION 
-$COMMAND represents the machine integer type for declarations
+$COMMAND represents the $SOLLYA object type for declarations
 of external procedures $EXTERNALPROC.
 §§ § §§
 Remark that in contrast to other indicators, type indicators like
@@ -18,4 +18,4 @@ particular, they cannot be assigned to variables.
 #SEEALSO $LISTOF
 #SEEALSO $RANGE
 #SEEALSO $STRING
-#SEEALSO $OBJECT
+#SEEALSO $INTEGER

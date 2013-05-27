@@ -1,5 +1,6 @@
 <?php
 $listOfCommands=array(
+"","",
 "abs","abs",
 "absolute","absolute",
 "accurateinfnorm","accurateinfnorm",
@@ -113,6 +114,7 @@ $listOfCommands=array(
 "not","!",
 "numberroots","numberroots",
 "numerator","numerator",
+"object","object",
 "off","off",
 "on","on",
 "or","||",

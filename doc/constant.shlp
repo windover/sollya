@@ -18,4 +18,4 @@ particular, they cannot be assigned to variables.
 #SEEALSO $LISTOF
 #SEEALSO $RANGE
 #SEEALSO $STRING
-
+#SEEALSO $OBJECT

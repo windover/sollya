@@ -123,5 +123,5 @@ particular, they cannot be assigned to variables.
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","proc","proc");?>, <?php linkTo("command","library","library");?>, <?php linkTo("command","procedure","procedure");?>, <?php linkTo("command","externalproc","externalproc");?>, <?php linkTo("command","boolean","boolean");?>, <?php linkTo("command","constant","constant");?>, <?php linkTo("command","integer","integer");?>, <?php linkTo("command","listof","list of");?>, <?php linkTo("command","range","range");?>, <?php linkTo("command","string","string");?> 
+<span class="category">See also: </span><?php linkTo("command","proc","proc");?>, <?php linkTo("command","library","library");?>, <?php linkTo("command","procedure","procedure");?>, <?php linkTo("command","externalproc","externalproc");?>, <?php linkTo("command","boolean","boolean");?>, <?php linkTo("command","constant","constant");?>, <?php linkTo("command","integer","integer");?>, <?php linkTo("command","listof","list of");?>, <?php linkTo("command","range","range");?>, <?php linkTo("command","string","string");?>, <?php linkTo("command","object","object");?> 
 </div> 
