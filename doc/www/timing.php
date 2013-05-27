@@ -42,9 +42,9 @@ command is measured and displayed (for <?php linkTo("command","verbosity","verbo
 &nbsp;&nbsp;&nbsp;Information: Remez: computing the quality of approximation spent 10 ms<br> 
 &nbsp;&nbsp;&nbsp;Information: Remez: computing the matrix spent 1 ms<br> 
 &nbsp;&nbsp;&nbsp;Information: Remez: computing the quality of approximation spent 10 ms<br> 
-&nbsp;&nbsp;&nbsp;Information: computing a minimax approximation spent 181 ms<br> 
-&nbsp;&nbsp;&nbsp;Information: assignment spent 193 ms<br> 
-&nbsp;&nbsp;&nbsp;Information: full execution of the last parse chunk spent 213 ms<br> 
+&nbsp;&nbsp;&nbsp;Information: computing a minimax approximation spent 186 ms<br> 
+&nbsp;&nbsp;&nbsp;Information: assignment spent 198 ms<br> 
+&nbsp;&nbsp;&nbsp;Information: full execution of the last parse chunk spent 219 ms<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

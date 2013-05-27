@@ -4,8 +4,6 @@
 <span class="smallDescription">reads the content of a file into a string variable 
 </span> 
 </div> 
-<div class="divLibraryName"> 
-</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","readfile","readfile");?>(<span class="arg">filename</span>) : <span class="type">string</span> -&gt; <span class="type">string</span></span> 

@@ -4,8 +4,6 @@
 <span class="smallDescription">binds an external code to a Sollya procedure 
 </span> 
 </div> 
-<div class="divLibraryName"> 
-</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","externalproc","externalproc");?>(<span class="arg">identifier</span>, <span class="arg">filename</span>, <span class="arg">argumenttype</span> -&gt; <span class="arg">resulttype</span>) : (<span class="type">identifier type</span>, <span class="type">string</span>, <span class="type">type type</span>, <span class="type">type type</span>) -&gt; <span class="type">void</span></span> 

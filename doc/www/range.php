@@ -4,8 +4,6 @@
 <span class="smallDescription">keyword representing a <span class="type">range</span> type  
 </span> 
 </div> 
-<div class="divLibraryName"> 
-</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","range","range");?> : <span class="type">type type</span></span> 
@@ -24,5 +22,5 @@ particular, they cannot be assigned to variables.
 <div class="divExamples"> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","externalproc","externalproc");?>, <?php linkTo("command","boolean","boolean");?>, <?php linkTo("command","constant","constant");?>, <?php linkTo("command","function","function");?>, <?php linkTo("command","integer","integer");?>, <?php linkTo("command","listof","list of");?>, <?php linkTo("command","string","string");?> 
+<span class="category">See also: </span><?php linkTo("command","externalproc","externalproc");?>, <?php linkTo("command","boolean","boolean");?>, <?php linkTo("command","constant","constant");?>, <?php linkTo("command","function","function");?>, <?php linkTo("command","integer","integer");?>, <?php linkTo("command","listof","list of");?>, <?php linkTo("command","string","string");?>, <?php linkTo("command","object","object");?> 
 </div> 

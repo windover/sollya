@@ -4,8 +4,6 @@
 <span class="smallDescription">indicates an expression to be returned in a procedure 
 </span> 
 </div> 
-<div class="divLibraryName"> 
-</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","return","return");?> <span class="arg">expression</span> : <span class="type">void</span></span> 

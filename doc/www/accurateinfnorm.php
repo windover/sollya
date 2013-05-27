@@ -4,8 +4,6 @@
 <span class="smallDescription">computes a faithful rounding of the infinity norm of a function  
 </span> 
 </div> 
-<div class="divLibraryName"> 
-</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","accurateinfnorm","accurateinfnorm");?>(<span class="arg">function</span>,<span class="arg">range</span>,<span class="arg">constant</span>) : (<span class="type">function</span>, <span class="type">range</span>, <span class="type">constant</span>) -&gt; <span class="type">constant</span></span> 

@@ -4,8 +4,6 @@
 <span class="smallDescription">keyword representing a machine integer type  
 </span> 
 </div> 
-<div class="divLibraryName"> 
-</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","integer","integer");?> : <span class="type">type type</span></span> 

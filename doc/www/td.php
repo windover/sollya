@@ -4,8 +4,6 @@
 <span class="smallDescription">short form for <?php linkTo("command","tripledouble","tripledouble");?> 
 </span> 
 </div> 
-<div class="divLibraryName"> 
-</div> 
 <div class="divExamples"> 
 </div> 
 <div class="divSeeAlso"> 

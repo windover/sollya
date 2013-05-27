@@ -4,8 +4,6 @@
 <span class="smallDescription">tests whether a function can be evaluated at a point  
 </span> 
 </div> 
-<div class="divLibraryName"> 
-</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","isevaluable","isevaluable");?>(<span class="arg">function</span>, <span class="arg">constant</span>) : (<span class="type">function</span>, <span class="type">constant</span>) -&gt; <span class="type">boolean</span></span> 

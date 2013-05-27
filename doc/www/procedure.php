@@ -4,8 +4,6 @@
 <span class="smallDescription">defines and assigns a Sollya procedure 
 </span> 
 </div> 
-<div class="divLibraryName"> 
-</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","procedure","procedure");?> <span class="arg">identifier</span>(<span class="arg">formal parameter1</span>, <span class="arg">formal parameter2</span>,..., <span class="arg">formal parameter n</span>) { <span class="arg">procedure body</span> } : <span class="type">void</span> -&gt; <span class="type">void</span></span> 

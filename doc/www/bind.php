@@ -4,8 +4,6 @@
 <span class="smallDescription">partially applies a procedure to an argument, returning a procedure with one argument less 
 </span> 
 </div> 
-<div class="divLibraryName"> 
-</div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
 <span class="commandline"><?php linkTo("command","bind","bind");?>(<span class="arg">proc</span>, <span class="arg">ident</span>, <span class="arg">obj</span>) : (<span class="type">procedure</span>, <span class="type">identifier type</span>, <span class="type">any type</span>) -&gt; <span class="type">procedure</span></span> 
