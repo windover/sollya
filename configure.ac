@@ -479,6 +479,17 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_CHECK_FUNCS([gettimeofday memmove memset strchr strerror strrchr strtol backtrace dup2 strstr dladdr])
 
+AC_MSG_CHECKING([if the Dl_info type is usable])
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[#define _GNU_SOURCE 1]]
+                               [[#define _DARWIN_C_SOURCE 1]]
+                               [[#include <dlfcn.h>]]
+			       [[#include <stdlib.h>]], 
+                               [[  Dl_info myInfo; if (dladdr(main, &myInfo) != 0) { return 0; } exit(1); ]])],
+              [AC_MSG_RESULT(yes)
+               AC_DEFINE([HAVE_DL_INFO_TYPE],[1],[Enabling Dl_info type usage])
+              ],
+              [AC_MSG_RESULT(no)])
+
 if test "x${FPLLLJUSTHEADER}y" == "xyesy" ; then
 AM_LDFLAGS="$AM_LDFLAGS -lstdc++"
 fi

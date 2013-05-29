@@ -55,12 +55,22 @@
 
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#if (defined(HAVE_DLADDR) && (HAVE_DLADDR) && defined(HAVE_DL_INFO_TYPE) && (HAVE_DL_INFO_TYPE))
+#define _GNU_SOURCE 1
+#define _DARWIN_C_SOURCE 1
+#endif
+
+#include <dlfcn.h>
+
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
-#include <dlfcn.h>
 #include <mpfr.h>
 #include "mpfi-compat.h"
 #include "expression.h"
@@ -72,20 +82,6 @@
 #ifndef RTLD_LOCAL
 #define RTLD_LOCAL 0
 #endif
-
-
-#if (defined(HAVE_DLADDR) && (HAVE_DLADDR))
-typedef struct {
-  const char *dli_fname;
-  void       *dli_fbase;
-  const char *dli_sname;
-  void       *dli_saddr;
-} Dl_info;
-
-int dladdr(void *, Dl_info *);
-
-#endif
-
 
 #define LIBRARYFUNCTION_CASE 0
 #define LIBRARYCONSTANT_CASE 1
@@ -321,7 +317,7 @@ void copyIdentifierSymbols(char *ptr, const char *src) {
 
 char *getBaseFunctionName(void *func, const char *base) {
   char *myFuncName, *funcName;
-#if (defined(HAVE_DLADDR) && (HAVE_DLADDR))
+#if (defined(HAVE_DLADDR) && (HAVE_DLADDR) && defined(HAVE_DL_INFO_TYPE) && (HAVE_DL_INFO_TYPE))
   int errorOccurred;
   Dl_info myInfo;
   errorOccurred = 0;
