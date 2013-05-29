@@ -13,7 +13,7 @@ installed:
 - g++
 - gnuplot
 - gmp
-- mpfr 2.2.0 or later
+- mpfr
 - mpfi
 - libxml2-dev
 - fplll (available at url http://perso.ens-lyon.fr/damien.stehle/english.html#software)
