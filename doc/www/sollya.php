@@ -53,7 +53,7 @@ The <span class="sollya">Sollya</span> tool is Copyright &copy;&nbsp;2006-2013 b
 All rights reserved.
 <p style="font-size:small;">
 The <span class="sollya">Sollya</span> tool is open software. It is distributed and can be used,
-modified and redistributed under the terms of the CeCILL-C licence
+modified and redistributed under the terms of the CeCILL-C license
 available at <a href="http://www.cecill.info/">http://www.cecill.info/</a> and reproduced in the
 <code>COPYING</code> file of the distribution. The distribution contains
 parts of other libraries as a support for but not integral part of
