@@ -615,6 +615,8 @@ void freeFunctionLibraries() {
   chain *currLibList, *currFunList, *prevFunList, *prevLibList;
   libraryFunction *currFunct;
   libraryHandle *currLibHandle;
+  int (*myFunction)(void);
+  int res;
 
   currFunList = globalLibraryFunctions;
   while (currFunList != NULL) {
@@ -629,6 +631,14 @@ void freeFunctionLibraries() {
   currLibList = openedFunctionLibraries;
   while (currLibList != NULL) {
     currLibHandle = (libraryHandle *) currLibList->value;
+    dlerror();
+    myFunction = (int (*)(void)) dlsym(currLibHandle->libraryDescriptor, "sollya_external_lib_close");
+    if (dlerror() == NULL) {
+      res = myFunction();
+      if (res) {
+	printMessage(1,SOLLYA_MSG_LIBRARY_CLOSER_ERROR,"Warning: while closing libary \"%s\", the function \"sollya_external_lib_close\" was found and called but it signaled the error %d\n",currLibHandle->libraryName,res);
+      }
+    }
     currFunList = currLibHandle->functionList;
     while (currFunList != NULL) {
       currFunct = (libraryFunction *) currFunList->value;
@@ -796,6 +806,8 @@ void freeConstantLibraries() {
   chain *currLibList, *currFunList, *prevFunList, *prevLibList;
   libraryFunction *currFunct;
   libraryHandle *currLibHandle;
+  int res;
+  int (*myFunction)(void);
 
   currFunList = globalLibraryConstants;
   while (currFunList != NULL) {
@@ -810,6 +822,14 @@ void freeConstantLibraries() {
   currLibList = openedConstantLibraries;
   while (currLibList != NULL) {
     currLibHandle = (libraryHandle *) currLibList->value;
+    dlerror();
+    myFunction = (int (*)(void)) dlsym(currLibHandle->libraryDescriptor, "sollya_external_lib_close");
+    if (dlerror() == NULL) {
+      res = myFunction();
+      if (res) {
+	printMessage(1,SOLLYA_MSG_LIBRARY_CLOSER_ERROR,"Warning: while closing libary \"%s\", the function \"sollya_external_lib_close\" was found and called but it signaled the error %d\n",currLibHandle->libraryName,res);
+      }
+    }
     currFunList = currLibHandle->functionList;
     while (currFunList != NULL) {
       currFunct = (libraryFunction *) currFunList->value;
@@ -896,10 +916,20 @@ void freeProcLibraries() {
   chain *currLibList, *currProcList, *prevProcList, *prevLibList;
   libraryProcedure *currProc;
   libraryHandle *currLibHandle;
+  int res;
+  int (*myFunction)(void);
 
   currLibList = openedProcLibraries;
   while (currLibList != NULL) {
     currLibHandle = (libraryHandle *) currLibList->value;
+    dlerror();
+    myFunction = (int (*)(void)) dlsym(currLibHandle->libraryDescriptor, "sollya_external_lib_close");
+    if (dlerror() == NULL) {
+      res = myFunction();
+      if (res) {
+	printMessage(1,SOLLYA_MSG_LIBRARY_CLOSER_ERROR,"Warning: while closing libary \"%s\", the function \"sollya_external_lib_close\" was found and called but it signaled the error %d\n",currLibHandle->libraryName,res);
+      }
+    }
     currProcList = currLibHandle->functionList;
     while (currProcList != NULL) {
       currProc = (libraryProcedure *) currProcList->value;
