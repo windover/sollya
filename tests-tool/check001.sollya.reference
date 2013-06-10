@@ -260,3 +260,7 @@ The tool has been restarted.
 =============== Test number 22 ================
 Warning: the given expression is not a constant but an expression to evaluate. A faithful evaluation to 170 bits will be used.
 -165
+The tool has been restarted.
+=============== Test number 23 ================
+0
+0

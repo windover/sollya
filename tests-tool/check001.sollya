@@ -325,3 +325,11 @@ roundingwarnings = on!;
 d = [sin(pi/6)*(1-1b-40)];
 log2(sup(d)-inf(d));
 
+
+/*********************************************************************************/
+restart;
+print("=============== Test number 23 ================");
+/* Non-regression test for revision  */
+(x * 1 - 1 * x * 1)/x^1;
+d=degree((x * 1 - 1 * x * 1)/x^1);
+d;
