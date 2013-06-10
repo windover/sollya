@@ -22452,7 +22452,7 @@ node *evaluateThingInnerst(node *tree) {
     if (isPureTree(copy->child1)) {
       if (timingString != NULL) pushTimeCounter();
       mpz_init(tempMpz);
-      getDegreeMpz(tempMpz, copy->child1);
+      getDegreeMpzVerified(tempMpz, copy->child1);
       tempNode = makeConstantMpz(tempMpz);
       mpz_clear(tempMpz);
       freeThing(copy);

@@ -8725,6 +8725,34 @@ int getDegreeMpz(mpz_t res, node *tree) {
   return getDegreeUnsafeMpz(res, tree);
 }
 
+int getDegreeMpzVerified(mpz_t res, node *tree) {
+  int okay, k, gottaBreak;
+  node *tempNode;
+
+  okay = getDegreeMpz(res, tree);
+  
+  if (okay) {
+    k = mpz_get_si(res);
+    if ((mpz_cmp_si(res, k) == 0) && (k > 0)) {
+      while (k > 0) {
+	tempNode = getIthCoefficient(tree, k);
+	gottaBreak = 1;
+	if (accessThruMemRef(tempNode)->nodeType == CONSTANT) {
+	  if (mpfr_zero_p(*(accessThruMemRef(tempNode)->value))) {
+	    gottaBreak = 0;
+	  }
+	}
+	free_memory(tempNode);
+	if (gottaBreak) break;
+	k--;
+	mpz_set_si(res, k);
+      }
+    }
+  }
+
+  return okay;
+}
+
 int isPolynomialExtraSafe(node *tree) {
   return (isPolynomial(tree) && (getDegreeSilent(tree) >= 0));
 }
@@ -10740,10 +10768,11 @@ node* hornerPolynomialUnsafe(node *tree) {
 
   while ((degree >= 0) && (monomials[degree] == NULL)) degree--;
   if ((degree < 0) || (monomials[degree] == NULL)) {
-    sollyaFprintf(stderr,
-                  "Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
-    exit(1);
-    return NULL;
+    for (i=0;i<=degree;i++) {
+      if (monomials[i] != NULL) free_memory(monomials[i]);
+    }
+    safeFree(monomials);
+    return makeConstantInt(0);
   }
 
   copy = copyTree(monomials[degree]);
@@ -10840,10 +10869,11 @@ node* dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha) {
 
   while ((degree >= 0) && (monomials[degree] == NULL)) degree--;
   if ((degree < 0) || (monomials[degree] == NULL)) {
-    sollyaFprintf(stderr,
-                  "Error: hornerPolynomialUnsafe: an error occurred. The coefficient of a monomial with the polynomial's degree exponent is zero.\n");
-    exit(1);
-    return NULL;
+    for (i=0;i<=degree;i++) {
+      if (monomials[i] != NULL) free_memory(monomials[i]);
+    }
+    safeFree(monomials);
+    return makeConstantInt(0);
   }
 
   copy = copyTree(monomials[degree]);
@@ -12688,7 +12718,8 @@ node *makeMulSimplified(node *a, node *b) {
 int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
   node *resLeft, *resRight;
   mpfr_t iAsMpfr, tAsMpfr;
-  int t;
+  mpz_t tMpz, kMpz; 
+  int t, k;
 
   resLeft = NULL;
   resRight = NULL;
@@ -12817,6 +12848,33 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
       }
       mpfr_clear(tAsMpfr);
     }
+    /* p = q * r, degree(q) = t, degree(r) = k, t * k = i */
+    mpz_init(tMpz);
+    if (getDegreeMpz(tMpz, poly->child1)) {
+      t = mpz_get_si(tMpz);
+      if (mpz_cmp_si(tMpz, t) == 0) {
+	mpz_init(kMpz);
+	if (getDegreeMpz(kMpz, poly->child2)) {
+	  k = mpz_get_si(kMpz);
+	  if (mpz_cmp_si(kMpz, k) == 0) {
+	    if ((t >= 0) && (t <= i) && 
+		(k >= 0) && (k <= i) &&
+		((((k == 0) || (t == 0)) && (i == 0)) || (t == i / k)) &&
+		(t * k == i)) {
+	      if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, t) &&
+		  tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, k)) {
+		*res = makeMulSimplified(resLeft, resRight);
+		resLeft = NULL;
+		resRight = NULL;
+		return 1;
+	      }
+	    }
+	  }
+	}
+	mpz_clear(kMpz);
+      }
+    }
+    mpz_clear(tMpz);
     /* Continue with other optimized ways to get the i-th coefficient
        of a sparse polynomial that is a product here.
     */
@@ -12850,6 +12908,25 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
 	}
       }
       mpfr_clear(iAsMpfr);
+    }
+    /* p = q^t with degree(q) = k and k * t = i */
+    if ((accessThruMemRef(poly->child2)->nodeType == CONSTANT) &&
+	mpfr_number_p(*(accessThruMemRef(poly->child2)->value))) {
+      t = mpfr_get_si(*(accessThruMemRef(poly->child2)->value),GMP_RNDN);
+      mpfr_init2(tAsMpfr, 8 * sizeof(int) + 10);
+      mpfr_set_si(tAsMpfr, t, GMP_RNDN); /* exact */
+      if (mpfr_cmp(*(accessThruMemRef(poly->child2)->value), tAsMpfr) == 0) {
+	if ((t != 0) && (i % t == 0)) {
+	  k = getDegreeSilent(poly->child1);
+	  if ((k > 0) && (k <= t) && (k * t == i)) {
+	    if (tryGetIthCoefficientSparseUnsafe(res, poly->child1, k)) {
+	      mpfr_clear(tAsMpfr);
+	      return 1;
+	    }
+	  }
+	}
+      } 
+      mpfr_clear(tAsMpfr);
     }
     /* Continue with other optimized ways to get the i-th coefficient
        of a sparse polynomial that is a power here.

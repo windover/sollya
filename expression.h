@@ -213,6 +213,7 @@ node* horner(node *tree);
 int getDegree(node *tree);
 int getDegreeSilent(node *tree);
 int getDegreeMpz(mpz_t res, node *tree);
+int getDegreeMpzVerified(mpz_t res, node *tree);
 int isPolynomialExtraSafe(node *tree);
 node* expand(node *tree);
 node* simplifyTreeErrorfree(node *tree);
