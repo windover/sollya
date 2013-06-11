@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2006-2012 by
+  Copyright 2006-2013 by
 
   Laboratoire de l'Informatique du Parallelisme,
   UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668
@@ -58,6 +58,13 @@
 #include "expansion.h"
 #include <sys/time.h>
 #include <time.h>
+#include <stdint.h>
+
+/* A constant always being false */
+#define __ALWAYS_FALSE 0
+
+
+/* Some declarations */
 
 double sollya_mpfr_get_d(mpfr_t, mp_rnd_t);
 
@@ -231,6 +238,34 @@ void f(mpfr_t y, mpfr_t xMpfr) {
 
 }
 
+#ifdef ASSEMBLY_TIMING
+
+#warning Assembly timing sequence used
+
+#define READ_TIME_COUNTER(time)                        \
+  __asm__ __volatile__(                                \
+          "xorl %%eax,%%eax\n\t"                       \
+          "cpuid\n\t"                                  \
+          "rdtsc\n\t"                                  \
+          "movl %%eax,(%0)\n\t"                        \
+          "movl %%edx,4(%0)\n\t"                       \
+          "xorl %%eax,%%eax\n\t"                       \
+          "cpuid\n\t"                                  \
+          : /* nothing */                              \
+          : "S"((time))                                \
+          : "eax", "ebx", "ecx", "edx", "memory")
+
+#else
+
+#define READ_TIME_COUNTER(time) do {                   \
+  struct timeval t;                                    \
+  gettimeofday(&t,NULL);                               \
+  *time = (((uint64_t) t.tv_sec) *                     \
+	   ((uint64_t) 1000000)) +                     \
+    ((uint64_t) t.tv_usec);                            \
+} while ( __ALWAYS_FALSE );
+
+#endif
 
 int timefunc(int *timing, void **args) {
   unsigned short oldcw, cw;
@@ -256,10 +291,10 @@ int timefunc(int *timing, void **args) {
   mpfr_t xMpfr;
   mpfr_t a, b;
   mpfr_t h;
-  int steps, iterations;
+  int steps, iterations, actualSteps;
   int i;
-  struct timeval start, end;
-  int usecs;
+  uint64_t start, end;
+  uint64_t usecs;
   double overalltime;
 
   mpfr_init2(xMpfr, 161);
@@ -278,6 +313,7 @@ int timefunc(int *timing, void **args) {
   mpfr_div_si(h, h, steps, GMP_RNDU);
 
   overalltime = 0;
+  actualSteps = 0;
 
   while (mpfr_cmp(xMpfr,b) <= 0) {
 
@@ -287,34 +323,34 @@ int timefunc(int *timing, void **args) {
 
 #if defined(D_TO_D)
     mpfr_to_double(&x, xMpfr);
-    gettimeofday(&start,NULL);
+    READ_TIME_COUNTER(&start);
     for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, x);
-    gettimeofday(&end,NULL);
+    READ_TIME_COUNTER(&end);
 #elif defined(D_TO_DD)
     mpfr_to_double(&x, xMpfr);
-    gettimeofday(&start,NULL);
+    READ_TIME_COUNTER(&start);
     for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, &resm, x);
-    gettimeofday(&end,NULL);
+    READ_TIME_COUNTER(&end);
 #elif defined(D_TO_TD)
     mpfr_to_double(&x, xMpfr);
-    gettimeofday(&start,NULL);
+    READ_TIME_COUNTER(&start);
     for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, &resm, &resl, x);
-    gettimeofday(&end,NULL);
+    READ_TIME_COUNTER(&end);
 #elif defined(DD_TO_DD)
     mpfr_to_doubledouble(&xh, &xm, xMpfr);
-    gettimeofday(&start,NULL);
+    READ_TIME_COUNTER(&start);
     for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, &resm, xh, xm);
-    gettimeofday(&end,NULL);
+    READ_TIME_COUNTER(&end);
 #elif defined(DD_TO_TD)
     mpfr_to_doubledouble(&xh, &xm, xMpfr);
-    gettimeofday(&start,NULL);
+    READ_TIME_COUNTER(&start);
     for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, &resm, &resl, xh, xm);
-    gettimeofday(&end,NULL);
+    READ_TIME_COUNTER(&end);
 #elif defined(TD_TO_TD)
     mpfr_to_tripledouble(&xh, &xm, &xl, xMpfr);
-    gettimeofday(&start,NULL);
+    READ_TIME_COUNTER(&start);
     for (i=0;i<iterations;i++) POLYNOMIALNAME(&resh, &resm, &resl, xh, xm, xl);
-    gettimeofday(&end,NULL);
+    READ_TIME_COUNTER(&end);
 #else
 #warning You must define one of the macros for the argument and result formats
 #endif
@@ -323,12 +359,18 @@ int timefunc(int *timing, void **args) {
 
     mpfr_add(xMpfr, xMpfr, h, GMP_RNDU);
 
-    usecs = ((end.tv_sec - start.tv_sec) * 1000000) + (end.tv_usec - start.tv_usec);
+    if (end >= start) {
+      usecs = end - start; 
+      actualSteps++;
+    } else {
+      usecs = 0;
+    }
 
     overalltime += usecs;
+    
   }
 
-  overalltime /= steps;
+  if (actualSteps != 0) overalltime /= actualSteps; 
 
   mpfr_clear(b);
   mpfr_clear(a);
