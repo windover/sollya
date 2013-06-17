@@ -2229,7 +2229,7 @@ char *sprintTree(node *tree) {
 	  tempBuf += sprintf(tempBuf,"%s",buffer1);
 	  tempBuf += sprintf(tempBuf,")");
 	} else {
-	  buffer = (char *) safeCalloc(strlen(tree->libFun->functionName) + strlen(buffer1) + 6 * tree->libFunDeriv + 3 + 1, sizeof(char));
+	  buffer = (char *) safeCalloc(strlen(tree->libFun->functionName) + strlen(buffer1) + 6 * tree->libFunDeriv + 4 + 1, sizeof(char));
 	  tempBuf = buffer;
 	  tempBuf += sprintf(tempBuf,"(");
 	  for (i=1;i<=tree->libFunDeriv;i++) {
