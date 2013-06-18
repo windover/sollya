@@ -1046,6 +1046,7 @@ void freeGappaProof(gappaProof *proof) {
   if (proof == NULL) return;
   mpfr_clear(proof->a);
   mpfr_clear(proof->b);
+  mpfr_clear(proof->eps);
   safeFree(proof->variableName);
   safeFree(proof->resultName);
   free_memory(proof->polynomToImplement);
@@ -1626,7 +1627,7 @@ void fprintGappaAssignmentAsOverlapBound(FILE *fd, gappaAssignment *assign) {
 
 void fprintGappaProof(FILE *fd, gappaProof *proof) {
   int i;
-  mpfr_t temp;
+  mpfr_t temp, temp2;
   mp_prec_t prec, p;
 
   prec = mpfr_get_prec(proof->a);
@@ -1801,7 +1802,20 @@ void fprintGappaProof(FILE *fd, gappaProof *proof) {
       fprintGappaAssignmentAsOverlapBound(fd, proof->assignments[i]);
     }
 
-    sollyaFprintf(fd,")\n->\n(\n   epsilon in ?\n)}\n");
+    mpfr_init2(temp2, mpfr_get_prec(proof->eps));
+    mpfr_set_si(temp2, 1, GMP_RNDN); /* exact */
+    mpfr_div_2si(temp2, temp2, 50, GMP_RNDN); /* exact */
+    if (mpfr_cmpabs(proof->eps, temp2) > 0) {
+      sollyaFprintf(fd,")\n->\n(\n   epsilon in [");
+      mpfr_neg(temp2, proof->eps, GMP_RNDD); /* exact */
+      fprintValue(fd, temp2);
+      sollyaFprintf(fd,",");
+      fprintValue(fd, proof->eps);
+      sollyaFprintf(fd,"]\n)}\n");
+    } else {
+      sollyaFprintf(fd,")\n->\n(\n   epsilon in ?\n)}\n");
+    }
+    mpfr_clear(temp2);
   } else {
     sollyaFprintf(fd,"{(\n");
     switch (proof->variableType) {

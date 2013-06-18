@@ -5905,6 +5905,8 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     mpfr_init2(proof->b,mpfr_get_prec(*(range.b)));
     mpfr_set(proof->a,*(range.a),GMP_RNDD);
     mpfr_set(proof->b,*(range.b),GMP_RNDU);
+    mpfr_init2(proof->eps, mpfr_get_prec(*accur));
+    mpfr_set(proof->eps, *accur, GMP_RNDN);
     assignments = NULL;
     assignmentsPtr = &assignments;
   } else {

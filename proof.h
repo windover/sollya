@@ -174,7 +174,7 @@ struct gappaProofStruct
 {
   char *variableName;
   char *resultName;
-  mpfr_t a, b;
+  mpfr_t a, b, eps;
   int variableType;
   int resultType;
   node *polynomToImplement;
