@@ -304,6 +304,8 @@ AC_LANG_PUSH([C++])
 
 AC_MSG_CHECKING([if fplll is a real library to be linked in])
 LDFLAGS="-lfplll $LDFLAGS"
+OLD_LIBS="$LIBS"
+LIBS="-lfplll $LIBS"
 AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
                                   #include <fplll.h>
                                   #include <gmp.h>]],
@@ -318,6 +320,7 @@ AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
                   AC_MSG_RESULT(no)
                ])
 LDFLAGS="$AM_LDFLAGS $USER_LDFLAGS"
+LIBS="$OLD_LIBS"
 
 if test "x${FPLLLISREALLIB}y" == "xnoy"
 then
