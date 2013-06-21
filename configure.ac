@@ -381,6 +381,8 @@ AC_DEFINE_UNQUOTED([HAVE_FPLLL_VERSION_STRING],["$FPLLLVERSIONSTRING"],[Define a
 
 OLD_LIBS="$LIBS"; LIBS="$LIBS -lstdc++"
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
+                  [],
+                  [LIBS="$OLD_LIBS"])
 
 
 # Checking that libfplll is found at runtime
