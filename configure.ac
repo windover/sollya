@@ -379,22 +379,8 @@ fi
 
 AC_DEFINE_UNQUOTED([HAVE_FPLLL_VERSION_STRING],["$FPLLLVERSIONSTRING"],[Define a kind of a version string for FPLLL])
 
-
-if test "x${FPLLLISREALLIB}y" == "xnoy"
-then
-  AC_DISABLE_STATIC
-  AC_PROG_LIBTOOL
-
-  OLD_LIBS="$LIBS"; LIBS="$LIBS -lstdc++"
-  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
-                    [],
-                    [LIBS="$OLD_LIBS"])
-
-  if test "x${enable_shared}y" == "xnoy"
-  then
-    AC_MSG_ERROR([fplll too old to be used in static libraries. Try to enable construction of shared libraries or update fplll])
-  fi
-fi
+OLD_LIBS="$LIBS"; LIBS="$LIBS -lstdc++"
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
 
 
 # Checking that libfplll is found at runtime
