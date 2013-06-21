@@ -28,9 +28,7 @@ if test "$LEX" != flex; then
   AC_SUBST(LEX_OUTPUT_ROOT, lex.yy)
   AC_SUBST(LEXLIB, '')
 fi
-#AC_PROG_RANLIB
 AC_LIBTOOL_DLOPEN
-#AC_DISABLE_SHARED
 AC_PROG_LIBTOOL
 AC_SUBST(LIBTOOL_DEPS)
 AC_CONFIG_MACRO_DIR([m4])
@@ -79,9 +77,8 @@ else
 fi
 
 # withs...
-FPLLLVERSIONSTRING=""
-FPLLLJUSTHEADER=yes
 SO_LIB_PATH=""
+FPLLLVERSIONSTRING=""
 
 AC_ARG_WITH(gmp-include,
             [  --with-gmp-include=DIR  GMP include directory ],
@@ -122,14 +119,14 @@ AC_ARG_WITH(mpfr,
 AC_ARG_WITH(fplll-include,
             [  --with-fplll-include=DIR  fplll include directory ],
             [  AM_CPPFLAGS="$AM_CPPFLAGS -I$withval"
-               FPLLLVERSIONSTRING=", --with-fplll-include given as '$withval'"
+               FPLLLVERSIONSTRING="$FPLLLVERSIONSTRING--with-fplll-include given as '$withval',"
             ])
 AC_ARG_WITH(fplll-lib,
             [  --with-fplll-lib=DIR      fplll lib directory ],
             [
                AM_LDFLAGS="$AM_LDFLAGS -L$withval"
                SO_LIB_PATH="${SO_LIB_PATH:+$SO_LIB_PATH:}$withval"
-               FPLLLVERSIONSTRING=", --with-fplll-lib given as '$withval'"
+               FPLLLVERSIONSTRING="$FPLLLVERSIONSTRING--with-fplll-lib given as '$withval',"
             ])
 AC_ARG_WITH(fplll,
             [  --with-fplll=DIR          fplll install directory ],
@@ -137,7 +134,7 @@ AC_ARG_WITH(fplll,
                AM_CPPFLAGS="$AM_CPPFLAGS -I$withval/include"
                AM_LDFLAGS="$AM_LDFLAGS -L$withval/lib"
                SO_LIB_PATH="${SO_LIB_PATH:+$SO_LIB_PATH:}$withval/lib"
-               FPLLLVERSIONSTRING=", --with-fplll given as '$withval'"
+               FPLLLVERSIONSTRING="$FPLLLVERSIONSTRING--with-fplll given as '$withval',"
             ])
 
 
@@ -254,12 +251,12 @@ AC_CHECK_LIB([c], [dlopen], [], [dlopen_ok="no"])
 if test "x${dlopen_ok}y" == "xnoy" ; then
   AC_CHECK_LIB([dl], [dlopen], [], AC_MSG_ERROR([libdl unusable]))
 fi
-AC_CHECK_LIB([gmp], [__gmpz_init], [], AC_MSG_ERROR([libgmp unusable]))
-AC_CHECK_LIB([gmp], [__gmpz_fac_ui], [], AC_MSG_ERROR([libgmp version too old]))
-AC_CHECK_LIB([gmp], [__gmpz_bin_uiui], [], AC_MSG_ERROR([libgmp version too old]))
-AC_CHECK_LIB([gmp], [__gmpz_export], [], AC_MSG_ERROR([libgmp version too old]))
-AC_CHECK_LIB([mpfr], [mpfr_init], [], AC_MSG_ERROR([libmpfr unusable]))
-AC_CHECK_LIB([mpfr], [mpfr_erfc], [], AC_MSG_ERROR([libmpfr version too old]))
+AC_CHECK_LIB([gmp], [__gmpz_init], [true], AC_MSG_ERROR([libgmp unusable]))
+AC_CHECK_LIB([gmp], [__gmpz_fac_ui], [true], AC_MSG_ERROR([libgmp version too old]))
+AC_CHECK_LIB([gmp], [__gmpz_bin_uiui], [true], AC_MSG_ERROR([libgmp version too old]))
+AC_CHECK_LIB([gmp], [__gmpz_export], [], AC_MSG_ERROR([libgmp version too old])) # This one adds -lgmp in case of success
+AC_CHECK_LIB([mpfr], [mpfr_init], [true], AC_MSG_ERROR([libmpfr unusable]))
+AC_CHECK_LIB([mpfr], [mpfr_erfc], [], AC_MSG_ERROR([libmpfr version too old])) # This one adds -lmpfr in case of success
 AC_CHECK_LIB([mpfi], [mpfi_init], [], AC_MSG_ERROR([libmpfi unusable]))
 AC_CHECK_LIB([z], [gzdopen], [], [])
 AC_CHECK_LIB([iconv], [libiconv_open], [], [])
@@ -297,100 +294,101 @@ AC_RUN_IFELSE([AC_LANG_PROGRAM([[#include <libxml/xmlreader.h>]],
 
 
 #Special check for fplll
-FPLLLUSABLE="yes"
-FPLLLSPECIALINCLUDE="no"
-FPLLLISREALLIB="yes"
 AC_LANG_PUSH([C++])
 
+FPLLLSPECIALINCLUDE="no"
+FPLLLISREALLIB="no"
+
+FPLLL_PROG=`printf "\
+  ZZ_mat<mpz_t> *M; Z_NR<mpz_t>  zval; mpz_t mpzval; wrapper *LLLwrapper; int i,j;\n\
+  mpz_init(mpzval);\n\
+  M = new ZZ_mat<mpz_t>(3, 3);\n\
+  for(i=0;i<=2;i++) {\n\
+    for(j=0;j<=2;j++) {\n\
+      mpz_set_ui(mpzval, (i+1)*(j+2));\n\
+      zval.set(mpzval);\n\
+      M->Set(i,j,zval);\n\
+    }\n\
+  }\n\
+  LLLwrapper = new wrapper(M);\n\
+  LLLwrapper->LLL();\
+"`
+FPLLL_NORMAL_HEADER=`printf "\
+  #include <stdlib.h>\n\
+  #include <fplll.h>\n\
+  #include <gmp.h>\
+"`
+
+FPLLL_SPECIAL_HEADER=`printf "\
+  #include <stdlib.h>\n\
+  #include <fplll/fplll.h>\n\
+  #include <gmp.h>\
+"`
+
 AC_MSG_CHECKING([if fplll is a real library to be linked in])
-LDFLAGS="-lfplll $LDFLAGS"
-OLD_LIBS="$LIBS"
-LIBS="-lfplll $LIBS"
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-                                  #include <fplll.h>
-                                  #include <gmp.h>]],
-                                [[ ZZ_mat<mpz_t> M(3, 3);
-                                   M.gen_uniform(3);
-                                   lllReduction(M, 0.99, 0.51, LM_WRAPPER);
-                                   return 0;]]
-                                )],
-               [AC_MSG_RESULT(yes)],
+OLD_LIBS="$LIBS"; LIBS="-lfplll $LIBS"
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[$FPLLL_NORMAL_HEADER]], [[$FPLLL_PROG]])],
                [
-                  FPLLLISREALLIB="no"
-                  AC_MSG_RESULT(no)
+                  FPLLLISREALLIB="yes"
+		  AC_MSG_RESULT(yes)
+               ],
+               [AC_LINK_IFELSE([AC_LANG_PROGRAM([[$FPLLL_SPECIAL_HEADER]], [[$FPLLL_PROG]])],
+                               [
+                                 FPLLLISREALLIB="yes"
+                                 FPLLLSPECIALINCLUDE="yes"
+             		         AC_MSG_RESULT(yes)
+                               ],
+              	               [
+                                 LIBS="$OLD_LIBS"
+                                 AC_MSG_RESULT(no)
+              	               ])
                ])
-LDFLAGS="$AM_LDFLAGS $USER_LDFLAGS"
-LIBS="$OLD_LIBS"
 
 if test "x${FPLLLISREALLIB}y" == "xnoy"
 then
   AC_MSG_CHECKING([for fplll support, fplll being just a header file])
-  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-                                    #include <fplll.h>
-                                    #include <gmp.h>]],
-                                  [[ ZZ_mat<mpz_t> * M;
-                                     M = new ZZ_mat<mpz_t>(3,3);
-                                     if(M!=NULL) exit(0);
-                                     else exit(1);]]
-                                  )],
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[$FPLLL_NORMAL_HEADER]], [[$FPLLL_PROG]])],
+                 [AC_MSG_RESULT(yes)],
                  [
-                    AC_MSG_RESULT(yes)
-                    FPLLLVERSIONSTRING="FPLLL: just a header file, directly in include directory$FPLLLVERSIONSTRING"
-                 ],
-                 [
-                    AC_MSG_RESULT(no)
-                    FPLLLUSABLE="no"
+                   AC_LINK_IFELSE([AC_LANG_PROGRAM([[$FPLLL_SPECIAL_HEADER]], [[$FPLLL_PROG]])],
+                                  [
+                                    FPLLLSPECIALINCLUDE="yes"
+                                    AC_MSG_RESULT(yes)
+                                  ],
+                                  [AC_MSG_ERROR([fplll unusable])])
                  ])
-else
-  # Add -lfplll to LDFLAGS
-  AM_LDFLAGS="-lfplll $AM_LDFLAGS"
-  LDFLAGS="$AM_LDFLAGS $USER_LDFLAGS"
-  FPLLLVERSIONSTRING="FPLLL: a real library, linked with -lfplll$FPLLLVERSIONSTRING"
-  FPLLLJUSTHEADER=no
 fi
 
-if test "x${FPLLLUSABLE}y" == "xnoy"
+if test "x${FPLLLISREALLIB}y" == "xyesy"
 then
-  FPLLLSPECIALINCLUDE="yes"
-  AC_MSG_CHECKING([for Debian-like fplll support, fplll being just a header file])
-  AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <stdlib.h>
-                                    #include <fplll/fplll.h>
-                                    #include <gmp.h>]],
-                                  [[ ZZ_mat<mpz_t> * M;
-                                     M = new ZZ_mat<mpz_t>(3,3);
-                                     if(M!=NULL) exit(0);
-                                     else exit(1);]]
-                                  )],
-                 [
-                    AC_MSG_RESULT(yes)
-                    FPLLLSPECIALINCLUDE="yes"
-                    FPLLLVERSIONSTRING="FPLLL: just a header file, in a subdirectory of the include directory (Debian-like)$FPLLLVERSIONSTRING"
-                 ],
-                 [
-                    AC_MSG_ERROR([fplll unusable (or g++ too new -- see README)])
-                    FPLLLVERSIONSTRING="FPLLL: unusable or g++ too new, $FPLLLVERSIONSTRING"
-                 ])
+  FPLLLVERSIONSTRING="$FPLLLVERSIONSTRING linkage with -lfplll is compatible. Header file"
+else
+  FPLLLVERSIONSTRING="$FPLLLVERSIONSTRING linkage with -lfplll is not compatible. Header file"
 fi
 
 if test "x${FPLLLSPECIALINCLUDE}y" == "xyesy"
 then
+  FPLLL_GOOD_HEADER="$FPLLL_SPECIAL_HEADER"
   AC_DEFINE([HAVE_SPECIAL_FPLLL_INCLUDE],[1],[Define for determining a special version of FPLLL])
+  FPLLLVERSIONSTRING="$FPLLLVERSIONSTRING in a subdirectory of the include directory (Debian-like)."
 else
+  FPLLL_GOOD_HEADER="$FPLLL_NORMAL_HEADER"
   AC_DEFINE([HAVE_SPECIAL_FPLLL_INCLUDE],[0],[Define for determining a special version of FPLLL])
+  FPLLLVERSIONSTRING="$FPLLLVERSIONSTRING directly in include directory."
 fi
+
 AC_DEFINE_UNQUOTED([HAVE_FPLLL_VERSION_STRING],["$FPLLLVERSIONSTRING"],[Define a kind of a version string for FPLLL])
 
 
-if test "x${FPLLLJUSTHEADER}y" == "xyesy"
+if test "x${FPLLLISREALLIB}y" == "xnoy"
 then
   AC_DISABLE_STATIC
   AC_PROG_LIBTOOL
 
-  AM_LDFLAGS="$AM_LDFLAGS -lstdc++ $USER_LDFLAGS"
+  OLD_LIBS="$LIBS"; LIBS="$LIBS -lstdc++"
   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
-                    [AM_LDFLAGS="$AM_LDFLAGS -lstdc++"],
-                    [LDFLAGS="$AM_LDFLAGS $USER_LDFLAGS"
-                  ])
+                    [],
+                    [LIBS="$OLD_LIBS"])
 
   if test "x${enable_shared}y" == "xnoy"
   then
@@ -401,34 +399,14 @@ fi
 
 # Checking that libfplll is found at runtime
 AC_MSG_CHECKING([if libfplll is found at runtime])
-if test "x${FPLLLSPECIALINCLUDE}y" == "xyesy"
-then
-  AC_RUN_IFELSE([AC_LANG_PROGRAM([[#undef malloc
-                                   #undef realloc
-                                   #include <fplll/fplll.h>
-                                   #include <gmp.h>
-                                   #include <stdlib.h>]],
-                                 [[ ZZ_mat<mpz_t> * M;
-                                    M = new ZZ_mat<mpz_t>(3,3);
-                                    if(M!=NULL) exit(0);
-                                    else exit(1);
-                                 ]])],
-	        [AC_MSG_RESULT(yes)],
-                [AC_MSG_WARN([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
-else
-  AC_RUN_IFELSE([AC_LANG_PROGRAM([[#undef malloc
-                                   #undef realloc
-                                   #include <fplll.h>
-                                   #include <gmp.h>
-                                   #include <stdlib.h>]],
-                                 [[ ZZ_mat<mpz_t> * M;
-                                    M = new ZZ_mat<mpz_t>(3,3);
-                                    if(M!=NULL) exit(0);
-                                    else exit(1);
-                                 ]])],
-	        [AC_MSG_RESULT(yes)],
-                [AC_MSG_WARN([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
-fi
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[ #undef malloc
+                                  #undef realloc
+                                  $FPLLL_GOOD_HEADER]],
+                               [[$FPLLL_PROG]])
+              ],
+              [AC_MSG_RESULT(yes)],
+              [AC_MSG_WARN([libfplll is found at compile time but not at run time. Checking /etc/ld.so.conf and running ldconfig could fix the problem.])])
+
 AC_LANG_POP([C++])
 
 
