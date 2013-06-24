@@ -1,2 +1,9 @@
+restart;
+print("=============== Test number 1 ================");
 (0*1)/@NaN@;
 evaluate((0*1)/@NaN@,13);
+
+restart;
+print("=============== Test number 2 ================");
+p = (0 * x) / NaN + NaN;
+p;
