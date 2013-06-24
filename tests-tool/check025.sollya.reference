@@ -4,4 +4,7 @@ The tool has been restarted.
 [@NaN@;@NaN@]
 The tool has been restarted.
 =============== Test number 2 ================
+x^2147483646 * 2147483647
+The tool has been restarted.
+=============== Test number 3 ================
 @NaN@

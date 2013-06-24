@@ -5,5 +5,10 @@ evaluate((0*1)/@NaN@,13);
 
 restart;
 print("=============== Test number 2 ================");
+f=x^2147483647;
+diff(f);
+
+restart;
+print("=============== Test number 3 ================");
 p = (0 * x) / NaN + NaN;
 p;
