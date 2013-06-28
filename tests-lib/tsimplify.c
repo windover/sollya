@@ -13,7 +13,7 @@ int main(void) {
   a[3] = SOLLYA_ADD(SOLLYA_CONST(1.0),SOLLYA_CONST(1e-300));
 
   for (i=0;i<4;i++) {
-    b[i] = sollya_lib_simplifysafe(a[i]);
+    b[i] = sollya_lib_simplify(a[i]);
   }
 
   for (i=0;i<4;i++) {
