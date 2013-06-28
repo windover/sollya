@@ -1035,7 +1035,7 @@ node *copyThingInner(node *tree) {
     break;
   case GETSUPPRESSEDMESSAGES:
     break;
-  case SIMPLIFY:
+  case DIRTYSIMPLIFY:
     copy->child1 = copyThingInner(tree->child1);
     break;
   case SIMPLIFYSAFE:
@@ -1917,7 +1917,7 @@ node *deepCopyThing(node *tree) {
     break;
   case GETSUPPRESSEDMESSAGES:
     break;
-  case SIMPLIFY:
+  case DIRTYSIMPLIFY:
     copy->child1 = deepCopyThing(tree->child1);
     break;
   case SIMPLIFYSAFE:
@@ -2804,11 +2804,11 @@ char *getTimingStringForThing(node *tree) {
   case GETSUPPRESSEDMESSAGES:
     constString = "getting the list of suppressed messages";
     break;
-  case SIMPLIFY:
-    constString = "simplifying";
+  case DIRTYSIMPLIFY:
+    constString = "simplifying with floating-point evaluation";
     break;
   case SIMPLIFYSAFE:
-    constString = "simplifying without rounding";
+    constString = "simplifying";
     break;
   case TIME:
     constString = "timing a command";
@@ -5959,13 +5959,13 @@ char *sRawPrintThing(node *tree) {
   case GETSUPPRESSEDMESSAGES:
     res = newString("getsuppressedmessages()");
     break;
-  case SIMPLIFY:
-    res = concatAndFree(newString("simplify("),
+  case DIRTYSIMPLIFY:
+    res = concatAndFree(newString("dirtysimplify("),
 			concatAndFree(sRawPrintThing(tree->child1),
 				      newString(")")));
     break;
   case SIMPLIFYSAFE:
-    res = concatAndFree(newString("simplifysafe("),
+    res = concatAndFree(newString("simplify("),
 			concatAndFree(sRawPrintThing(tree->child1),
 				      newString(")")));
     break;
@@ -12011,11 +12011,11 @@ node *makeDiff(node *thing) {
 
 }
 
-node *makeSimplify(node *thing) {
+node *makeDirtysimplify(node *thing) {
   node *res;
 
   res = (node *) safeMalloc(sizeof(node));
-  res->nodeType = SIMPLIFY;
+  res->nodeType = DIRTYSIMPLIFY;
   res->child1 = thing;
 
   return res;
@@ -13730,7 +13730,7 @@ void freeThing(node *tree) {
   case GETSUPPRESSEDMESSAGES:
     safeFree(tree);
     break;
-  case SIMPLIFY:
+  case DIRTYSIMPLIFY:
     freeThing(tree->child1);
     safeFree(tree);
     break;
@@ -14690,7 +14690,7 @@ int isEqualThing(node *tree, node *tree2) {
     break;
   case GETSUPPRESSEDMESSAGES:
     break;
-  case SIMPLIFY:
+  case DIRTYSIMPLIFY:
     if (!isEqualThing(tree->child1,tree2->child1)) return 0;
     break;
   case SIMPLIFYSAFE:
@@ -16482,7 +16482,7 @@ int variableUsePreventsPreevaluation(node *tree) {
   case DEBOUNDMIN:
   case DEBOUNDMID:
   case DIFF:
-  case SIMPLIFY:
+  case DIRTYSIMPLIFY:
   case SIMPLIFYSAFE:
   case TIME:
     return variableUsePreventsPreevaluation(tree->child1);
@@ -17291,7 +17291,7 @@ node *preevaluateMatcher(node *tree) {
   case EVALCONST:
     copy->child1 = preevaluateMatcher(tree->child1);
     break;
-  case SIMPLIFY:
+  case DIRTYSIMPLIFY:
     copy->child1 = preevaluateMatcher(tree->child1);
     break;
   case SIMPLIFYSAFE:
@@ -22007,7 +22007,7 @@ node *evaluateThingInnerst(node *tree) {
       if (timingString != NULL) popTimeCounter(timingString);
     }
     break;
-  case SIMPLIFY:
+  case DIRTYSIMPLIFY:
     copy->child1 = evaluateThingInner(tree->child1);
     if (isPureTree(copy->child1)) {
       if (isConstant(copy->child1)) {

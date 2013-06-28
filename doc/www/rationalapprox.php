@@ -47,11 +47,11 @@ and <?php linkTo("command","denominator","denominator");?>.
 &nbsp;&nbsp;&nbsp;&gt; pi10 = rationalapprox(Pi,10);<br> 
 &nbsp;&nbsp;&nbsp;&gt; pi50 = rationalapprox(Pi,50);<br> 
 &nbsp;&nbsp;&nbsp;&gt; pi100 = rationalapprox(Pi,100);<br> 
-&nbsp;&nbsp;&nbsp;&gt; print( pi10, ": ", simplify(floor(-log2(abs(pi10-Pi)/Pi))), "bits." );<br> 
+&nbsp;&nbsp;&nbsp;&gt; print( pi10, ": ", dirtysimplify(floor(-log2(abs(pi10-Pi)/Pi))), "bits." );<br> 
 &nbsp;&nbsp;&nbsp;3.140625 :&nbsp;&nbsp;11 bits.<br> 
-&nbsp;&nbsp;&nbsp;&gt; print( pi50, ": ", simplify(floor(-log2(abs(pi50-Pi)/Pi))), "bits." );<br> 
+&nbsp;&nbsp;&nbsp;&gt; print( pi50, ": ", dirtysimplify(floor(-log2(abs(pi50-Pi)/Pi))), "bits." );<br> 
 &nbsp;&nbsp;&nbsp;85563208 / 27235615 :&nbsp;&nbsp;51 bits.<br> 
-&nbsp;&nbsp;&nbsp;&gt; print( pi100, ": ", simplify(floor(-log2(abs(pi100-Pi)/Pi))), "bits." );<br> 
+&nbsp;&nbsp;&nbsp;&gt; print( pi100, ": ", dirtysimplify(floor(-log2(abs(pi100-Pi)/Pi))), "bits." );<br> 
 &nbsp;&nbsp;&nbsp;4422001152019829 / 1407566683404023 :&nbsp;&nbsp;100 bits.<br> 
 </div> 
 <div class="divExample"> 
@@ -61,7 +61,7 @@ and <?php linkTo("command","denominator","denominator");?>.
 &nbsp;&nbsp;&nbsp;&gt; numerator(b); denominator(b);<br> 
 &nbsp;&nbsp;&nbsp;1<br> 
 &nbsp;&nbsp;&nbsp;10<br> 
-&nbsp;&nbsp;&nbsp;&gt; print(simplify(floor(-log2(abs((b-a)/a)))), "bits.");<br> 
+&nbsp;&nbsp;&nbsp;&gt; print(dirtysimplify(floor(-log2(abs((b-a)/a)))), "bits.");<br> 
 &nbsp;&nbsp;&nbsp;166 bits.<br> 
 </div> 
 </div> 

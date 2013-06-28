@@ -392,7 +392,6 @@ extern "C" {
   sollya_obj_t sollya_lib_mid(sollya_obj_t);
   sollya_obj_t sollya_lib_inf(sollya_obj_t);
   sollya_obj_t sollya_lib_diff(sollya_obj_t);
-  sollya_obj_t sollya_lib_simplify(sollya_obj_t);
   sollya_obj_t sollya_lib_bashevaluate(sollya_obj_t, ...);
   sollya_obj_t sollya_lib_v_bashevaluate(sollya_obj_t, va_list);
   sollya_obj_t sollya_lib_getsuppressedmessages();
@@ -407,6 +406,8 @@ extern "C" {
   sollya_obj_t sollya_lib_horner(sollya_obj_t);
   sollya_obj_t sollya_lib_canonical(sollya_obj_t);
   sollya_obj_t sollya_lib_expand(sollya_obj_t);
+  sollya_obj_t sollya_lib_dirtysimplify(sollya_obj_t);
+  sollya_obj_t sollya_lib_simplify(sollya_obj_t);
   sollya_obj_t sollya_lib_simplifysafe(sollya_obj_t);
   sollya_obj_t sollya_lib_taylor(sollya_obj_t, sollya_obj_t, sollya_obj_t);
   sollya_obj_t sollya_lib_taylorform(sollya_obj_t, sollya_obj_t, sollya_obj_t, ...);

@@ -44,5 +44,5 @@ function returned is mathematically equal to the function <span class="arg">func
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","canonical","canonical");?>, <?php linkTo("command","print","print");?>, <?php linkTo("command","coeff","coeff");?>, <?php linkTo("command","degree","degree");?>, <?php linkTo("command","autosimplify","autosimplify");?>, <?php linkTo("command","simplifysafe","simplifysafe");?> 
+<span class="category">See also: </span><?php linkTo("command","canonical","canonical");?>, <?php linkTo("command","print","print");?>, <?php linkTo("command","coeff","coeff");?>, <?php linkTo("command","degree","degree");?>, <?php linkTo("command","autosimplify","autosimplify");?>, <?php linkTo("command","simplifysafe","simplify");?> 
 </div> 

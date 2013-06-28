@@ -268,14 +268,14 @@ extern FILE *internyyget_in(void *scanner);
 %token  LIBRARYCONSTANTTOKEN "libraryconstant"
 
 %token  DIFFTOKEN "diff"
-%token  SIMPLIFYTOKEN "simplify"
+%token  DIRTYSIMPLIFYTOKEN "dirtysimplify"
 %token  REMEZTOKEN "remez"
 %token  BASHEVALUATETOKEN "bashevaluate"
 %token  GETSUPPRESSEDMESSAGESTOKEN "getsuppressedmessages"
 %token  FPMINIMAXTOKEN "fpminimax"
 %token  HORNERTOKEN "horner"
 %token  EXPANDTOKEN "expand"
-%token  SIMPLIFYSAFETOKEN "simplifysafe"
+%token  SIMPLIFYSAFETOKEN "simplify"
 
 %token  TAYLORTOKEN "taylor"
 %token  TAYLORFORMTOKEN "taylorform"
@@ -1633,9 +1633,9 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeBashevaluate(addElement(addElement(NULL,$5),$3));
 			  }
-                      | SIMPLIFYTOKEN LPARTOKEN thing RPARTOKEN
+                      | DIRTYSIMPLIFYTOKEN LPARTOKEN thing RPARTOKEN
                           {
-			    $$ = makeSimplify($3);
+			    $$ = makeDirtysimplify($3);
 			  }
                       | REMEZTOKEN LPARTOKEN thing COMMATOKEN thing COMMATOKEN thinglist RPARTOKEN
                           {

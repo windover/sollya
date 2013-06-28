@@ -60,5 +60,5 @@ which is in most cases a faithful rounding of the constant expression.
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","on","on");?>, <?php linkTo("command","off","off");?>, <?php linkTo("command","numerator","numerator");?>, <?php linkTo("command","denominator","denominator");?>, <?php linkTo("command","simplifysafe","simplifysafe");?>, <?php linkTo("command","rationalapprox","rationalapprox");?>, <?php linkTo("command","autosimplify","autosimplify");?> 
+<span class="category">See also: </span><?php linkTo("command","on","on");?>, <?php linkTo("command","off","off");?>, <?php linkTo("command","numerator","numerator");?>, <?php linkTo("command","denominator","denominator");?>, <?php linkTo("command","simplifysafe","simplify");?>, <?php linkTo("command","rationalapprox","rationalapprox");?>, <?php linkTo("command","autosimplify","autosimplify");?> 
 </div> 

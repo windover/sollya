@@ -136,13 +136,13 @@ in Gappa.
 <div class="divExample"> 
 <h2 class="category">Example 3: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; verbosity = 1!;<br> 
-&nbsp;&nbsp;&nbsp;&gt; q = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c");<br> 
+&nbsp;&nbsp;&nbsp;&gt; q = implementpoly(1 - dirtysimplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c");<br> 
 &nbsp;&nbsp;&nbsp;Warning: at least one of the coefficients of the given polynomial has been rounded in a way<br> 
 &nbsp;&nbsp;&nbsp;that the target precision can be achieved at lower cost. Nevertheless, the implemented polynomial<br> 
 &nbsp;&nbsp;&nbsp;is different from the given one.<br> 
 &nbsp;&nbsp;&nbsp;&gt; printexpansion(q);<br> 
 &nbsp;&nbsp;&nbsp;0x3ff0000000000000 + x^2 * 0xbfc5555555555555<br> 
-&nbsp;&nbsp;&nbsp;&gt; r = implementpoly(1 - simplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c",honorcoeffprec);<br> 
+&nbsp;&nbsp;&nbsp;&gt; r = implementpoly(1 - dirtysimplify(TD(1/6)) * x^2,[-1b-10;1b-10],1b-60,DD,"p","implementation.c",honorcoeffprec);<br> 
 &nbsp;&nbsp;&nbsp;Warning: the infered precision of the 2th coefficient of the polynomial is greater than<br> 
 &nbsp;&nbsp;&nbsp;the necessary precision computed for this step. This may make the automatic determination<br> 
 &nbsp;&nbsp;&nbsp;of precisions useless.<br> 

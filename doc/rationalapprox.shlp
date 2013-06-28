@@ -38,15 +38,15 @@ and $DENOMINATOR.
 pi10 = rationalapprox(Pi,10);
 pi50 = rationalapprox(Pi,50);
 pi100 = rationalapprox(Pi,100);
-print( pi10, ": ", simplify(floor(-log2(abs(pi10-Pi)/Pi))), "bits." );
-print( pi50, ": ", simplify(floor(-log2(abs(pi50-Pi)/Pi))), "bits." );
-print( pi100, ": ", simplify(floor(-log2(abs(pi100-Pi)/Pi))), "bits." );
+print( pi10, ": ", dirtysimplify(floor(-log2(abs(pi10-Pi)/Pi))), "bits." );
+print( pi50, ": ", dirtysimplify(floor(-log2(abs(pi50-Pi)/Pi))), "bits." );
+print( pi100, ": ", dirtysimplify(floor(-log2(abs(pi100-Pi)/Pi))), "bits." );
 
 #EXAMPLE
 a=0.1;
 b=rationalapprox(a,4);
 numerator(b); denominator(b);
-print(simplify(floor(-log2(abs((b-a)/a)))), "bits.");
+print(dirtysimplify(floor(-log2(abs((b-a)/a)))), "bits.");
 
 #SEEALSO $PRINT
 #SEEALSO $NUMERATOR

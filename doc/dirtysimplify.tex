@@ -1,12 +1,12 @@
-\subsection{simplify}
-\label{labsimplify}
-\noindent Name: \textbf{simplify}\\
+\subsection{dirtysimplify}
+\label{labdirtysimplify}
+\noindent Name: \textbf{dirtysimplify}\\
 \phantom{aaa}simplifies an expression representing a function\\[0.2cm]
 \noindent Library name:\\
 \verb|   sollya_obj_t sollya_lib_simplify(sollya_obj_t)|\\[0.2cm]
 \noindent Usage: 
 \begin{center}
-\textbf{simplify}(\emph{function}) : \textsf{function} $\rightarrow$ \textsf{function}\\
+\textbf{dirtysimplify}(\emph{function}) : \textsf{function} $\rightarrow$ \textsf{function}\\
 \end{center}
 Parameters: 
 \begin{itemize}
@@ -14,16 +14,16 @@ Parameters:
 \end{itemize}
 \noindent Description: \begin{itemize}
 
-\item The command \textbf{simplify} simplifies constant subexpressions of the
+\item The command \textbf{dirtysimplify} simplifies constant subexpressions of the
    expression given in argument representing the function
    \emph{function}. Those constant subexpressions are evaluated using
    floating-point arithmetic with the global precision \textbf{prec}.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
-> print(simplify(sin(pi * x)));
+> print(dirtysimplify(sin(pi * x)));
 sin(3.14159265358979323846264338327950288419716939937508 * x)
-> print(simplify(erf(exp(3) + x * log(4))));
+> print(dirtysimplify(erf(exp(3) + x * log(4))));
 erf(2.00855369231876677409285296545817178969879078385544e1 + x * 1.3862943611198
 906188344642429163531361510002687205)
 \end{Verbatim}
@@ -32,7 +32,7 @@ erf(2.00855369231876677409285296545817178969879078385544e1 + x * 1.3862943611198
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > prec = 20!;
 > t = erf(0.5);
-> s = simplify(erf(0.5));
+> s = dirtysimplify(erf(0.5));
 > prec = 200!;
 > t;
 0.5204998778130465376827466538919645287364515757579637000588058
@@ -40,4 +40,4 @@ erf(2.00855369231876677409285296545817178969879078385544e1 + x * 1.3862943611198
 0.52050018310546875
 \end{Verbatim}
 \end{minipage}\end{center}
-See also: \textbf{simplifysafe} (\ref{labsimplifysafe}), \textbf{autosimplify} (\ref{labautosimplify}), \textbf{prec} (\ref{labprec}), \textbf{evaluate} (\ref{labevaluate}), \textbf{horner} (\ref{labhorner}), \textbf{rationalmode} (\ref{labrationalmode})
+See also: \textbf{simplify} (\ref{labsimplifysafe}), \textbf{autosimplify} (\ref{labautosimplify}), \textbf{prec} (\ref{labprec}), \textbf{evaluate} (\ref{labevaluate}), \textbf{horner} (\ref{labhorner}), \textbf{rationalmode} (\ref{labrationalmode})

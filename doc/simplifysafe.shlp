@@ -18,13 +18,13 @@ they may exist simpler equivalent expressions for expressions returned
 by $COMMAND.
 
 #EXAMPLE
-print(simplifysafe((6 + 2) + (5 + exp(0)) * x));
+print(simplify((6 + 2) + (5 + exp(0)) * x));
 
 #EXAMPLE
-print(simplifysafe((log(x - x + 1) + asin(1))));
+print(simplify((log(x - x + 1) + asin(1))));
 
 #EXAMPLE
-print(simplifysafe((log(x - x + 1) + asin(1)) - (atan(1) * 2)));
+print(simplify((log(x - x + 1) + asin(1)) - (atan(1) * 2)));
 
 #SEEALSO $SIMPLIFY
 #SEEALSO $AUTOSIMPLIFY

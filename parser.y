@@ -287,14 +287,14 @@ int parserCheckEof() {
 %token  LIBRARYCONSTANTTOKEN "libraryconstant"
 
 %token  DIFFTOKEN "diff"
-%token  SIMPLIFYTOKEN "simplify"
+%token  DIRTYSIMPLIFYTOKEN "dirtysimplify"
 %token  REMEZTOKEN "remez"
 %token  BASHEVALUATETOKEN "bashevaluate"
 %token  GETSUPPRESSEDMESSAGESTOKEN "getsuppressedmessages"
 %token  FPMINIMAXTOKEN "fpminimax"
 %token  HORNERTOKEN "horner"
 %token  EXPANDTOKEN "expand"
-%token  SIMPLIFYSAFETOKEN "simplifysafe"
+%token  SIMPLIFYSAFETOKEN "simplify"
 
 %token  TAYLORTOKEN "taylor"
 %token  TAYLORFORMTOKEN "taylorform"
@@ -1687,9 +1687,9 @@ headfunction:           DIFFTOKEN LPARTOKEN thing RPARTOKEN
                           {
 			    $$ = makeDiff($3);
 			  }
-                      | SIMPLIFYTOKEN LPARTOKEN thing RPARTOKEN
+                      | DIRTYSIMPLIFYTOKEN LPARTOKEN thing RPARTOKEN
                           {
-			    $$ = makeSimplify($3);
+			    $$ = makeDirtysimplify($3);
 			  }
                       | BASHEVALUATETOKEN LPARTOKEN thing RPARTOKEN
                           {
@@ -3571,14 +3571,14 @@ help:                   CONSTANTTOKEN
 #endif
 #endif
                           }
-                      | SIMPLIFYTOKEN
+                      | DIRTYSIMPLIFYTOKEN
                           {
-#ifdef HELP_SIMPLIFY_TEXT
-			    outputMode(); sollyaPrintf(HELP_SIMPLIFY_TEXT);
+#ifdef HELP_DIRTYSIMPLIFY_TEXT
+			    outputMode(); sollyaPrintf(HELP_DIRTYSIMPLIFY_TEXT);
 #else
-			    outputMode(); sollyaPrintf("Simplify: simplify(func).\n");
+			    outputMode(); sollyaPrintf("Simplify with floating-point evaluation: dirtysimplify(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
-#warning "No help text for SIMPLIFY"
+#warning "No help text for DIRTYSIMPLIFY"
 #endif
 #endif
                           }
@@ -3653,7 +3653,7 @@ help:                   CONSTANTTOKEN
 #ifdef HELP_SIMPLIFYSAFE_TEXT
 			    outputMode(); sollyaPrintf(HELP_SIMPLIFYSAFE_TEXT);
 #else
-			    outputMode(); sollyaPrintf("Safe simplification: simplifysafe(func).\n");
+			    outputMode(); sollyaPrintf("Simplification without rounding error: simplify(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
 #warning "No help text for SIMPLIFYSAFE"
 #endif
@@ -4610,6 +4610,7 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- dirtyfindzeros\n");
 			    sollyaPrintf("- dirtyinfnorm\n");
 			    sollyaPrintf("- dirtyintegral\n");
+			    sollyaPrintf("- dirtysimplify\n");
 			    sollyaPrintf("- display\n");
 			    sollyaPrintf("- do\n");
 			    sollyaPrintf("- double\n");
@@ -4715,7 +4716,6 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- roundcoefficients\n");
 			    sollyaPrintf("- roundcorrectly\n");
 			    sollyaPrintf("- roundingwarnings\n");
-			    sollyaPrintf("- simplifysafe\n");
 			    sollyaPrintf("- searchgal\n");
 			    sollyaPrintf("- showmessagenumbers\n");
 			    sollyaPrintf("- simplify\n");

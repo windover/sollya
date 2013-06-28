@@ -1,4 +1,4 @@
-#NAME $SIMPLIFY
+#NAME $DIRTYSIMPLIFY
 #QUICK_DESCRIPTION simplifies an expression representing a function
 #CALLING $COMMAND(<function>)
 #TYPE $FUNCTION_TYPE -> $FUNCTION_TYPE
@@ -13,13 +13,13 @@ expression given in argument representing the function
 floating-point arithmetic with the global precision $PREC.
 
 #EXAMPLE
-print(simplify(sin(pi * x)));
-print(simplify(erf(exp(3) + x * log(4))));
+print(dirtysimplify(sin(pi * x)));
+print(dirtysimplify(erf(exp(3) + x * log(4))));
 
 #EXAMPLE
 prec = 20!;
 t = erf(0.5);
-s = simplify(erf(0.5));
+s = dirtysimplify(erf(0.5));
 prec = 200!;
 t;
 s;

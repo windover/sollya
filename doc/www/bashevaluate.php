@@ -44,7 +44,7 @@ such.
 <div class="divExample"> 
 <h2 class="category">Example 1: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; bashevaluate("LANG=C date");<br> 
-&nbsp;&nbsp;&nbsp;Mon May 27 16:57:22 CEST 2013<br> 
+&nbsp;&nbsp;&nbsp;Fri Jun 28 17:25:42 CEST 2013<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 2: </h2> 

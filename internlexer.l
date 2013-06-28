@@ -175,7 +175,7 @@ PRINT           "print"
 SUPPRESSMESSAGE "suppressmessage"
 UNSUPPRESSMESSAGE "unsuppressmessage"
 DIFF            "diff"
-SIMPLIFY        "simplify"
+DIRTYSIMPLIFY   "dirtysimplify"
 CANONICAL       "canonical"
 PLOT            "plot"
 REMEZ           "remez"
@@ -214,7 +214,7 @@ HORNER          "horner"
 DEGREE          "degree"
 EXPAND          "expand"
 
-SIMPLIFYSAFE1   "safesimplify"
+SIMPLIFYSAFE1   "simplify"
 SIMPLIFYSAFE2   "simplifysafe"
 
 SIMPLIFYSAFE    ({SIMPLIFYSAFE1}|{SIMPLIFYSAFE2})
@@ -674,7 +674,7 @@ NOP             "nop"
 {LIBRARY}         			    {  return LIBRARYTOKEN; }
 {LIBRARYCONSTANT}         		    {  return LIBRARYCONSTANTTOKEN; }
 {DIFF}            			    {  return DIFFTOKEN; }
-{SIMPLIFY}				    {  return SIMPLIFYTOKEN; }
+{DIRTYSIMPLIFY}				    {  return DIRTYSIMPLIFYTOKEN; }
 {REMEZ}           			    {  return REMEZTOKEN; }
 {FPMINIMAX}           			    {  return FPMINIMAXTOKEN; }
 {HORNER}          			    {  return HORNERTOKEN; }

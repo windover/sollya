@@ -166,7 +166,7 @@ extern void endBuffer(void);
 #define DEBOUNDMIN 147
 #define DEBOUNDMID 148
 #define DIFF 149
-#define SIMPLIFY 150
+#define DIRTYSIMPLIFY 150
 #define SIMPLIFYSAFE 151
 #define REMEZ 152
 #define HORNER 153
@@ -449,7 +449,7 @@ node *makeEvalConst(node *thing);
 node *makeDiff(node *thing);
 node *makeBashevaluate(chain *thinglist);
 node *makeGetSuppressedMessages();
-node *makeSimplify(node *thing);
+node *makeDirtysimplify(node *thing);
 node *makeSimplifySafe(node *thing);
 node *makeRemez(chain *thinglist);
 node *makeMin(chain *thinglist);

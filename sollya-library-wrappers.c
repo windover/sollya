@@ -919,14 +919,6 @@ sollya_obj_t sollya_lib_diff(sollya_obj_t obj1) {
   return evaluatedThing;
 }
 
-sollya_obj_t sollya_lib_simplify(sollya_obj_t obj1) {
-  node *thingToEvaluate, *evaluatedThing;
-  thingToEvaluate = makeSimplify(copyThing(obj1));
-  evaluatedThing = evaluateThing(thingToEvaluate);
-  freeThing(thingToEvaluate);
-  return evaluatedThing;
-}
-
 sollya_obj_t sollya_lib_bashevaluate(sollya_obj_t obj1, ...) {
   node *thingToEvaluate, *evaluatedThing;
   MAKE_THINGLIST_DECLS(thinglist);
@@ -1054,6 +1046,22 @@ sollya_obj_t sollya_lib_canonical(sollya_obj_t obj1) {
 sollya_obj_t sollya_lib_expand(sollya_obj_t obj1) {
   node *thingToEvaluate, *evaluatedThing;
   thingToEvaluate = makeExpand(copyThing(obj1));
+  evaluatedThing = evaluateThing(thingToEvaluate);
+  freeThing(thingToEvaluate);
+  return evaluatedThing;
+}
+
+sollya_obj_t sollya_lib_dirtysimplify(sollya_obj_t obj1) {
+  node *thingToEvaluate, *evaluatedThing;
+  thingToEvaluate = makeDirtysimplify(copyThing(obj1));
+  evaluatedThing = evaluateThing(thingToEvaluate);
+  freeThing(thingToEvaluate);
+  return evaluatedThing;
+}
+
+sollya_obj_t sollya_lib_simplify(sollya_obj_t obj1) {
+  node *thingToEvaluate, *evaluatedThing;
+  thingToEvaluate = makeSimplifySafe(copyThing(obj1));
   evaluatedThing = evaluateThing(thingToEvaluate);
   freeThing(thingToEvaluate);
   return evaluatedThing;
