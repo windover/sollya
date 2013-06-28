@@ -4,7 +4,12 @@ The tool has been restarted.
 [@NaN@;@NaN@]
 The tool has been restarted.
 =============== Test number 2 ================
-x^2147483646 * 2147483647
+The precision has been set to 53 bits.
+8388608, 5.9089927267963719e-12
+8388609, 1.1860607934483566e-13
 The tool has been restarted.
 =============== Test number 3 ================
+x^2147483646 * 2147483647
+The tool has been restarted.
+=============== Test number 4 ================
 @NaN@

@@ -5,10 +5,53 @@ evaluate((0*1)/@NaN@,13);
 
 restart;
 print("=============== Test number 2 ================");
+/* This code used to produce a memory leak until revision 1871. See bug #8726 for details. */
+prec = 53;
+
+nearest = floor(x + 1/2);
+
+procedure myround(k,X) {
+var ulp;
+
+ulp = 2^(floor(log2(abs(X)))-k+1);
+
+return ulp * nearest(X * 1/ulp);
+};
+
+
+procedure worstCaseRange(f,mMin,mMax) {
+var m;
+var y, roundY;
+var delta;
+var minDelta, minDeltaM;
+
+minDelta = 1b1000000;
+minDeltaM = NaN;
+for m from mMin to mMax do {
+y = f(m);
+roundY = myround(25,y);
+delta = abs(roundY - y);
+if (delta < minDelta) then {
+minDelta = delta;
+minDeltaM = m;
+m,", ", ~delta;
+};
+};
+
+return [| minDelta, minDeltaM |];
+};
+
+f = 1/sqrt(x);
+
+a = worstCaseRange(f,1b23,1b23+10);
+
+
+restart;
+print("=============== Test number 3 ================");
 f=x^2147483647;
 diff(f);
 
 restart;
-print("=============== Test number 3 ================");
+print("=============== Test number 4 ================");
 p = (0 * x) / NaN + NaN;
 p;
