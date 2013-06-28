@@ -48,5 +48,5 @@ floating-point arithmetic with the global precision <?php linkTo("command","prec
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","simplifysafe","simplify");?>, <?php linkTo("command","autosimplify","autosimplify");?>, <?php linkTo("command","prec","prec");?>, <?php linkTo("command","evaluate","evaluate");?>, <?php linkTo("command","horner","horner");?>, <?php linkTo("command","rationalmode","rationalmode");?> 
+<span class="category">See also: </span><?php linkTo("command","simplify","simplify");?>, <?php linkTo("command","autosimplify","autosimplify");?>, <?php linkTo("command","prec","prec");?>, <?php linkTo("command","evaluate","evaluate");?>, <?php linkTo("command","horner","horner");?>, <?php linkTo("command","rationalmode","rationalmode");?> 
 </div> 

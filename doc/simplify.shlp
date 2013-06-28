@@ -1,4 +1,4 @@
-#NAME $SIMPLIFYSAFE
+#NAME $SIMPLIFY
 #QUICK_DESCRIPTION simplifies an expression representing a function
 #CALLING $COMMAND(<function>)
 #TYPE $FUNCTION_TYPE -> $FUNCTION_TYPE

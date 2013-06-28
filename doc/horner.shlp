@@ -26,6 +26,6 @@ print(horner(exp((x + 1)^5) - log(asin(x + x^3) + x)));
 #SEEALSO $COEFF
 #SEEALSO $DEGREE
 #SEEALSO $AUTOSIMPLIFY
-#SEEALSO $SIMPLIFYSAFE
+#SEEALSO $SIMPLIFY
 
 

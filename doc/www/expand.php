@@ -46,5 +46,5 @@ are brought at the most interior point of expressions.
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span><?php linkTo("command","dirtysimplify","dirtysimplify");?>, <?php linkTo("command","simplifysafe","simplify");?>, <?php linkTo("command","horner","horner");?>, <?php linkTo("command","coeff","coeff");?>, <?php linkTo("command","degree","degree");?> 
+<span class="category">See also: </span><?php linkTo("command","dirtysimplify","dirtysimplify");?>, <?php linkTo("command","simplify","simplify");?>, <?php linkTo("command","horner","horner");?>, <?php linkTo("command","coeff","coeff");?>, <?php linkTo("command","degree","degree");?> 
 </div> 

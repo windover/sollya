@@ -24,7 +24,7 @@ print(expand((x + 2)^3 + 2 * x));
 print(expand(exp((x + (x + 3))^5)));
 
 #SEEALSO $DIRTYSIMPLIFY
-#SEEALSO $SIMPLIFYSAFE
+#SEEALSO $SIMPLIFY
 #SEEALSO $HORNER
 #SEEALSO $COEFF
 #SEEALSO $DEGREE

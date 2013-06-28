@@ -3650,12 +3650,12 @@ help:                   CONSTANTTOKEN
                           }
                       | SIMPLIFYSAFETOKEN
                           {
-#ifdef HELP_SIMPLIFYSAFE_TEXT
-			    outputMode(); sollyaPrintf(HELP_SIMPLIFYSAFE_TEXT);
+#ifdef HELP_SIMPLIFY_TEXT
+			    outputMode(); sollyaPrintf(HELP_SIMPLIFY_TEXT);
 #else
 			    outputMode(); sollyaPrintf("Simplification without rounding error: simplify(func).\n");
 #if defined(WARN_IF_NO_HELP_TEXT) && WARN_IF_NO_HELP_TEXT
-#warning "No help text for SIMPLIFYSAFE"
+#warning "No help text for SIMPLIFY"
 #endif
 #endif
                           }

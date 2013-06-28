@@ -1,6 +1,6 @@
-<a name="simplifysafe"></a> 
+<a name="simplify"></a> 
 <div class="divName"> 
-<h2 class="name">Name:</h2> <?php linkTo("command","simplifysafe","simplify");?> 
+<h2 class="name">Name:</h2> <?php linkTo("command","simplify","simplify");?> 
 <span class="smallDescription">simplifies an expression representing a function 
 </span> 
 </div> 
@@ -10,7 +10,7 @@
 </div> 
 <div class="divUsage"> 
 <h2 class="category">Usage: </h2> 
-<span class="commandline"><?php linkTo("command","simplifysafe","simplify");?>(<span class="arg">function</span>) : <span class="type">function</span> -&gt; <span class="type">function</span></span> 
+<span class="commandline"><?php linkTo("command","simplify","simplify");?>(<span class="arg">function</span>) : <span class="type">function</span> -&gt; <span class="type">function</span></span> 
  
 </div> 
 <div class="divParameters"> 
@@ -21,15 +21,15 @@
 </div> 
 <div class="divDescription"> 
 <h2 class="category">Description: </h2><ul> 
-<li>The command <?php linkTo("command","simplifysafe","simplify");?> simplifies the expression given in argument 
-representing the function <span class="arg">function</span>.  The command <?php linkTo("command","simplifysafe","simplify");?> does not 
+<li>The command <?php linkTo("command","simplify","simplify");?> simplifies the expression given in argument 
+representing the function <span class="arg">function</span>.  The command <?php linkTo("command","simplify","simplify");?> does not 
 endanger the safety of computations even in Sollya's floating-point 
 environment: the function returned is mathematically equal to the 
 function <span class="arg">function</span>.  
 <br><br> 
-Remark that the simplification provided by <?php linkTo("command","simplifysafe","simplify");?> is not perfect: 
+Remark that the simplification provided by <?php linkTo("command","simplify","simplify");?> is not perfect: 
 they may exist simpler equivalent expressions for expressions returned 
-by <?php linkTo("command","simplifysafe","simplify");?>. 
+by <?php linkTo("command","simplify","simplify");?>. 
 </ul> 
 </div> 
 <div class="divExamples"> 
