@@ -92,6 +92,7 @@ tdenominator.c \
 tdiff.c \
 tdirtyinfnorm.c \
 tdirtyintegral.c \
+tdirtysimplify.c \
 tdiv.c \
 tdouble.c \
 tdouble_double.c \
@@ -280,7 +281,6 @@ tset_timing.c \
 tset_verbosity_and_print.c \
 tset_verbosity.c \
 tsimplify.c \
-tsimplifysafe.c \
 tsin.c \
 tsingle.c \
 tsingle_obj.c \

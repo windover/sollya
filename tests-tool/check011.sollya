@@ -21,30 +21,30 @@ searchgal([|sin(x),cos(x)|],1,53,15,[|D,D|],[|1b-62,1b-60|]);
 /*********************************************************************************/
 restart;
 print("=============== Test number 204 ================");
-print(simplifysafe((6 + 2) + (5 + exp(0)) * x));
+print(simplify((6 + 2) + (5 + exp(0)) * x));
 
 /*********************************************************************************/
 restart;
 print("=============== Test number 205 ================");
-print(simplifysafe((log(x - x + 1) + asin(1))));
+print(simplify((log(x - x + 1) + asin(1))));
 
 /*********************************************************************************/
 restart;
 print("=============== Test number 206 ================");
-print(simplifysafe((log(x - x + 1) + asin(1)) - (atan(1) * 2)));
+print(simplify((log(x - x + 1) + asin(1)) - (atan(1) * 2)));
 
 /*********************************************************************************/
 restart;
 print("=============== Test number 207 ================");
-print(simplify(sin(pi * x)));
-print(simplify(erf(exp(3) + x * log(4))));
+print(dirtysimplify(sin(pi * x)));
+print(dirtysimplify(erf(exp(3) + x * log(4))));
 
 /*********************************************************************************/
 restart;
 print("=============== Test number 208 ================");
 prec = 20!;
 t = erf(0.5);
-s = simplify(erf(0.5));
+s = dirtysimplify(erf(0.5));
 prec = 200!;
 t;
 s;

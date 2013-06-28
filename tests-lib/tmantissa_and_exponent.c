@@ -29,7 +29,7 @@ int main(void) {
   a[4] = sollya_lib_exponent(a[3]);
   a[5] = sollya_lib_mantissa(a[3]);
   a[6] = SOLLYA_SUB(sollya_lib_copy_obj(a[3]),SOLLYA_MUL(sollya_lib_copy_obj(a[5]),SOLLYA_POW(SOLLYA_CONST(2.0),sollya_lib_copy_obj(a[4]))));
-  a[7] = sollya_lib_simplifysafe(a[6]);
+  a[7] = sollya_lib_simplify(a[6]);
   
   sollya_lib_printf("val = %b, mantissa = %b, exponent = %b, val - mantissa * 2^exponent = %b\n", a[3], a[5], a[4], a[7]);
 
@@ -44,7 +44,7 @@ int main(void) {
   a[4] = sollya_lib_exponent(a[3]);
   a[5] = sollya_lib_mantissa(a[3]);
   a[6] = SOLLYA_SUB(sollya_lib_copy_obj(a[3]),SOLLYA_MUL(sollya_lib_copy_obj(a[5]),SOLLYA_POW(SOLLYA_CONST(2.0),sollya_lib_copy_obj(a[4]))));
-  a[7] = sollya_lib_simplifysafe(a[6]);
+  a[7] = sollya_lib_simplify(a[6]);
   
   sollya_lib_printf("val = %b, mantissa = %b, exponent = %b, val - mantissa * 2^exponent = %b\n", a[3], a[5], a[4], a[7]);
 
@@ -59,7 +59,7 @@ int main(void) {
   a[4] = sollya_lib_exponent(a[3]);
   a[5] = sollya_lib_mantissa(a[3]);
   a[6] = SOLLYA_SUB(sollya_lib_copy_obj(a[3]),SOLLYA_MUL(sollya_lib_copy_obj(a[5]),SOLLYA_POW(SOLLYA_CONST(2.0),sollya_lib_copy_obj(a[4]))));
-  a[7] = sollya_lib_simplifysafe(a[6]);
+  a[7] = sollya_lib_simplify(a[6]);
   
   sollya_lib_printf("val = %b, mantissa = %b, exponent = %b, val - mantissa * 2^exponent = %b\n", a[3], a[5], a[4], a[7]);
 
