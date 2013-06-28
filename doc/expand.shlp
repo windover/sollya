@@ -23,7 +23,7 @@ print(expand((x + 2)^3 + 2 * x));
 #EXAMPLE
 print(expand(exp((x + (x + 3))^5)));
 
-#SEEALSO $SIMPLIFY
+#SEEALSO $DIRTYSIMPLIFY
 #SEEALSO $SIMPLIFYSAFE
 #SEEALSO $HORNER
 #SEEALSO $COEFF

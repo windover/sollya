@@ -50,5 +50,5 @@ by <?php linkTo("command","simplifysafe","simplify");?>.
 </div> 
 </div> 
 <div class="divSeeAlso"> 
-<span class="category">See also: </span>$SIMPLIFY, <?php linkTo("command","autosimplify","autosimplify");?>, <?php linkTo("command","rationalmode","rationalmode");?>, <?php linkTo("command","horner","horner");?> 
+<span class="category">See also: </span><?php linkTo("command","dirtysimplify","dirtysimplify");?>, <?php linkTo("command","autosimplify","autosimplify");?>, <?php linkTo("command","rationalmode","rationalmode");?>, <?php linkTo("command","horner","horner");?> 
 </div> 

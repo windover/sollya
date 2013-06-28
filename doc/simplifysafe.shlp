@@ -26,7 +26,7 @@ print(simplify((log(x - x + 1) + asin(1))));
 #EXAMPLE
 print(simplify((log(x - x + 1) + asin(1)) - (atan(1) * 2)));
 
-#SEEALSO $SIMPLIFY
+#SEEALSO $DIRTYSIMPLIFY
 #SEEALSO $AUTOSIMPLIFY
 #SEEALSO $RATIONALMODE
 #SEEALSO $HORNER
