@@ -18113,6 +18113,8 @@ node *evaluateThingInnerst(node *tree) {
   chain *assoclist;
   int floatingPointEvaluationAlreadyDone;
   mpz_t tempMpz;
+  char *decString;
+  int negate;
 
   /* Make compiler happy: */
   pTemp = 12;
@@ -21584,19 +21586,34 @@ node *evaluateThingInnerst(node *tree) {
     break;
   case RANGE:
     alreadyDisplayed = 0;
-    if (accessThruMemRef(tree->child1)->nodeType == DECIMALCONSTANT) {
-      if (accessThruMemRef(tree->child2)->nodeType == DECIMALCONSTANT) {
-        if (!strcmp(accessThruMemRef(tree->child1)->string,accessThruMemRef(tree->child2)->string))
-          alreadyDisplayed = 1;
+    if ((accessThruMemRef(tree->child1)->nodeType == DECIMALCONSTANT) || 
+	((accessThruMemRef(tree->child1)->nodeType == NEG) && 
+	 (accessThruMemRef(accessThruMemRef(tree->child1)->child1)->nodeType == DECIMALCONSTANT))) {
+      if ((accessThruMemRef(tree->child1)->nodeType == NEG) && 
+	  (accessThruMemRef(accessThruMemRef(tree->child1)->child1)->nodeType == DECIMALCONSTANT)) {
+	negate = 1;
+	decString = accessThruMemRef(accessThruMemRef(tree->child1)->child1)->string;
+	if ((accessThruMemRef(tree->child2)->nodeType == NEG) &&  
+	    (accessThruMemRef(accessThruMemRef(tree->child2)->child1)->nodeType == DECIMALCONSTANT)) {
+	  if (!strcmp(decString,accessThruMemRef(accessThruMemRef(tree->child2)->child1)->string))
+	    alreadyDisplayed = 1;
+	}	
+      } else {
+	negate = 0;
+	decString = accessThruMemRef(tree->child1)->string;
+	if (accessThruMemRef(tree->child2)->nodeType == DECIMALCONSTANT) {
+	  if (!strcmp(decString,accessThruMemRef(tree->child2)->string))
+	    alreadyDisplayed = 1;
+	}
       }
       resA = 0;
-      tempString2 = strchr(accessThruMemRef(tree->child1)->string,'%');
-      tempString3 = strrchr(accessThruMemRef(tree->child1)->string,'%');
+      tempString2 = strchr(decString,'%');
+      tempString3 = strrchr(decString,'%');
       if ((tempString2 != NULL) &&
           (tempString3 != NULL) &&
           (tempString2 != tempString3) &&
           (*(tempString2 + 1) != '\0') &&
-          (tempString3 != accessThruMemRef(tree->child1)->string) &&
+          (tempString3 != decString) &&
           (*(tempString3 + 1) != '\0')) {
         tempString = (char *) safeCalloc(strlen(tempString3 + 1) + 1, sizeof(char));
         strcpy(tempString,tempString3 + 1);
@@ -21618,8 +21635,8 @@ node *evaluateThingInnerst(node *tree) {
         resA = 1;
       }
       if (!resA) {
-        tempString = (char *) safeCalloc(strlen(accessThruMemRef(tree->child1)->string) + 1, sizeof(char));
-        strcpy(tempString,accessThruMemRef(tree->child1)->string);
+        tempString = (char *) safeCalloc(strlen(decString) + 1, sizeof(char));
+        strcpy(tempString,decString);
         pTemp = 4 * strlen(tempString) + 3324;
         if (tools_precision > pTemp) pTemp = tools_precision;
         pTemp2 = tools_precision;
@@ -21644,10 +21661,24 @@ node *evaluateThingInnerst(node *tree) {
                          tempString,(int) pTemp);
             printMessage(1,SOLLYA_MSG_CONTINUATION,"The inclusion property is nevertheless satisfied.\n");
           }
-          mpfr_set_str(a,tempString,10,GMP_RNDD);
+          if (negate) {
+	    mpfr_set_str(a,tempString,10,GMP_RNDU);
+	  } else {
+	    mpfr_set_str(a,tempString,10,GMP_RNDD);
+	  }
         }
         mpfr_init2(c,pTemp);
-        if (!resA) simplifyMpfrPrec(c, a); else mpfr_set(c,a,GMP_RNDN);
+        if (!resA) {
+	  simplifyMpfrPrec(c, a); 
+	  if (negate) mpfr_neg(c, c, GMP_RNDN);
+	} else {
+	  if (negate) {
+	    mpfr_set(c,a,GMP_RNDU);
+	    mpfr_neg(c, c, GMP_RNDN);
+	  } else {
+	    mpfr_set(c,a,GMP_RNDD);
+	  }
+	}
         tempNode = makeConstant(c);
         mpfr_clear(c);
         mpfr_clear(b);
@@ -21658,15 +21689,25 @@ node *evaluateThingInnerst(node *tree) {
     } else {
       copy->child1 = evaluateThingInner(tree->child1);
     }
-    if (accessThruMemRef(tree->child2)->nodeType == DECIMALCONSTANT) {
+    if ((accessThruMemRef(tree->child2)->nodeType == DECIMALCONSTANT) || 
+	((accessThruMemRef(tree->child2)->nodeType == NEG) && 
+	 (accessThruMemRef(accessThruMemRef(tree->child2)->child1)->nodeType == DECIMALCONSTANT))) {
+      if ((accessThruMemRef(tree->child2)->nodeType == NEG) && 
+	  (accessThruMemRef(accessThruMemRef(tree->child2)->child1)->nodeType == DECIMALCONSTANT)) {
+	negate = 1;
+	decString = accessThruMemRef(accessThruMemRef(tree->child2)->child1)->string;
+      } else {
+	negate = 0;
+	decString = accessThruMemRef(tree->child2)->string;
+      }
       resA = 0;
-      tempString2 = strchr(accessThruMemRef(tree->child2)->string,'%');
-      tempString3 = strrchr(accessThruMemRef(tree->child2)->string,'%');
+      tempString2 = strchr(decString,'%');
+      tempString3 = strrchr(decString,'%');
       if ((tempString2 != NULL) &&
           (tempString3 != NULL) &&
           (tempString2 != tempString3) &&
           (*(tempString2 + 1) != '\0') &&
-          (tempString3 != accessThruMemRef(tree->child2)->string) &&
+          (tempString3 != decString) &&
           (*(tempString3 + 1) != '\0')) {
         tempString = (char *) safeCalloc(strlen(tempString3 + 1) + 1, sizeof(char));
         strcpy(tempString,tempString3 + 1);
@@ -21679,7 +21720,7 @@ node *evaluateThingInnerst(node *tree) {
         }
         resB = atoi(tempString4);
         safeFree(tempString4);
-        if (resB < 12) {
+        if ((resB < 12) && (!alreadyDisplayed)) {
           printMessage(1,SOLLYA_MSG_PRECISION_OF_NUMS_MUST_BE_AT_LEAST_TWELVE_BITS,"Warning: the precision of values in the tool must be at least 12 bits.\n");
           resB = 12;
         }
@@ -21688,8 +21729,8 @@ node *evaluateThingInnerst(node *tree) {
         resA = 1;
       }
       if (!resA) {
-        tempString = (char *) safeCalloc(strlen(accessThruMemRef(tree->child2)->string) + 1, sizeof(char));
-        strcpy(tempString,accessThruMemRef(tree->child2)->string);
+        tempString = (char *) safeCalloc(strlen(decString) + 1, sizeof(char));
+        strcpy(tempString,decString);
         pTemp = 4 * strlen(tempString) + 3324;
         if (tools_precision > pTemp) pTemp = tools_precision;
         pTemp2 = tools_precision;
@@ -21714,10 +21755,24 @@ node *evaluateThingInnerst(node *tree) {
                          tempString,(int) pTemp);
             printMessage(1,SOLLYA_MSG_CONTINUATION,"The inclusion property is nevertheless satisfied.\n");
           }
-          mpfr_set_str(a,tempString,10,GMP_RNDU);
+          if (negate) {
+	    mpfr_set_str(a,tempString,10,GMP_RNDD);
+	  } else {
+	    mpfr_set_str(a,tempString,10,GMP_RNDU);
+	  }
         }
         mpfr_init2(c,pTemp);
-        if (!resA) simplifyMpfrPrec(c, a); else mpfr_set(c,a,GMP_RNDN);
+        if (!resA) {
+	  simplifyMpfrPrec(c, a); 
+	  if (negate) mpfr_neg(c, c, GMP_RNDN);
+	} else {
+	  if (negate) {
+	    mpfr_set(c,a,GMP_RNDD);
+	    mpfr_neg(c, c, GMP_RNDN);
+	  } else {
+	    mpfr_set(c,a,GMP_RNDU);
+	  }
+	}
         tempNode = makeConstant(c);
         mpfr_clear(c);
         mpfr_clear(b);
