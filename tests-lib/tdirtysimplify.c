@@ -24,7 +24,7 @@ int main(void) {
   a[7] = sollya_lib_parse_string("-log(13)/log(17) + x * (sin(pi/3) - sqrt(3)/2) + log2(13)/log2(17)");
 
   for (i=0;i<A_DIM;i++) {
-    b[i] = sollya_lib_simplify(a[i]);
+    b[i] = sollya_lib_dirtysimplify(a[i]);
     sollya_lib_printf("%b has been simplified (with possible rounding) to %b.\n",a[i],b[i]);
   }
 
