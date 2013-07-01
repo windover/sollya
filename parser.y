@@ -4719,7 +4719,6 @@ help:                   CONSTANTTOKEN
 			    sollyaPrintf("- searchgal\n");
 			    sollyaPrintf("- showmessagenumbers\n");
 			    sollyaPrintf("- simplify\n");
-			    sollyaPrintf("- simplifysafe\n");
 			    sollyaPrintf("- sin\n");
 			    sollyaPrintf("- single\n");
 			    sollyaPrintf("- sinh\n");
