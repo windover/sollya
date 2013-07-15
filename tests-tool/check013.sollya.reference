@@ -341,6 +341,11 @@ Test 68: (+infty)^NaN = @NaN@ IEEE 754-2008: NaN
 Test 69: (-infty)^NaN = @NaN@ IEEE 754-2008: NaN
 Test 70: NaN^(+infty) = @NaN@ IEEE 754-2008: NaN
 Test 71: NaN^(-infty) = @NaN@ IEEE 754-2008: NaN
+Test 72: infty = @Inf@
+Test 73: -infty = -@Inf@
+Test 74: exp(-infty) = 0
+Test 75: infty^infty = @Inf@
+Test 76: infty^(-infty) = 0
 The tool has been restarted.
 =============== Test number 257 ================
 [@Inf@;@Inf@]  [@Inf@;@Inf@]

@@ -467,6 +467,12 @@ verbosity=0; i = 1;
 "Test ", i, ": ", "NaN^(+infty) = ", NaN^(+infty), " IEEE 754-2008: NaN"; i := i + 1;
 "Test ", i, ": ", "NaN^(-infty) = ", NaN^(-infty), " IEEE 754-2008: NaN"; i := i + 1;
 
+"Test ", i, ": ", "infty = ", infty; i := i + 1;
+"Test ", i, ": ", "-infty = ", -infty; i := i + 1;
+"Test ", i, ": ", "exp(-infty) = ", exp(-infty); i := i + 1;
+"Test ", i, ": ", "infty^infty = ", infty^infty; i := i + 1;
+"Test ", i, ": ", "infty^(-infty) = ", infty^(-infty); i := i + 1;
+
 restart;
 print("=============== Test number 257 ================");
 [@Inf@]/[0,1], "  ", [@Inf@];
