@@ -439,14 +439,14 @@ void sollya_mpfi_ceil(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_init2(opl,sollya_mpfi_get_prec(op));
   mpfr_init2(opr,sollya_mpfi_get_prec(op));
 
-  mpfr_init2(ropl,sollya_mpfi_get_prec(op));
-  mpfr_init2(ropr,sollya_mpfi_get_prec(op));
+  mpfr_init2(ropl,sollya_mpfi_get_prec(rop));
+  mpfr_init2(ropr,sollya_mpfi_get_prec(rop));
 
   sollya_mpfi_get_left(opl,op);
   sollya_mpfi_get_right(opr,op);
 
-  mpfr_ceil(ropl,opr);
-  mpfr_ceil(ropr,opl);
+  mpfr_rint_ceil(ropl,opl,GMP_RNDD);
+  mpfr_rint_ceil(ropr,opr,GMP_RNDU);
 
   sollya_mpfi_interv_fr(rop,ropl,ropr);
 
@@ -462,14 +462,14 @@ void sollya_mpfi_floor(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_init2(opl,sollya_mpfi_get_prec(op));
   mpfr_init2(opr,sollya_mpfi_get_prec(op));
 
-  mpfr_init2(ropl,sollya_mpfi_get_prec(op));
-  mpfr_init2(ropr,sollya_mpfi_get_prec(op));
+  mpfr_init2(ropl,sollya_mpfi_get_prec(rop));
+  mpfr_init2(ropr,sollya_mpfi_get_prec(rop));
 
   sollya_mpfi_get_left(opl,op);
   sollya_mpfi_get_right(opr,op);
 
-  mpfr_floor(ropl,opr);
-  mpfr_floor(ropr,opl);
+  mpfr_rint_floor(ropl,opl,GMP_RNDD);
+  mpfr_rint_floor(ropr,opr,GMP_RNDU);
 
   sollya_mpfi_interv_fr(rop,ropl,ropr);
 
@@ -485,14 +485,14 @@ void sollya_mpfi_nearestint(sollya_mpfi_t rop, sollya_mpfi_t op) {
   mpfr_init2(opl,sollya_mpfi_get_prec(op));
   mpfr_init2(opr,sollya_mpfi_get_prec(op));
 
-  mpfr_init2(ropl,sollya_mpfi_get_prec(op));
-  mpfr_init2(ropr,sollya_mpfi_get_prec(op));
+  mpfr_init2(ropl,sollya_mpfi_get_prec(rop));
+  mpfr_init2(ropr,sollya_mpfi_get_prec(rop));
 
   sollya_mpfi_get_left(opl,op);
   sollya_mpfi_get_right(opr,op);
 
-  mpfr_nearestint(ropl,opr);
-  mpfr_nearestint(ropr,opl);
+  mpfr_rint_round(ropl,opl,GMP_RNDD);
+  mpfr_rint_round(ropr,opr,GMP_RNDU);
 
   sollya_mpfi_interv_fr(rop,ropl,ropr);
 
