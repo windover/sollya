@@ -1677,8 +1677,8 @@ void continuedFrac(mpq_t q, sollya_mpfi_t x) {
 
   sollya_mpfi_get_left(a,x);
   sollya_mpfi_get_right(b,x);
-  mpfr_floor(m1,a);
-  mpfr_floor(m2,b);
+  mpfr_floor(m1,a); /* really a floor because m1 and a have the same precision */
+  mpfr_floor(m2,b); /* really a floor because m2 and b have the same precision */
 
   if (mpfr_equal_p(m1,m2) && (!mpfr_equal_p(a, m1))) {
     mpfr_get_z(u,m1,GMP_RNDN); /* exact */

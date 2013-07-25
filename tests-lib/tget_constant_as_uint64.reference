@@ -12,7 +12,6 @@ The precision has been set to 20 bits.
 Warning: rounding occurred on retrieval of a constant.
 -3 has been converted to 0 (expecting 0)
 
-Warning: rounding occurred on retrieval of a constant.
 1 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 * 2 - 1 has been converted to UINT64_MAX
 
 Warning: rounding occurred on retrieval of a constant.
