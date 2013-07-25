@@ -520,6 +520,13 @@ extern "C" node *FPminimax(node *f,
     else pstar = copyTree(minimax);
   }
 
+  if (isError(pstar)) {
+      printMessage(1, SOLLYA_MSG_FPMINIMAX_FAILED_TO_RECOVER_COEFFS_FROM_POLY, "Warning: fpminimax failed to recover the coefficients from the minimax pseudo-polynomial\n");
+      free_memory(g); free_memory(w); freeThing(pstar);
+      mpfr_clear(zero); mpfr_clear(infinity);
+      return NULL;
+  }
+
   if ((pstar != NULL) && (isHorner(pstar))) {
     tempTree = makeCanonical(pstar, tools_precision);
     free_memory(pstar);

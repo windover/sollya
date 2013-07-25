@@ -281,3 +281,10 @@ autodiff(1^x,5,17);
 autodiff(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),80,[1;2]);
 autodiff(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),80,1);
 autodiff(exp(sin(x))^log2(1 + sin(x)^2) * erf(x),80,[1]);
+
+
+restart;
+print("=============== Test number 240 ================");
+/* Non-regression test for bug #16164 */
+verbosity=0!;
+fpminimax(erf(-24 + x),[|0|],[|double|],[1b-1075;8],default,default,default);
