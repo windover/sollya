@@ -2920,10 +2920,6 @@ node* copyTreeInner(node *tree) {
   return copy;
 }
 
-int mpfr_nearestint(mpfr_t rop, mpfr_t op) {
-  return mpfr_rint(rop,op,GMP_RNDN);
-}
-
 int mpfr_to_mpq( mpq_t y, mpfr_t x){
   mpz_t mant;
   mp_exp_t expo;
@@ -4945,7 +4941,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
     if (accessThruMemRef(simplChild1)->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,(tools_precision<mpfr_get_prec(*(accessThruMemRef(simplChild1)->value))?mpfr_get_prec(*(accessThruMemRef(simplChild1)->value)):tools_precision));
       simplified->value = value;
       if ((mpfr_rint_ceil(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
@@ -5004,7 +5000,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
     if (accessThruMemRef(simplChild1)->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,(tools_precision<mpfr_get_prec(*(accessThruMemRef(simplChild1)->value))?mpfr_get_prec(*(accessThruMemRef(simplChild1)->value)):tools_precision));
       simplified->value = value;
       if ((mpfr_rint_floor(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
@@ -5063,7 +5059,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
     if (accessThruMemRef(simplChild1)->nodeType == CONSTANT) {
       simplified->nodeType = CONSTANT;
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
-      mpfr_init2(*value,tools_precision);
+      mpfr_init2(*value,(tools_precision<mpfr_get_prec(*(accessThruMemRef(simplChild1)->value))?mpfr_get_prec(*(accessThruMemRef(simplChild1)->value)):tools_precision));
       simplified->value = value;
       if ((sollya_mpfr_rint_nearestint(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
@@ -6377,7 +6373,7 @@ int evaluateConstantExpression(mpfr_t result, node *tree, mp_prec_t prec) {
   case NEARESTINT:
     isConstant = evaluateConstantExpression(stack1, tree->child1, prec);
     if (!isConstant) break;
-    mpfr_nearestint(result, stack1);
+    sollya_mpfr_rint_nearestint(result, stack1, GMP_RNDN);
     break;
   case PI_CONST:
     mpfr_const_pi(result, GMP_RNDN);
@@ -7155,7 +7151,7 @@ node* simplifyTreeInnerst(node *tree) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      mpfr_nearestint(*value, *(accessThruMemRef(simplChild1)->value));
+      sollya_mpfr_rint_nearestint(*value, *(accessThruMemRef(simplChild1)->value),GMP_RNDN);
       free_memory(simplChild1);
     } else {
       simplified->nodeType = NEARESTINT;
@@ -7887,7 +7883,7 @@ node* simplifyAllButDivisionInnerst(node *tree) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      mpfr_nearestint(*value, *(accessThruMemRef(simplChild1)->value));
+      sollya_mpfr_rint_nearestint(*value, *(accessThruMemRef(simplChild1)->value),GMP_RNDN);
       free_memory(simplChild1);
     } else {
       simplified->nodeType = NEARESTINT;
@@ -8144,7 +8140,7 @@ void evaluate(mpfr_t result, node *tree, mpfr_t x, mp_prec_t prec) {
     break;
   case NEARESTINT:
     evaluate(stack1, tree->child1, x, prec);
-    mpfr_nearestint(result, stack1);
+    sollya_mpfr_rint_nearestint(result, stack1, GMP_RNDN);
     break;
   case PI_CONST:
     mpfr_const_pi(result, GMP_RNDN);

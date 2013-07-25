@@ -2673,7 +2673,7 @@ uint64_t sollya_lib_helper_mpfr_to_uint64(mpfr_t op) {
     mpfr_init2(op_int,p);
     mpfr_init2(temp,p);
     mpfr_init2(temp2,p);
-    mpfr_nearestint(op_int,op);
+    sollya_mpfr_rint_nearestint(op_int,op,GMP_RNDN);
     if (mpfr_sgn(op_int) >= 0) {
       for (i=0;i<8;i++) {
 	mpfr_div_2ui(temp, op_int, 8, GMP_RNDN); /* exact */
@@ -2770,7 +2770,7 @@ int sollya_lib_get_constant_as_int64(int64_t *value, sollya_obj_t obj1) {
   int warning = 1;
 
   roundOp = makeNearestInt(makeVariable());
-  mpfr_init2(temp,8 * sizeof(int64_t)); /* sollya_lib_get_constant_inner may change the precision afterwards */
+  mpfr_init2(temp,8 * sizeof(int64_t) + 10); /* sollya_lib_get_constant_inner may change the precision afterwards */
   if (sollya_lib_get_constant_inner(temp, obj1, roundOp, &warning)) {
     *value = sollya_lib_helper_mpfr_to_int64(temp);
     mpfr_init2(reconvert,8 * sizeof(int64_t) + 10);
@@ -2801,7 +2801,7 @@ int sollya_lib_get_constant_as_uint64(uint64_t *value, sollya_obj_t obj1) {
   int warning = 1;
 
   roundOp = makeNearestInt(makeVariable());
-  mpfr_init2(temp,8 * sizeof(uint64_t)); /* sollya_lib_get_constant_inner may change the precision afterwards */
+  mpfr_init2(temp,8 * sizeof(uint64_t) + 10); /* sollya_lib_get_constant_inner may change the precision afterwards */
   if (sollya_lib_get_constant_inner(temp, obj1, roundOp, &warning)) {
     *value = sollya_lib_helper_mpfr_to_uint64(temp);
     mpfr_init2(reconvert,8 * sizeof(uint64_t) + 10);

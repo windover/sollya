@@ -1953,7 +1953,7 @@ int sollya_mpfr_rint_nearestint(mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd) {
 
   mpfr_init2(temp, mpfr_get_prec(op));
 
-  mpfr_nearestint(temp, op); /* No double rounding possible because precision the same */
+  mpfr_rint(temp, op, GMP_RNDN); /* No double rounding possible because precision the same */
   
   res = mpfr_set(rop, temp, rnd);
 
