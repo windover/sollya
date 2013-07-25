@@ -5065,7 +5065,7 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
       value = (mpfr_t*) safeMalloc(sizeof(mpfr_t));
       mpfr_init2(*value,tools_precision);
       simplified->value = value;
-      if ((mpfr_rint_round(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
+      if ((sollya_mpfr_rint_nearestint(*value, *(accessThruMemRef(simplChild1)->value), GMP_RNDN) != 0) ||
 	  (!mpfr_number_p(*value))) {
 	simplified->nodeType = NEARESTINT;
 	simplified->child1 = simplChild1;
@@ -5087,8 +5087,8 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
         mpfr_set_ui(*(xrange.a),1,GMP_RNDD);
         mpfr_set_ui(*(xrange.b),1,GMP_RNDU);
         evaluateRangeFunction(yrange, simplChild1, xrange, 8 * tools_precision);
-        mpfr_rint_round(*(xrange.a),*(yrange.a),GMP_RNDD);
-        mpfr_rint_round(*(xrange.b),*(yrange.b),GMP_RNDU);
+        sollya_mpfr_rint_nearestint(*(xrange.a),*(yrange.a),GMP_RNDD);
+        sollya_mpfr_rint_nearestint(*(xrange.b),*(yrange.b),GMP_RNDU);
         if (mpfr_number_p(*(xrange.a)) &&
             mpfr_number_p(*(xrange.b)) &&
             (mpfr_cmp(*(xrange.a),*(xrange.b)) == 0)) {

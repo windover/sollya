@@ -491,8 +491,8 @@ void sollya_mpfi_nearestint(sollya_mpfi_t rop, sollya_mpfi_t op) {
   sollya_mpfi_get_left(opl,op);
   sollya_mpfi_get_right(opr,op);
 
-  mpfr_rint_round(ropl,opl,GMP_RNDD);
-  mpfr_rint_round(ropr,opr,GMP_RNDU);
+  sollya_mpfr_rint_nearestint(ropl,opl,GMP_RNDD);
+  sollya_mpfr_rint_nearestint(ropr,opr,GMP_RNDU);
 
   sollya_mpfi_interv_fr(rop,ropl,ropr);
 

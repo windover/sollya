@@ -1946,3 +1946,18 @@ int mpfr_round_to_doubleextended(mpfr_t rop, mpfr_t op) {
 int mpfr_round_to_doubleextended_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode) {
   return mpfr_round_to_ieee_format(rop, op, 64, 15, mode);
 }
+
+int sollya_mpfr_rint_nearestint(mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd) {
+  mpfr_t temp;
+  int res;
+
+  mpfr_init2(temp, mpfr_get_prec(op));
+
+  mpfr_nearestint(temp, op); /* No double rounding possible because precision the same */
+  
+  res = mpfr_set(rop, temp, rnd);
+
+  mpfr_clear(temp);
+
+  return res;
+}
