@@ -71,6 +71,7 @@
 #include "sollya-library-wrappers.h"
 #include "printf.h"
 #include "infnorm.h"
+#include "double.h"
 
 /* Some helper macros */
 
