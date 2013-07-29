@@ -10775,7 +10775,7 @@ node* hornerPolynomialUnsafe(node *tree) {
 
   for (i=degree-1;i>=0;i--) {
     if (monomials[i] == NULL) {
-      if ((i == 0)) {
+      if (i == 0) {
 	temp = (node *) safeMalloc(sizeof(node));
 	temp->nodeType = MUL;
 	temp2 = (node *) safeMalloc(sizeof(node));
@@ -10876,7 +10876,7 @@ node* dividePolynomialByPowerOfVariableUnsafe(node *tree, int alpha) {
 
   for (i=degree-1;i>=0;i--) {
     if (monomials[i] == NULL) {
-      if ((i == 0)) {
+      if (i == 0) {
 	temp = (node *) safeMalloc(sizeof(node));
 	temp->nodeType = MUL;
 	temp2 = (node *) safeMalloc(sizeof(node));
@@ -11354,7 +11354,7 @@ node *differentiatePolynomialHornerUnsafe(node *tree) {
 
   for (i=degree-1;i>=0;i--) {
     if (monomials[i] == NULL) {
-      if ((i == 0)) {
+      if (i == 0) {
 	temp = (node *) safeMalloc(sizeof(node));
 	temp->nodeType = MUL;
 	temp2 = (node *) safeMalloc(sizeof(node));
@@ -12446,7 +12446,7 @@ node *makePolynomialConstantExpressions(node **coeffs, int deg) {
     if ((coeffs[i] == NULL) ||
         ((accessThruMemRef(coeffs[i])->nodeType == CONSTANT) &&
          (mpfr_zero_p(*(accessThruMemRef(coeffs[i])->value))))) {
-      if ((i == 0)) {
+      if (i == 0) {
 	temp = (node *) safeMalloc(sizeof(node));
 	temp->nodeType = MUL;
 	temp2 = (node *) safeMalloc(sizeof(node));

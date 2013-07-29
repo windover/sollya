@@ -317,7 +317,7 @@ void plotTree(chain *treeList, mpfr_t a, mpfr_t b, unsigned long int points, mp_
       }
       else {
 	wait(NULL);
-	if((type==PLOTPOSTSCRIPT)) {
+	if(type==PLOTPOSTSCRIPT) {
 	  remove(gplotname);
 	  remove(dataname);
 	}

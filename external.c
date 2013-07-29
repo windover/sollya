@@ -416,7 +416,7 @@ void externalPlot(char *library, mpfr_t a, mpfr_t b, mp_prec_t samplingPrecision
     }
     else {
       wait(NULL);
-      if((type==PLOTPOSTSCRIPT)) {
+      if(type==PLOTPOSTSCRIPT) {
 	remove(gplotname);
 	remove(dataname);
       }
