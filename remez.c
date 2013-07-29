@@ -549,7 +549,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	stop_algo = 1;
       }
       else {
-	printMessage(-1, SOLLYA_MSG_NEWTON_ALGORITHM_FAILS_DUE_TO_NUMERICAL_ISSUES, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
+	printMessage(0, SOLLYA_MSG_NEWTON_ALGORITHM_FAILS_DUE_TO_NUMERICAL_ISSUES, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
 	mpfr_set_nan(res);
 	stop_algo = 1;
       }
@@ -561,7 +561,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	stop_algo = 1;
       }
       else {
-	printMessage(-1, SOLLYA_MSG_NEWTON_ALGORITHM_FAILS_DUE_TO_NUMERICAL_ISSUES, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
+	printMessage(0, SOLLYA_MSG_NEWTON_ALGORITHM_FAILS_DUE_TO_NUMERICAL_ISSUES, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
 	mpfr_set_nan(res);
 	stop_algo = 1;
       }
@@ -573,20 +573,20 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 	stop_algo = 1;
       }
       else {
-	printMessage(-1, SOLLYA_MSG_NEWTON_ALGORITHM_FAILS_DUE_TO_NUMERICAL_ISSUES, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
+	printMessage(0, SOLLYA_MSG_NEWTON_ALGORITHM_FAILS_DUE_TO_NUMERICAL_ISSUES, "Error (Newton's algorithm): numerical problems have been encountered. Failed.\n");
 	mpfr_set_nan(res);
 	stop_algo = 1;
       }
     }
     if ( ((sgnfepsa==codefa) && (sgnf0==codefa) && (sgnfepsb==3)) ||
 	 ((sgnfepsa==3) && (sgnf0==codefa) && (sgnfepsb==3)) ) {
-      printMessage(-1, SOLLYA_MSG_NEWTON_ALGORITHM_FAILS_TO_LOCATE_ZERO, "Error (Newton's algorithm): failed to locate the zero\n");
+      printMessage(0, SOLLYA_MSG_NEWTON_ALGORITHM_FAILS_TO_LOCATE_ZERO, "Error (Newton's algorithm): failed to locate the zero\n");
       mpfr_set_nan(res);
       stop_algo = 1;
     }
     if ( ((sgnfepsa==3) && (sgnf0==codeNegfa) && (sgnfepsb==codeNegfa)) ||
 	 ((sgnfepsa==3) && (sgnf0==codeNegfa) && (sgnfepsb==3)) ) {
-      printMessage(-1, SOLLYA_MSG_NEWTON_ALGORITHM_FAILS_TO_LOCATE_ZERO, "Error (Newton's algorithm): failed to locate the zero\n");
+      printMessage(0, SOLLYA_MSG_NEWTON_ALGORITHM_FAILS_TO_LOCATE_ZERO, "Error (Newton's algorithm): failed to locate the zero\n");
       mpfr_set_nan(res);
       stop_algo = 1;
     }
@@ -2026,7 +2026,7 @@ node *remezAux(node *f, node *w, chain *monomials, mpfr_t u, mpfr_t v, mp_prec_t
   mpfr_clear(infinityNorm);
 
   if (res == NULL) {
-    printMessage(-1, SOLLYA_MSG_REMEZ_DOES_NOT_CONVERGE, "Error in Remez: the algorithm does not converge.\n");
+    printMessage(1, SOLLYA_MSG_REMEZ_DOES_NOT_CONVERGE, "Error in Remez: the algorithm does not converge.\n");
     res = makeError();
   }
 

@@ -235,8 +235,8 @@ void copycModel(chebModel *t, chebModel *tt){
   int i;
 
   if (!cModelsAreCompatible(t, tt)) {
-    printMessage(-1, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS, "Error in chebyshevform: trying to copy incompatible models.\n");
-    printMessage(-1, SOLLYA_MSG_CONTINUATION, "No modification is made.\n");
+    printMessage(0, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS, "Error in chebyshevform: trying to copy incompatible models.\n");
+    printMessage(0, SOLLYA_MSG_CONTINUATION, "No modification is made.\n");
     return;
   }
 
@@ -263,8 +263,8 @@ void addition_CM(chebModel *t,chebModel *child1_tm, chebModel *child2_tm, mp_pre
   int n;
   chebModel *tt;
   if ( (!cModelsAreCompatible(child1_tm, child2_tm)) || (!cModelsAreCompatible(t, child1_tm)) ) {
-    printMessage(-1, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS, "Error in chebyshevform: trying to copy incompatible models.\n");
-    printMessage(-1, SOLLYA_MSG_CONTINUATION, "No modification is made.\n");
+    printMessage(0, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS, "Error in chebyshevform: trying to copy incompatible models.\n");
+    printMessage(0, SOLLYA_MSG_CONTINUATION, "No modification is made.\n");
     return;
   }
   n=t->n;
@@ -311,8 +311,8 @@ void  multiplication_CM(chebModel *t,chebModel *c1, chebModel *c2, int boundLeve
   sollya_mpfi_t temp1, temp2;
   sollya_mpfi_t *r;
   if ( (!cModelsAreCompatible(c2, c1)) || (!cModelsAreCompatible(t, c1)) ) {
-    printMessage(-1, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS, "Error in chebyshevform: trying to copy incompatible models.\n");
-    printMessage(-1, SOLLYA_MSG_CONTINUATION, "No modification is made.\n");
+    printMessage(0, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_COPYING_INCOMPAT_MODELS, "Error in chebyshevform: trying to copy incompatible models.\n");
+    printMessage(0, SOLLYA_MSG_CONTINUATION, "No modification is made.\n");
     return;
   }
   n=t->n;
@@ -612,7 +612,7 @@ void computeMonotoneRemainderCheb(sollya_mpfi_t *bound, int typeOfFunction, int 
     sollya_mpfi_pow(boundf2, p_interv, xsup);
     break;
   default:
-    printMessage(-1, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_UNKNOWN_FUNC_FOR_ZUMKELLER, "Error in chebyshev: unkown type of function used with Zumkeller's technique\n");
+    printMessage(0, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_UNKNOWN_FUNC_FOR_ZUMKELLER, "Error in chebyshev: unkown type of function used with Zumkeller's technique\n");
     return;
   }
 
@@ -704,7 +704,7 @@ void base_CMAux(chebModel *t, int typeOfFunction, int nodeType, node *f, mpfr_t 
     }
     break;
   default:
-    printMessage(-1, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_UNKNOWN_FUNC_FOR_ZUMKELLER, "Error in chebyshev: unkown type of function used with Zumkeller's technique\n");
+    printMessage(0, SOLLYA_MSG_ERROR_IN_CHEBYSHEVFORM_UNKNOWN_FUNC_FOR_ZUMKELLER, "Error in chebyshev: unkown type of function used with Zumkeller's technique\n");
     return;
   }
   /*compute the values of the coefficients*/
