@@ -558,6 +558,7 @@ static const messageEntry messageTextsTable[] = {
   { SOLLYA_MSG_NO_CORRECT_TERNARY_VALUE_FOR_ROUND_BUT_CORRECT_ROUNDING, "A correct rounding was possible but the actual rounding direction could not be determined." },
   { SOLLYA_MSG_NO_CORRECT_TERNARY_VALUE_FOR_ROUND                     , "The actual rounding direction during a round operation could not be determined." },
   { SOLLYA_MSG_LIBRARY_CLOSER_ERROR                                   , "While closing a libary, the function \"sollya_external_lib_close\" was found and called but it signaled an error." },
+  { SOLLYA_MSG_INF_CONVERTED_TO_NUMBER_ON_CONSTANT_RETRIEVAL          , "An infinity has been converted to a number upon retrieval of a constant." },
   /* Add your new warning message texts above here. */
 
   { -1, "Unknown message number -1" }   /* Do not ever change the text in this default entry, which must be the last entry in the list */

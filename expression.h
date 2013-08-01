@@ -256,6 +256,7 @@ node *simplifyRationalErrorfree(node *tree);
 int tryEvaluateConstantTermToMpq(mpq_t res, node *tree);
 node *simplifyAllButDivision(node *tree);
 int mpfr_to_mpq( mpq_t y, mpfr_t x);
+int mpfr_to_mpz( mpz_t y, mpfr_t x);
 mp_prec_t getMpzPrecision(mpz_t x);
 
 node *makeVariable();

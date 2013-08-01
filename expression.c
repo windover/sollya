@@ -2942,16 +2942,58 @@ int mpfr_to_mpq( mpq_t y, mpfr_t x){
   else return 0;
 }
 
+
+
 mp_prec_t getMpzPrecision(mpz_t x) {
   mp_prec_t prec;
   int p, dyadicValue;
 
-  prec = mpz_sizeinbase(x, 2);
-  dyadicValue = mpz_scan1(x, 0);
-  p = prec - dyadicValue;
-  if (p < 12) prec = 12; else prec = p;
+  if (mpz_cmp_si(x, 0) == 0) {
+    prec = 12;
+  } else {
+    prec = mpz_sizeinbase(x, 2);
+    dyadicValue = mpz_scan1(x, 0);
+    p = prec - dyadicValue;
+    if (p < 12) prec = 12; else prec = p;
+  }
 
   return prec;
+}
+
+int mpfr_to_mpz( mpz_t y, mpfr_t x){
+  mpz_t aux;
+  mp_exp_t expo;
+  int negative;
+  mpfr_t t;
+
+  mpfr_init2(t, mpfr_get_prec(x));
+  mpfr_floor(t, x); /* No double rounding as precision the same */
+  if (mpfr_number_p(t)) {
+    negative = 0;
+    if (mpfr_sgn(t) < 0) {
+      negative = 1;
+      mpfr_neg(t, t, GMP_RNDN); /* exact */
+    }
+
+    mpz_init(aux);
+    expo = mpfr_get_z_exp(aux,t);
+
+    if (expo>=0)
+      mpz_mul_2exp(y,aux,(unsigned int)expo);
+    else
+      mpz_div_2exp(y,aux,(unsigned int)(-expo));
+
+    if (negative) {
+      mpz_neg(y, y);
+    }
+
+    mpz_clear(aux);
+    mpfr_clear(t);
+    return 1;
+  } else {
+    mpfr_clear(t);
+    return 0;
+  }
 }
 
 

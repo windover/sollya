@@ -2285,6 +2285,42 @@ sollya_obj_t sollya_lib_constant_from_uint64(uint64_t value) {
   return temp;
 }
 
+sollya_obj_t sollya_lib_constant_from_mpz(mpz_t value) {
+  mpfr_t temp;
+  sollya_obj_t res;
+
+  mpfr_init2(temp, getMpzPrecision(value));
+  mpfr_set_z(temp, value, GMP_RNDN); /* exact as precision determined to make it exact */
+  
+  res = sollya_lib_constant(temp);
+
+  mpfr_clear(temp);
+
+  return res;
+}
+
+sollya_obj_t sollya_lib_constant_from_mpq(mpq_t value) {
+  mpz_t numerator, denominator;
+  sollya_obj_t res, simplifiedRes;
+
+  mpz_init(numerator);
+  mpz_init(denominator);
+  
+  mpq_get_num(numerator, value);
+  mpq_get_den(denominator, value);
+
+  res = makeDiv(sollya_lib_constant_from_mpz(numerator),
+		sollya_lib_constant_from_mpz(denominator));
+
+  simplifiedRes = simplifyTreeErrorfree(res);
+
+  mpz_clear(numerator);
+  mpz_clear(denominator);
+  freeThing(res);
+
+  return simplifiedRes;
+}
+
 int sollya_lib_get_interval_from_range(mpfi_t interval, sollya_obj_t obj1) {
   mpfr_t a, b;
 
@@ -2584,6 +2620,100 @@ int sollya_lib_get_constant_as_double(double *value, sollya_obj_t obj1) {
   freeThing(roundOp);
   return 0;
 }
+
+int sollya_lib_get_constant_as_mpz(mpz_t value, sollya_obj_t obj1) {
+  mpfr_t temp, reconvert;
+  sollya_obj_t roundOp;
+  int warning = 1;
+
+  roundOp = makeNearestInt(makeVariable());
+  mpfr_init2(temp,64); /* sollya_lib_get_constant_inner may change the precision afterwards */
+  if (sollya_lib_get_constant_inner(temp, obj1, roundOp, &warning)) {
+    if (mpfr_to_mpz(value, temp)) {
+      mpfr_init2(reconvert, getMpzPrecision(value));
+      mpfr_set_z(reconvert, value, GMP_RNDN); /* exact as precision determined to make it exact */
+      if ((mpfr_cmp(temp, reconvert) != 0) &&
+	  (mpfr_number_p(temp) || mpfr_inf_p(temp)) &&
+	  (mpfr_number_p(reconvert) || mpfr_inf_p(reconvert))) {
+	if ((!noRoundingWarnings) && warning) {
+	  printMessage(1,SOLLYA_MSG_ROUNDING_ON_CONSTANT_RETRIEVAL,"Warning: rounding occurred on retrieval of a constant.\n");
+	}
+      }
+      mpfr_clear(reconvert);
+    } else {
+      if (mpfr_nan_p(temp)) {
+	mpz_set_si(value, 0);
+	printMessage(1,	SOLLYA_MSG_NAN_CONVERTED_TO_NUMBER_ON_CONSTANT_RETRIEVAL,"Warning: a Not-A-Number value has been converted to a number upon retrieval of a constant.\n");
+      } else {
+	if (mpfr_inf_p(temp)) {
+	  mpz_set_si(value, 0);
+	  printMessage(1, SOLLYA_MSG_INF_CONVERTED_TO_NUMBER_ON_CONSTANT_RETRIEVAL,"Warning: an infinity has been converted to a number upon retrieval of a constant.\n");
+	} else {
+	  mpfr_clear(temp);
+	  freeThing(roundOp);
+	  return 0;
+	}
+      }
+    }
+    mpfr_clear(temp);
+    freeThing(roundOp);
+    return 1;
+  }
+
+  mpfr_clear(temp);
+  freeThing(roundOp);
+  return 0;
+}
+
+int sollya_lib_get_constant_as_mpq(mpq_t value, sollya_obj_t obj1) {
+  sollya_obj_t evaluatedObj, simplifiedObj, rationalSimplifiedObj;
+  mpq_t numerator, denominator;
+
+  evaluatedObj = evaluateThing(obj1);
+  if (!isPureTree(evaluatedObj)) {
+    freeThing(evaluatedObj);
+    return 0;
+  }
+
+  simplifiedObj = simplifyTreeErrorfree(evaluatedObj);
+  if (!isConstant(simplifiedObj)) {
+    freeThing(evaluatedObj);
+    freeThing(simplifiedObj);
+    return 0;
+  }
+
+  rationalSimplifiedObj = simplifyRationalErrorfree(simplifiedObj);
+  freeThing(evaluatedObj);
+  freeThing(simplifiedObj);
+
+  if (accessThruMemRef(rationalSimplifiedObj)->nodeType == CONSTANT) {
+    if (mpfr_to_mpq(value, *(accessThruMemRef(rationalSimplifiedObj)->value))) {
+      freeThing(rationalSimplifiedObj);
+      return 1;
+    }
+  }
+
+  if ((accessThruMemRef(rationalSimplifiedObj)->nodeType == DIV) &&
+      (accessThruMemRef(accessThruMemRef(rationalSimplifiedObj)->child1)->nodeType == CONSTANT) && 
+      (accessThruMemRef(accessThruMemRef(rationalSimplifiedObj)->child2)->nodeType == CONSTANT)) {
+    mpq_init(numerator);
+    mpq_init(denominator);
+    if (mpfr_to_mpq(numerator, *(accessThruMemRef(accessThruMemRef(rationalSimplifiedObj)->child1)->value)) && 
+	mpfr_to_mpq(denominator, *(accessThruMemRef(accessThruMemRef(rationalSimplifiedObj)->child2)->value))) {
+      mpq_div(value, numerator, denominator);
+      mpq_clear(numerator);
+      mpq_clear(denominator);
+      freeThing(rationalSimplifiedObj);
+      return 1;
+    }
+    mpq_clear(numerator);
+    mpq_clear(denominator);
+  }
+
+  freeThing(rationalSimplifiedObj);
+  return 0;
+}
+
 
 
 /* In some versions of MPFR, mpfr_get_si seems to contain a couple of
