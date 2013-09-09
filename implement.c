@@ -69,6 +69,96 @@
 
 #define MIN(a,b) (a > b ? b : a)
 
+void emitLegalNoticeAndDisclaimer(FILE *fd) {
+  fprintf(fd, "/*\n"); 
+  fprintf(fd, "    This code was generated using non-trivial code generation commands of\n"); 
+  fprintf(fd, "    the Sollya software program.\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    Before using, modifying and/or integrating this code into other\n"); 
+  fprintf(fd, "    software, review the copyright and license status of this generated\n"); 
+  fprintf(fd, "    code. In particular, see the exception below.\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    Sollya is\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    Copyright 2006-2013 by\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    Laboratoire de l'Informatique du Parallelisme, UMR CNRS - ENS Lyon -\n"); 
+  fprintf(fd, "    UCB Lyon 1 - INRIA 5668,\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    Laboratoire d'Informatique de Paris 6, equipe PEQUAN, UPMC Universite\n"); 
+  fprintf(fd, "    Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    and by\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,\n"); 
+  fprintf(fd, "    Sophia Antipolis, France.\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    Contributors Ch. Lauter, S. Chevillard, M. Joldes\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    christoph.lauter@ens-lyon.org\n"); 
+  fprintf(fd, "    sylvain.chevillard@ens-lyon.org\n"); 
+  fprintf(fd, "    joldes@lass.fr\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    The Sollya software is a computer program whose purpose is to provide\n"); 
+  fprintf(fd, "    an environment for safe floating-point code development. It is\n"); 
+  fprintf(fd, "    particularily targeted to the automatized implementation of\n"); 
+  fprintf(fd, "    mathematical floating-point libraries (libm). Amongst other features,\n"); 
+  fprintf(fd, "    it offers a certified infinity norm, an automatic polynomial\n"); 
+  fprintf(fd, "    implementer and a fast Remez algorithm.\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    The Sollya software is governed by the CeCILL-C license under French\n"); 
+  fprintf(fd, "    law and abiding by the rules of distribution of free software.  You\n"); 
+  fprintf(fd, "    can use, modify and/ or redistribute the software under the terms of\n"); 
+  fprintf(fd, "    the CeCILL-C license as circulated by CEA, CNRS and INRIA at the\n"); 
+  fprintf(fd, "    following URL \"http://www.cecill.info\".\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    As a counterpart to the access to the source code and rights to copy,\n"); 
+  fprintf(fd, "    modify and redistribute granted by the license, users are provided\n"); 
+  fprintf(fd, "    only with a limited warranty and the software's author, the holder of\n"); 
+  fprintf(fd, "    the economic rights, and the successive licensors have only limited\n"); 
+  fprintf(fd, "    liability.\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    In this respect, the user's attention is drawn to the risks associated\n"); 
+  fprintf(fd, "    with loading, using, modifying and/or developing or reproducing the\n"); 
+  fprintf(fd, "    software by the user in light of its specific status of free software,\n"); 
+  fprintf(fd, "    that may mean that it is complicated to manipulate, and that also\n"); 
+  fprintf(fd, "    therefore means that it is reserved for developers and experienced\n"); 
+  fprintf(fd, "    professionals having in-depth computer knowledge. Users are therefore\n"); 
+  fprintf(fd, "    encouraged to load and test the software's suitability as regards\n"); 
+  fprintf(fd, "    their requirements in conditions enabling the security of their\n"); 
+  fprintf(fd, "    systems and/or data to be ensured and, more generally, to use and\n"); 
+  fprintf(fd, "    operate it in the same conditions as regards security.\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    The fact that you are presently reading this means that you have had\n"); 
+  fprintf(fd, "    knowledge of the CeCILL-C license and that you accept its terms.\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    The Sollya program is distributed WITHOUT ANY WARRANTY; without even\n"); 
+  fprintf(fd, "    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR\n"); 
+  fprintf(fd, "    PURPOSE.\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    This generated program is distributed WITHOUT ANY WARRANTY; without\n"); 
+  fprintf(fd, "    even the implied warranty of MERCHANTABILITY or FITNESS FOR A\n"); 
+  fprintf(fd, "    PARTICULAR PURPOSE.\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    As a special exception, you may create a larger work that contains\n"); 
+  fprintf(fd, "    part or all of this software generated using Sollya and distribute\n"); 
+  fprintf(fd, "    that work under terms of your choice, so long as that work isn't\n"); 
+  fprintf(fd, "    itself a numerical code generator using the skeleton of this code or a\n"); 
+  fprintf(fd, "    modified version thereof as a code skeleton.  Alternatively, if you\n"); 
+  fprintf(fd, "    modify or redistribute this generated code itself, or its skeleton,\n"); 
+  fprintf(fd, "    you may (at your option) remove this special exception, which will\n"); 
+  fprintf(fd, "    cause this generated code and its skeleton and the resulting Sollya\n"); 
+  fprintf(fd, "    output files to be licensed under the CeCILL-C licence without this\n"); 
+  fprintf(fd, "    special exception.\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "    This special exception was added by the Sollya copyright holders in\n"); 
+  fprintf(fd, "    version 4.1 of Sollya.\n"); 
+  fprintf(fd, "    \n"); 
+  fprintf(fd, "*/\n"); 
+  fprintf(fd, "\n"); 
+  fprintf(fd, "\n"); 
+}
+
 int determinePowers(mpfr_t *coefficients, int degree, int *mulPrec, int *powPrec) {
   int i,k;
 
@@ -5996,6 +6086,8 @@ node *implementpoly(node *func, rangetype range, mpfr_t *accur, int variablePrec
     printMessage(1,SOLLYA_MSG_ERROR_ON_DETERMINING_THE_REQUIRED_POWERS,"Warning: a problem has been encountered during the determination of the powers needed.\n");
     printMessage(1,SOLLYA_MSG_CONTINUATION,"The produced implementation may be incorrect.\n");
   }
+
+  emitLegalNoticeAndDisclaimer(fd);
 
   if (!implementCoefficients(fpCoefficients, degree, fd, name, prec, assignmentsPtr)) {
     printMessage(1,SOLLYA_MSG_ERROR_ON_CODE_GENERATION_FOR_COEFFICIENTS,"Warning: a problem has been encountered during the generation of the code for the coefficients.\n");

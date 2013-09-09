@@ -92,6 +92,93 @@
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > implementconstant(exp(1)+log(2)/sqrt(1/10));
+/*
+    This code was generated using non-trivial code generation commands of
+    the Sollya software program.
+    
+    Before using, modifying and/or integrating this code into other
+    software, review the copyright and license status of this generated
+    code. In particular, see the exception below.
+    
+    Sollya is
+    
+    Copyright 2006-2013 by
+    
+    Laboratoire de l'Informatique du Parallelisme, UMR CNRS - ENS Lyon -
+    UCB Lyon 1 - INRIA 5668,
+    
+    Laboratoire d'Informatique de Paris 6, equipe PEQUAN, UPMC Universite
+    Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+    
+    and by
+    
+    Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+    Sophia Antipolis, France.
+    
+    Contributors Ch. Lauter, S. Chevillard, M. Joldes
+    
+    christoph.lauter@ens-lyon.org
+    sylvain.chevillard@ens-lyon.org
+    joldes@lass.fr
+    
+    The Sollya software is a computer program whose purpose is to provide
+    an environment for safe floating-point code development. It is
+    particularily targeted to the automatized implementation of
+    mathematical floating-point libraries (libm). Amongst other features,
+    it offers a certified infinity norm, an automatic polynomial
+    implementer and a fast Remez algorithm.
+    
+    The Sollya software is governed by the CeCILL-C license under French
+    law and abiding by the rules of distribution of free software.  You
+    can use, modify and/ or redistribute the software under the terms of
+    the CeCILL-C license as circulated by CEA, CNRS and INRIA at the
+    following URL "http://www.cecill.info".
+    
+    As a counterpart to the access to the source code and rights to copy,
+    modify and redistribute granted by the license, users are provided
+    only with a limited warranty and the software's author, the holder of
+    the economic rights, and the successive licensors have only limited
+    liability.
+    
+    In this respect, the user's attention is drawn to the risks associated
+    with loading, using, modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean that it is complicated to manipulate, and that also
+    therefore means that it is reserved for developers and experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards
+    their requirements in conditions enabling the security of their
+    systems and/or data to be ensured and, more generally, to use and
+    operate it in the same conditions as regards security.
+    
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL-C license and that you accept its terms.
+    
+    The Sollya program is distributed WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+    PURPOSE.
+    
+    This generated program is distributed WITHOUT ANY WARRANTY; without
+    even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    
+    As a special exception, you may create a larger work that contains
+    part or all of this software generated using Sollya and distribute
+    that work under terms of your choice, so long as that work isn't
+    itself a numerical code generator using the skeleton of this code or a
+    modified version thereof as a code skeleton.  Alternatively, if you
+    modify or redistribute this generated code itself, or its skeleton,
+    you may (at your option) remove this special exception, which will
+    cause this generated code and its skeleton and the resulting Sollya
+    output files to be licensed under the CeCILL-C licence without this
+    special exception.
+    
+    This special exception was added by the Sollya copyright holders in
+    version 4.1 of Sollya.
+    
+*/
+
+
 #include <mpfr.h>
 
 void
@@ -152,6 +239,93 @@ const_something (mpfr_ptr y, mp_prec_t prec)
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > implementconstant(sin(13/17),"sine_of_thirteen_seventeenth.c");
 > readfile("sine_of_thirteen_seventeenth.c");
+/*
+    This code was generated using non-trivial code generation commands of
+    the Sollya software program.
+    
+    Before using, modifying and/or integrating this code into other
+    software, review the copyright and license status of this generated
+    code. In particular, see the exception below.
+    
+    Sollya is
+    
+    Copyright 2006-2013 by
+    
+    Laboratoire de l'Informatique du Parallelisme, UMR CNRS - ENS Lyon -
+    UCB Lyon 1 - INRIA 5668,
+    
+    Laboratoire d'Informatique de Paris 6, equipe PEQUAN, UPMC Universite
+    Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+    
+    and by
+    
+    Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+    Sophia Antipolis, France.
+    
+    Contributors Ch. Lauter, S. Chevillard, M. Joldes
+    
+    christoph.lauter@ens-lyon.org
+    sylvain.chevillard@ens-lyon.org
+    joldes@lass.fr
+    
+    The Sollya software is a computer program whose purpose is to provide
+    an environment for safe floating-point code development. It is
+    particularily targeted to the automatized implementation of
+    mathematical floating-point libraries (libm). Amongst other features,
+    it offers a certified infinity norm, an automatic polynomial
+    implementer and a fast Remez algorithm.
+    
+    The Sollya software is governed by the CeCILL-C license under French
+    law and abiding by the rules of distribution of free software.  You
+    can use, modify and/ or redistribute the software under the terms of
+    the CeCILL-C license as circulated by CEA, CNRS and INRIA at the
+    following URL "http://www.cecill.info".
+    
+    As a counterpart to the access to the source code and rights to copy,
+    modify and redistribute granted by the license, users are provided
+    only with a limited warranty and the software's author, the holder of
+    the economic rights, and the successive licensors have only limited
+    liability.
+    
+    In this respect, the user's attention is drawn to the risks associated
+    with loading, using, modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean that it is complicated to manipulate, and that also
+    therefore means that it is reserved for developers and experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards
+    their requirements in conditions enabling the security of their
+    systems and/or data to be ensured and, more generally, to use and
+    operate it in the same conditions as regards security.
+    
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL-C license and that you accept its terms.
+    
+    The Sollya program is distributed WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+    PURPOSE.
+    
+    This generated program is distributed WITHOUT ANY WARRANTY; without
+    even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    
+    As a special exception, you may create a larger work that contains
+    part or all of this software generated using Sollya and distribute
+    that work under terms of your choice, so long as that work isn't
+    itself a numerical code generator using the skeleton of this code or a
+    modified version thereof as a code skeleton.  Alternatively, if you
+    modify or redistribute this generated code itself, or its skeleton,
+    you may (at your option) remove this special exception, which will
+    cause this generated code and its skeleton and the resulting Sollya
+    output files to be licensed under the CeCILL-C licence without this
+    special exception.
+    
+    This special exception was added by the Sollya copyright holders in
+    version 4.1 of Sollya.
+    
+*/
+
+
 #include <mpfr.h>
 
 void
@@ -188,6 +362,93 @@ const_something (mpfr_ptr y, mp_prec_t prec)
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > implementconstant(asin(1/3 * pi),default,"arcsin_of_one_third_pi");
+/*
+    This code was generated using non-trivial code generation commands of
+    the Sollya software program.
+    
+    Before using, modifying and/or integrating this code into other
+    software, review the copyright and license status of this generated
+    code. In particular, see the exception below.
+    
+    Sollya is
+    
+    Copyright 2006-2013 by
+    
+    Laboratoire de l'Informatique du Parallelisme, UMR CNRS - ENS Lyon -
+    UCB Lyon 1 - INRIA 5668,
+    
+    Laboratoire d'Informatique de Paris 6, equipe PEQUAN, UPMC Universite
+    Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+    
+    and by
+    
+    Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+    Sophia Antipolis, France.
+    
+    Contributors Ch. Lauter, S. Chevillard, M. Joldes
+    
+    christoph.lauter@ens-lyon.org
+    sylvain.chevillard@ens-lyon.org
+    joldes@lass.fr
+    
+    The Sollya software is a computer program whose purpose is to provide
+    an environment for safe floating-point code development. It is
+    particularily targeted to the automatized implementation of
+    mathematical floating-point libraries (libm). Amongst other features,
+    it offers a certified infinity norm, an automatic polynomial
+    implementer and a fast Remez algorithm.
+    
+    The Sollya software is governed by the CeCILL-C license under French
+    law and abiding by the rules of distribution of free software.  You
+    can use, modify and/ or redistribute the software under the terms of
+    the CeCILL-C license as circulated by CEA, CNRS and INRIA at the
+    following URL "http://www.cecill.info".
+    
+    As a counterpart to the access to the source code and rights to copy,
+    modify and redistribute granted by the license, users are provided
+    only with a limited warranty and the software's author, the holder of
+    the economic rights, and the successive licensors have only limited
+    liability.
+    
+    In this respect, the user's attention is drawn to the risks associated
+    with loading, using, modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean that it is complicated to manipulate, and that also
+    therefore means that it is reserved for developers and experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards
+    their requirements in conditions enabling the security of their
+    systems and/or data to be ensured and, more generally, to use and
+    operate it in the same conditions as regards security.
+    
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL-C license and that you accept its terms.
+    
+    The Sollya program is distributed WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+    PURPOSE.
+    
+    This generated program is distributed WITHOUT ANY WARRANTY; without
+    even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    
+    As a special exception, you may create a larger work that contains
+    part or all of this software generated using Sollya and distribute
+    that work under terms of your choice, so long as that work isn't
+    itself a numerical code generator using the skeleton of this code or a
+    modified version thereof as a code skeleton.  Alternatively, if you
+    modify or redistribute this generated code itself, or its skeleton,
+    you may (at your option) remove this special exception, which will
+    cause this generated code and its skeleton and the resulting Sollya
+    output files to be licensed under the CeCILL-C licence without this
+    special exception.
+    
+    This special exception was added by the Sollya copyright holders in
+    version 4.1 of Sollya.
+    
+*/
+
+
 #include <mpfr.h>
 
 void
@@ -224,6 +485,93 @@ arcsin_of_one_third_pi (mpfr_ptr y, mp_prec_t prec)
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > implementconstant(ceil(log(19 + 1/3)),"constant_code.c","magic_constant");
 > readfile("constant_code.c");
+/*
+    This code was generated using non-trivial code generation commands of
+    the Sollya software program.
+    
+    Before using, modifying and/or integrating this code into other
+    software, review the copyright and license status of this generated
+    code. In particular, see the exception below.
+    
+    Sollya is
+    
+    Copyright 2006-2013 by
+    
+    Laboratoire de l'Informatique du Parallelisme, UMR CNRS - ENS Lyon -
+    UCB Lyon 1 - INRIA 5668,
+    
+    Laboratoire d'Informatique de Paris 6, equipe PEQUAN, UPMC Universite
+    Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+    
+    and by
+    
+    Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+    Sophia Antipolis, France.
+    
+    Contributors Ch. Lauter, S. Chevillard, M. Joldes
+    
+    christoph.lauter@ens-lyon.org
+    sylvain.chevillard@ens-lyon.org
+    joldes@lass.fr
+    
+    The Sollya software is a computer program whose purpose is to provide
+    an environment for safe floating-point code development. It is
+    particularily targeted to the automatized implementation of
+    mathematical floating-point libraries (libm). Amongst other features,
+    it offers a certified infinity norm, an automatic polynomial
+    implementer and a fast Remez algorithm.
+    
+    The Sollya software is governed by the CeCILL-C license under French
+    law and abiding by the rules of distribution of free software.  You
+    can use, modify and/ or redistribute the software under the terms of
+    the CeCILL-C license as circulated by CEA, CNRS and INRIA at the
+    following URL "http://www.cecill.info".
+    
+    As a counterpart to the access to the source code and rights to copy,
+    modify and redistribute granted by the license, users are provided
+    only with a limited warranty and the software's author, the holder of
+    the economic rights, and the successive licensors have only limited
+    liability.
+    
+    In this respect, the user's attention is drawn to the risks associated
+    with loading, using, modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean that it is complicated to manipulate, and that also
+    therefore means that it is reserved for developers and experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards
+    their requirements in conditions enabling the security of their
+    systems and/or data to be ensured and, more generally, to use and
+    operate it in the same conditions as regards security.
+    
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL-C license and that you accept its terms.
+    
+    The Sollya program is distributed WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+    PURPOSE.
+    
+    This generated program is distributed WITHOUT ANY WARRANTY; without
+    even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    
+    As a special exception, you may create a larger work that contains
+    part or all of this software generated using Sollya and distribute
+    that work under terms of your choice, so long as that work isn't
+    itself a numerical code generator using the skeleton of this code or a
+    modified version thereof as a code skeleton.  Alternatively, if you
+    modify or redistribute this generated code itself, or its skeleton,
+    you may (at your option) remove this special exception, which will
+    cause this generated code and its skeleton and the resulting Sollya
+    output files to be licensed under the CeCILL-C licence without this
+    special exception.
+    
+    This special exception was added by the Sollya copyright holders in
+    version 4.1 of Sollya.
+    
+*/
+
+
 #include <mpfr.h>
 
 void
@@ -246,6 +594,93 @@ e");
 gmp -lmpfr");
 > euler_gamma = libraryconstant("./libraryconstantexample");
 > implementconstant(euler_gamma^(1/3));
+/*
+    This code was generated using non-trivial code generation commands of
+    the Sollya software program.
+    
+    Before using, modifying and/or integrating this code into other
+    software, review the copyright and license status of this generated
+    code. In particular, see the exception below.
+    
+    Sollya is
+    
+    Copyright 2006-2013 by
+    
+    Laboratoire de l'Informatique du Parallelisme, UMR CNRS - ENS Lyon -
+    UCB Lyon 1 - INRIA 5668,
+    
+    Laboratoire d'Informatique de Paris 6, equipe PEQUAN, UPMC Universite
+    Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+    
+    and by
+    
+    Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+    Sophia Antipolis, France.
+    
+    Contributors Ch. Lauter, S. Chevillard, M. Joldes
+    
+    christoph.lauter@ens-lyon.org
+    sylvain.chevillard@ens-lyon.org
+    joldes@lass.fr
+    
+    The Sollya software is a computer program whose purpose is to provide
+    an environment for safe floating-point code development. It is
+    particularily targeted to the automatized implementation of
+    mathematical floating-point libraries (libm). Amongst other features,
+    it offers a certified infinity norm, an automatic polynomial
+    implementer and a fast Remez algorithm.
+    
+    The Sollya software is governed by the CeCILL-C license under French
+    law and abiding by the rules of distribution of free software.  You
+    can use, modify and/ or redistribute the software under the terms of
+    the CeCILL-C license as circulated by CEA, CNRS and INRIA at the
+    following URL "http://www.cecill.info".
+    
+    As a counterpart to the access to the source code and rights to copy,
+    modify and redistribute granted by the license, users are provided
+    only with a limited warranty and the software's author, the holder of
+    the economic rights, and the successive licensors have only limited
+    liability.
+    
+    In this respect, the user's attention is drawn to the risks associated
+    with loading, using, modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean that it is complicated to manipulate, and that also
+    therefore means that it is reserved for developers and experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards
+    their requirements in conditions enabling the security of their
+    systems and/or data to be ensured and, more generally, to use and
+    operate it in the same conditions as regards security.
+    
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL-C license and that you accept its terms.
+    
+    The Sollya program is distributed WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+    PURPOSE.
+    
+    This generated program is distributed WITHOUT ANY WARRANTY; without
+    even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    
+    As a special exception, you may create a larger work that contains
+    part or all of this software generated using Sollya and distribute
+    that work under terms of your choice, so long as that work isn't
+    itself a numerical code generator using the skeleton of this code or a
+    modified version thereof as a code skeleton.  Alternatively, if you
+    modify or redistribute this generated code itself, or its skeleton,
+    you may (at your option) remove this special exception, which will
+    cause this generated code and its skeleton and the resulting Sollya
+    output files to be licensed under the CeCILL-C licence without this
+    special exception.
+    
+    This special exception was added by the Sollya copyright holders in
+    version 4.1 of Sollya.
+    
+*/
+
+
 #include <mpfr.h>
 
 void

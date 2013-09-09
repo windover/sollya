@@ -61,6 +61,7 @@
 #include "expression.h"
 #include "infnorm.h"
 #include "general.h"
+#include "implement.h"
 
 #define BUFFERSIZE 64
 
@@ -609,6 +610,8 @@ int implementconst(node *c, FILE *fd, char *name) {
       appendInit2Prog( ((couple *)(curr->value))->var, ((couple *)(curr->value))->prec, &program);
     curr = curr->next;
   }
+
+  emitLegalNoticeAndDisclaimer(output);
 
   sollyaFprintf(output, "#include <mpfr.h>\n\n");
   sollyaFprintf(output, "void\n");
