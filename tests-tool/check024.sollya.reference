@@ -14,4 +14,3 @@ Information: extraction of coefficient terms from a polynomial uses a special al
 Information: extraction of coefficient terms from a polynomial uses a special algorithm for canonical forms.
 Information: expression '1 + x * 1' has been simplified to expression '1 + x'.
 [0;1]
-Information: the bash return value is 0.

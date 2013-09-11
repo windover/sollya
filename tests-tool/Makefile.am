@@ -5,9 +5,18 @@ EXTRA_DIST = check.proto $(TESTFILES) $(TESTFILES:.sollya=.sollya.reference)
 TESTS = $(TESTFILES:.sollya=.sh)
 
 check_PROGRAMS = force_compilation
+check_LIBRARIES = libraryexample.a # libraryexample.a will be a shared library actually,
+                                   # but we do not know how to explain it to automake.
+
 force_compilation_SOURCES =
 
-MOSTLYCLEANFILES = $(TESTS)
+MOSTLYCLEANFILES = $(TESTS) libraryexample.a
+
+libraryexample.$(OBJEXT): libraryexample.c
+	$(CC) $(CFLAGS) $(AM_CPPFLAGS) -fPIC -Wall -c libraryexample.c
+
+libraryexample.a: libraryexample.$(OBJEXT)
+	$(CC) $(LDFLAGS) $(AM_LDFLAGS) -shared -o libraryexample.a libraryexample.$(OBJEXT) -lmpfi -lmpfr -lgmp
 
 .PHONY: force_compilation$(EXEEXT)
 

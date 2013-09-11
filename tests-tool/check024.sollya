@@ -1,7 +1,3 @@
-print("#include <mpfi.h>\nint foo(mpfi_t rop, mpfi_t op, int n) {mpfi_interv_ui(rop, 0, 1);return 0;}") > "foo.c";
-bashexecute("gcc -fPIC -Wall -c foo.c 1> /dev/null 2>&1");
-bashexecute(" gcc -fPIC -shared -o foo.so foo.o 1> /dev/null 2>&1");
-foo = library("./foo.so");
+foo = library("./libraryexample.a");
 verbosity=9;
 evaluate(diff(foo(x+1)), 0);
-bashexecute("rm -rf foo.c foo.o foo.so");
