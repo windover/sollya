@@ -1,6 +1,93 @@
 Caught the message: the implemented polynomial is different from the original one.
 implementpoly(649037107316853453566312041152512 - 108172851219475575594385340192085 * x^2,[-1b-10;1b-10],1b-44,double,p,"timplementpoly.implementation.c") returns 649037107316853453566312041152512 + x^2 * (-108172851219475569589585837031424) and produces the following code:
 
+/*
+    This code was generated using non-trivial code generation commands of
+    the Sollya software program.
+    
+    Before using, modifying and/or integrating this code into other
+    software, review the copyright and license status of this generated
+    code. In particular, see the exception below.
+    
+    Sollya is
+    
+    Copyright 2006-2013 by
+    
+    Laboratoire de l'Informatique du Parallelisme, UMR CNRS - ENS Lyon -
+    UCB Lyon 1 - INRIA 5668,
+    
+    Laboratoire d'Informatique de Paris 6, equipe PEQUAN, UPMC Universite
+    Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+    
+    and by
+    
+    Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+    Sophia Antipolis, France.
+    
+    Contributors Ch. Lauter, S. Chevillard, M. Joldes
+    
+    christoph.lauter@ens-lyon.org
+    sylvain.chevillard@ens-lyon.org
+    joldes@lass.fr
+    
+    The Sollya software is a computer program whose purpose is to provide
+    an environment for safe floating-point code development. It is
+    particularily targeted to the automatized implementation of
+    mathematical floating-point libraries (libm). Amongst other features,
+    it offers a certified infinity norm, an automatic polynomial
+    implementer and a fast Remez algorithm.
+    
+    The Sollya software is governed by the CeCILL-C license under French
+    law and abiding by the rules of distribution of free software.  You
+    can use, modify and/ or redistribute the software under the terms of
+    the CeCILL-C license as circulated by CEA, CNRS and INRIA at the
+    following URL "http://www.cecill.info".
+    
+    As a counterpart to the access to the source code and rights to copy,
+    modify and redistribute granted by the license, users are provided
+    only with a limited warranty and the software's author, the holder of
+    the economic rights, and the successive licensors have only limited
+    liability.
+    
+    In this respect, the user's attention is drawn to the risks associated
+    with loading, using, modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean that it is complicated to manipulate, and that also
+    therefore means that it is reserved for developers and experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards
+    their requirements in conditions enabling the security of their
+    systems and/or data to be ensured and, more generally, to use and
+    operate it in the same conditions as regards security.
+    
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL-C license and that you accept its terms.
+    
+    The Sollya program is distributed WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+    PURPOSE.
+    
+    This generated program is distributed WITHOUT ANY WARRANTY; without
+    even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    
+    As a special exception, you may create a larger work that contains
+    part or all of this software generated using Sollya and distribute
+    that work under terms of your choice, so long as that work isn't
+    itself a numerical code generator using the skeleton of this code or a
+    modified version thereof as a code skeleton.  Alternatively, if you
+    modify or redistribute this generated code itself, or its skeleton,
+    you may (at your option) remove this special exception, which will
+    cause this generated code and its skeleton and the resulting Sollya
+    output files to be licensed under the CeCILL-C licence without this
+    special exception.
+    
+    This special exception was added by the Sollya copyright holders in
+    version 4.1 of Sollya.
+    
+*/
+
+
 #define p_coeff_0h 6.49037107316853453566312041152512000000000000000000000000000000000000000000000000e+32
 #define p_coeff_2h -1.08172851219475569589585837031424000000000000000000000000000000000000000000000000e+32
 
@@ -28,6 +115,93 @@ p_t_3_0h = p_coeff_0h + p_t_2_0h;
 
 Caught the message: the infered precision of a coefficient is higher than what seems to be needed to meet the accuracy target.
 implementpoly(649037107316853453566312041152512 - 108172851219475575594385340192085 * x^2,[-1b-10;1b-10],1b-44,double,p,"timplementpoly.implementation.c",honorcoeffprec) returns 649037107316853453566312041152512 + x^2 * (-108172851219475575594385340192085) and produces the following code:
+
+/*
+    This code was generated using non-trivial code generation commands of
+    the Sollya software program.
+    
+    Before using, modifying and/or integrating this code into other
+    software, review the copyright and license status of this generated
+    code. In particular, see the exception below.
+    
+    Sollya is
+    
+    Copyright 2006-2013 by
+    
+    Laboratoire de l'Informatique du Parallelisme, UMR CNRS - ENS Lyon -
+    UCB Lyon 1 - INRIA 5668,
+    
+    Laboratoire d'Informatique de Paris 6, equipe PEQUAN, UPMC Universite
+    Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+    
+    and by
+    
+    Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+    Sophia Antipolis, France.
+    
+    Contributors Ch. Lauter, S. Chevillard, M. Joldes
+    
+    christoph.lauter@ens-lyon.org
+    sylvain.chevillard@ens-lyon.org
+    joldes@lass.fr
+    
+    The Sollya software is a computer program whose purpose is to provide
+    an environment for safe floating-point code development. It is
+    particularily targeted to the automatized implementation of
+    mathematical floating-point libraries (libm). Amongst other features,
+    it offers a certified infinity norm, an automatic polynomial
+    implementer and a fast Remez algorithm.
+    
+    The Sollya software is governed by the CeCILL-C license under French
+    law and abiding by the rules of distribution of free software.  You
+    can use, modify and/ or redistribute the software under the terms of
+    the CeCILL-C license as circulated by CEA, CNRS and INRIA at the
+    following URL "http://www.cecill.info".
+    
+    As a counterpart to the access to the source code and rights to copy,
+    modify and redistribute granted by the license, users are provided
+    only with a limited warranty and the software's author, the holder of
+    the economic rights, and the successive licensors have only limited
+    liability.
+    
+    In this respect, the user's attention is drawn to the risks associated
+    with loading, using, modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean that it is complicated to manipulate, and that also
+    therefore means that it is reserved for developers and experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards
+    their requirements in conditions enabling the security of their
+    systems and/or data to be ensured and, more generally, to use and
+    operate it in the same conditions as regards security.
+    
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL-C license and that you accept its terms.
+    
+    The Sollya program is distributed WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+    PURPOSE.
+    
+    This generated program is distributed WITHOUT ANY WARRANTY; without
+    even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    
+    As a special exception, you may create a larger work that contains
+    part or all of this software generated using Sollya and distribute
+    that work under terms of your choice, so long as that work isn't
+    itself a numerical code generator using the skeleton of this code or a
+    modified version thereof as a code skeleton.  Alternatively, if you
+    modify or redistribute this generated code itself, or its skeleton,
+    you may (at your option) remove this special exception, which will
+    cause this generated code and its skeleton and the resulting Sollya
+    output files to be licensed under the CeCILL-C licence without this
+    special exception.
+    
+    This special exception was added by the Sollya copyright holders in
+    version 4.1 of Sollya.
+    
+*/
+
 
 #define p_coeff_0h 6.49037107316853453566312041152512000000000000000000000000000000000000000000000000e+32
 #define p_coeff_2h -1.08172851219475569589585837031424000000000000000000000000000000000000000000000000e+32
@@ -69,6 +243,93 @@ Caught the message: a coefficient in a Horner scheme is not guaranteed to also b
 Caught the message: a coefficient in a Horner scheme is not guaranteed to also be twice as large as the subpolynomial.
 Caught the message: an error has occured during the determination of the required precisions.
 implementpoly(15 + x * (14 + x * (13 + x * (12 + x * (11 + x * (10 + x * (9 + x * (8 + x * (7 + x * (6 + x * (5 + x * (4 + x * (3 + x * (2 + x))))))))))))),[-1b-1;1b-1],1b-60,doubledouble,p,"timplementpoly.implementation.c",honorcoeffprec,"timplementpoly.implementation.gappa") returns 15 + x * (14 + x * (13 + x * (12 + x * (11 + x * (10 + x * (9 + x * (8 + x * (7 + x * (6 + x * (5 + x * (4 + x * (3 + x * (2 + x))))))))))))) and produces the following code:
+
+/*
+    This code was generated using non-trivial code generation commands of
+    the Sollya software program.
+    
+    Before using, modifying and/or integrating this code into other
+    software, review the copyright and license status of this generated
+    code. In particular, see the exception below.
+    
+    Sollya is
+    
+    Copyright 2006-2013 by
+    
+    Laboratoire de l'Informatique du Parallelisme, UMR CNRS - ENS Lyon -
+    UCB Lyon 1 - INRIA 5668,
+    
+    Laboratoire d'Informatique de Paris 6, equipe PEQUAN, UPMC Universite
+    Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France
+    
+    and by
+    
+    Centre de recherche INRIA Sophia-Antipolis Mediterranee, equipe APICS,
+    Sophia Antipolis, France.
+    
+    Contributors Ch. Lauter, S. Chevillard, M. Joldes
+    
+    christoph.lauter@ens-lyon.org
+    sylvain.chevillard@ens-lyon.org
+    joldes@lass.fr
+    
+    The Sollya software is a computer program whose purpose is to provide
+    an environment for safe floating-point code development. It is
+    particularily targeted to the automatized implementation of
+    mathematical floating-point libraries (libm). Amongst other features,
+    it offers a certified infinity norm, an automatic polynomial
+    implementer and a fast Remez algorithm.
+    
+    The Sollya software is governed by the CeCILL-C license under French
+    law and abiding by the rules of distribution of free software.  You
+    can use, modify and/ or redistribute the software under the terms of
+    the CeCILL-C license as circulated by CEA, CNRS and INRIA at the
+    following URL "http://www.cecill.info".
+    
+    As a counterpart to the access to the source code and rights to copy,
+    modify and redistribute granted by the license, users are provided
+    only with a limited warranty and the software's author, the holder of
+    the economic rights, and the successive licensors have only limited
+    liability.
+    
+    In this respect, the user's attention is drawn to the risks associated
+    with loading, using, modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean that it is complicated to manipulate, and that also
+    therefore means that it is reserved for developers and experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards
+    their requirements in conditions enabling the security of their
+    systems and/or data to be ensured and, more generally, to use and
+    operate it in the same conditions as regards security.
+    
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL-C license and that you accept its terms.
+    
+    The Sollya program is distributed WITHOUT ANY WARRANTY; without even
+    the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+    PURPOSE.
+    
+    This generated program is distributed WITHOUT ANY WARRANTY; without
+    even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    
+    As a special exception, you may create a larger work that contains
+    part or all of this software generated using Sollya and distribute
+    that work under terms of your choice, so long as that work isn't
+    itself a numerical code generator using the skeleton of this code or a
+    modified version thereof as a code skeleton.  Alternatively, if you
+    modify or redistribute this generated code itself, or its skeleton,
+    you may (at your option) remove this special exception, which will
+    cause this generated code and its skeleton and the resulting Sollya
+    output files to be licensed under the CeCILL-C licence without this
+    special exception.
+    
+    This special exception was added by the Sollya copyright holders in
+    version 4.1 of Sollya.
+    
+*/
+
 
 #define p_coeff_0h 1.50000000000000000000000000000000000000000000000000000000000000000000000000000000e+01
 #define p_coeff_1h 1.40000000000000000000000000000000000000000000000000000000000000000000000000000000e+01
