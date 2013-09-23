@@ -22836,9 +22836,12 @@ node *evaluateThingInnerst(node *tree) {
 	      mpfr_set(*(xrange.b),a,GMP_RNDU);
 	      evaluateRangeFunction(yrange, copy->child1, xrange, tools_precision * 256);
 	      freeThing(copy);
-	      if (mpfr_inf_p(*(yrange.a)) &&
-		  mpfr_inf_p(*(yrange.b)) &&
-		  (mpfr_sgn(*(yrange.a)) == mpfr_sgn(*(yrange.b)))) {
+	      if ((mpfr_inf_p(*(yrange.a)) &&
+		   mpfr_inf_p(*(yrange.b)) &&
+		   (mpfr_sgn(*(yrange.a)) == mpfr_sgn(*(yrange.b)))) ||
+		  (mpfr_number_p(*(yrange.a)) && 
+		   mpfr_number_p(*(yrange.b)) &&
+		   (mpfr_cmp(*(yrange.a),*(yrange.b)) == 0))) {
 		copy = makeConstant(*(yrange.a));
 	      } else {
 		copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
