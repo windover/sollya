@@ -374,12 +374,6 @@ extern "C" int findCoeffInPseudoPolynomial(node **c, node *poly, node *g) {
     *c = makeDiv(copyTree(poly), copyTree(g)); return 1;
   }
 
-  temp = makePow(makeVariable(), makeConstantDouble(0.0));
-  if ( isSyntacticallyEqual(poly, temp) && (isConstant(g)) ) {
-    *c = makeDiv(makeConstantDouble(1.0), copyTree(g));
-    free_memory(temp); return 1;
-  }
-
   temp = makeConstantDouble(0.0);
   if (isSyntacticallyEqual(poly, temp)) { *c = temp; return 1; }
 
