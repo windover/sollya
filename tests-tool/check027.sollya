@@ -1,0 +1,49 @@
+/* Non-regression tests for #15256 */
+restart;
+print("=============== Test number 1 ================");
+a=17; b=0; c=abs(a)/abs(b); round(c,17,RD);
+a=17; b=0; c=abs(a)/abs(b); round(c,12,RN);
+
+
+/*********************************************************************************/
+/* Non-regression tests for #10322*/
+restart;
+print("=============== Test number 2 ================");
+printsingle(round(2^2000,SG,RD));
+printsingle(round(2^2000,SG,RN));
+printsingle(round( (2^24-1)*2^104,SG,RN));
+printsingle(round( (2^24-1)*2^104,SG,RD));
+printsingle(round( (2^24-1)*2^104,SG,RU));
+printsingle(round( (2^24-1/2)*2^104,SG,RD));
+printsingle(round( (2^24-1/2)*2^104,SG,RN));
+printsingle(round( (2^24-1/2)*2^104,SG,RU));
+printsingle(round( (2^23)*2^(-149),SG,RD));
+printsingle(round( (2^23)*2^(-149),SG,RN));
+printsingle(round( (2^23)*2^(-149),SG,RU));
+printsingle(round( (2^23-1)*2^(-149),SG,RD));
+printsingle(round( (2^23-1)*2^(-149),SG,RN));
+printsingle(round( (2^23-1)*2^(-149),SG,RU));
+printsingle(round( (1)*2^(-149),SG,RD));
+printsingle(round( (1)*2^(-149),SG,RN));
+printsingle(round( (1)*2^(-149),SG,RU));
+printsingle(round( (1/2)*2^(-149),SG,RD));
+printsingle(round( (1/2)*2^(-149),SG,RN));
+printsingle(round( (1/2)*2^(-149),SG,RU));
+printsingle(round( -(2^24-1)*2^104,SG,RN));
+printsingle(round( -(2^24-1)*2^104,SG,RD));
+printsingle(round( -(2^24-1)*2^104,SG,RU));
+printsingle(round( -(2^24-1/2)*2^104,SG,RD));
+printsingle(round( -(2^24-1/2)*2^104,SG,RN));
+printsingle(round( -(2^24-1/2)*2^104,SG,RU));
+printsingle(round( -(2^23)*2^(-149),SG,RD));
+printsingle(round( -(2^23)*2^(-149),SG,RN));
+printsingle(round( -(2^23)*2^(-149),SG,RU));
+printsingle(round( -(2^23-1)*2^(-149),SG,RD));
+printsingle(round( -(2^23-1)*2^(-149),SG,RN));
+printsingle(round( -(2^23-1)*2^(-149),SG,RU));
+printsingle(round( -(1)*2^(-149),SG,RD));
+printsingle(round( -(1)*2^(-149),SG,RN));
+printsingle(round( -(1)*2^(-149),SG,RU));
+printsingle(round( -(1/2)*2^(-149),SG,RD));
+printsingle(round( -(1/2)*2^(-149),SG,RN));
+printsingle(round( -(1/2)*2^(-149),SG,RU));

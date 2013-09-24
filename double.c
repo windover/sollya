@@ -162,214 +162,6 @@ int mpfr_round_to_prec(mpfr_t rop, mpfr_t op, mp_prec_t prec) {
 }
 
 
-int mpfr_round_to_single(mpfr_t rop, mpfr_t x) {
-  int res;
-  double d, dd;
-  mpfr_t temp, tempRound, temp2;
-  fl_number xfl;
-  float xfloat;
-
-  mpfr_init2(temp,mpfr_get_prec(x));
-  mpfr_init2(temp2,mpfr_get_prec(x));
-  mpfr_init2(tempRound,24);
-
-  mpfr_set(tempRound,x,GMP_RNDN);
-
-  d = sollya_mpfr_get_d(tempRound,GMP_RNDN);
-  xfloat = d;
-  dd = xfloat;
-  if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
-    if (!noRoundingWarnings) {
-      printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
-    }
-  }
-
-  res = mpfr_cmp(temp,x);
-  if (res && mpfr_number_p(x) && mpfr_number_p(temp)) {
-    xfl.f = xfloat;
-    if (*((uint32_t *) &xfl.i) == 0x80000000U) {
-      xfl.i = 0x80000001U;
-    } else {
-      if (res < 0) {
-        if (xfl.i >= 0) {
-          xfl.i++;
-        } else {
-          xfl.i--;
-        }
-      } else {
-        if (xfl.i < 0) {
-          xfl.i--;
-        } else {
-          xfl.i++;
-        }
-      }
-    }
-    dd = xfl.f;
-    if (mpfr_set_d(temp2,dd,GMP_RNDN) != 0) {
-      if (!noRoundingWarnings) {
-        printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
-      }
-    }
-    mpfr_sub(temp,temp,x,GMP_RNDN);
-    mpfr_sub(temp2,temp2,x,GMP_RNDN);
-    if (mpfr_cmpabs(temp2,temp) < 0) {
-      xfloat = dd;
-      if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
-        if (!noRoundingWarnings) {
-          printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
-        }
-      }
-    }
-  }
-
-  dd = xfloat;
-
-  if (mpfr_set_d(rop,dd,GMP_RNDN) != 0) {
-    if (!noRoundingWarnings) {
-      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_SINGLE,"Warning: double rounding occurred on invoking the single rounding operator.\n");
-      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
-    }
-  }
-
-  res = mpfr_cmp(rop,x);
-
-  mpfr_clear(temp);
-  mpfr_clear(temp2);
-  mpfr_clear(tempRound);
-  return res;
-}
-
-int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
-  int res;
-  double d, dd;
-  mpfr_t temp, tempRound, temp2;
-  fl_number xfl;
-  float xfloat;
-
-  mpfr_init2(temp,mpfr_get_prec(x));
-  mpfr_init2(temp2,mpfr_get_prec(x));
-  mpfr_init2(tempRound,24);
-
-  mpfr_set(tempRound,x,GMP_RNDN);
-
-  d = sollya_mpfr_get_d(tempRound,GMP_RNDN);
-  xfloat = d;
-  dd = xfloat;
-  if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
-    if (!noRoundingWarnings) {
-      printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
-    }
-  }
-
-  res = mpfr_cmp(temp,x);
-  if ((res != 0) && mpfr_number_p(x) && mpfr_number_p(temp)) {
-    xfl.f = xfloat;
-    if (*((uint32_t *) &xfl.i) == 0x80000000U) {
-      xfl.i = 0x80000001U;
-    } else {
-      if (res < 0) {
-        if (xfl.i >= 0) {
-          xfl.i++;
-        } else {
-          xfl.i--;
-        }
-      } else {
-        if (xfl.i < 0) {
-          xfl.i--;
-        } else {
-          xfl.i++;
-        }
-      }
-    }
-    dd = xfl.f;
-    if (mpfr_set_d(temp2,dd,GMP_RNDN) != 0) {
-      if (!noRoundingWarnings) {
-        printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
-      }
-    }
-    mpfr_sub(temp,temp,x,GMP_RNDN);
-    mpfr_sub(temp2,temp2,x,GMP_RNDN);
-    if (mpfr_cmpabs(temp2,temp) < 0) {
-      xfloat = dd;
-      if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
-        if (!noRoundingWarnings) {
-          printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
-        }
-      }
-    }
-  }
-
-  dd = xfloat;
-  if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
-    if (!noRoundingWarnings) {
-      printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
-    }
-  }
-
-  /* Now, temp is equal to the single rounding of x under round to nearest
-   */
-  res = mpfr_cmp(temp,x);
-  if ((mode != GMP_RNDN) &&
-      mpfr_number_p(x) &&
-      mpfr_number_p(temp) &&
-      (res != 0))  {
-    /* Here, we have an inexact single rounding to nearest that is a number
-       but we must produce a directed rounding
-    */
-    if ((res < 0) &&
-	((mode == GMP_RNDU) ||
-	 ((mode == GMP_RNDZ) && (mpfr_sgn(x) < 0)))) {
-      /* The rounded value is too small */
-      xfl.f = xfloat;
-      if (xfl.i >= 0) {
-	xfl.i++;
-      } else {
-	xfl.i--;
-      }
-      dd = xfl.f;
-      if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
-	if (!noRoundingWarnings) {
-	  printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
-	}
-      }
-    } else {
-      if ((res > 0) &&
-	  ((mode == GMP_RNDD) ||
-	   ((mode == GMP_RNDZ) && (mpfr_sgn(x) > 0)))) {
-	/* The rounded value is too great */
-	xfl.f = xfloat;
-	if (xfl.i >= 0) {
-	  xfl.i--;
-	} else {
-	  xfl.i++;
-	}
-	dd = xfl.f;
-	if (mpfr_set_d(temp,dd,GMP_RNDN) != 0) {
-	  if (!noRoundingWarnings) {
-	    printMessage(1,SOLLYA_MSG_ROUNDING_OCCURRED_WHILE_CONVERTING_FROM_DOUBLE,"Warning: rounding occurred unexpectedly on reconverting a double value.\n");
-	  }
-	}
-      }
-    }
-  }
-
-  if (mpfr_set(rop,temp,GMP_RNDN) != 0) {
-    if (!noRoundingWarnings) {
-      printMessage(1,SOLLYA_MSG_DOUBLE_ROUNDING_IN_ROUND_TO_SINGLE,"Warning: double rounding occurred on invoking the single rounding operator.\n");
-      printMessage(1,SOLLYA_MSG_CONTINUATION,"Try to increase the working precision.\n");
-    }
-  }
-
-  res = mpfr_cmp(rop,x);
-
-  mpfr_clear(temp);
-  mpfr_clear(temp2);
-  mpfr_clear(tempRound);
-  return res;
-}
-
-
-
 int mpfr_round_to_doubledouble(mpfr_t rop, mpfr_t op) {
   double d;
   mpfr_t accu, temp, rest;
@@ -1396,16 +1188,37 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
   if (mpfr_inf_p(ya) || mpfr_inf_p(yb)) {
     /* At least one of ya and yb is an infinity. Check if both are infinity. */
     if (mpfr_inf_p(ya) && mpfr_inf_p(yb)) {
-      /* Here, both numbers are infinity. Return the rounding of infinity. */
-      *ternaryOkay = 1;
-      *ternary = round_to_format_or_expansion_format(rop, ya, expansion_format_round, format, prec, mode);
-      sollya_mpfi_clear(y);
-      mpfr_clear(ya);
-      mpfr_clear(yb);
-      mpfr_clear(rya);
-      mpfr_clear(ryb);
-      sollya_mpfi_clear(x);
-      return 1;
+      /* Here, both numbers are infinity. Check if they are identical */
+      if ( ((mpfr_sgn(ya) > 0) && (mpfr_sgn(yb) > 0)) ||
+           ((mpfr_sgn(ya) < 0) && (mpfr_sgn(yb) < 0)) ) {
+        /* They are equal: return the rounding of infinity. */
+        *ternaryOkay = 1;
+        *ternary = round_to_format_or_expansion_format(rop, ya, expansion_format_round, format, prec, mode);
+        sollya_mpfi_clear(y);
+        mpfr_clear(ya);
+        mpfr_clear(yb);
+        mpfr_clear(rya);
+        mpfr_clear(ryb);
+        sollya_mpfi_clear(x);
+        return 1;
+      }
+      else {
+        /* They are different infinities. Return NaN */
+        if (!noRoundingWarnings) {
+          printMessage(1,SOLLYA_MSG_NO_CORRECT_ROUNDING_FOR_ROUND_OPERATOR,"Warning: no correctly rounded result could be obtained upon evaluation of a rounding operator.\n");
+          printMessage(2,SOLLYA_MSG_NO_CORRECT_TERNARY_VALUE_FOR_ROUND,"Warning: the actual rounding direction for a round operation could not be determined.\n");
+        }
+        *ternaryOkay = 0;
+        mpfr_set_nan(ya);
+        *ternary = round_to_format_or_expansion_format(rop, ya, expansion_format_round, format, prec, mode);
+        sollya_mpfi_clear(y);
+        mpfr_clear(ya);
+        mpfr_clear(yb);
+        mpfr_clear(rya);
+        mpfr_clear(ryb);
+        sollya_mpfi_clear(x);
+        return 1;
+      }
     }
 
     /* Here only one of ya or yb is an infinity, the other one is a real number
@@ -1420,9 +1233,9 @@ int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternary
     }
     *ternaryOkay = 0;
     if (mpfr_inf_p(ya)) {
-      *ternary = round_to_format_or_expansion_format(rop, ya, expansion_format_round, format, prec, mode);
-    } else {
       *ternary = round_to_format_or_expansion_format(rop, yb, expansion_format_round, format, prec, mode);
+    } else {
+      *ternary = round_to_format_or_expansion_format(rop, ya, expansion_format_round, format, prec, mode);
     }
     sollya_mpfi_clear(y);
     mpfr_clear(ya);
@@ -1921,6 +1734,14 @@ int mpfr_round_to_ieee_format(mpfr_t rop, mpfr_t op, mp_prec_t prec, unsigned in
   res = mpfr_cmp(rop,op);
 
   return res;
+}
+
+int mpfr_round_to_single(mpfr_t rop, mpfr_t x) {
+  return mpfr_round_to_ieee_format(rop, x, 24, 8, GMP_RNDN);
+}
+
+int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode) {
+  return mpfr_round_to_ieee_format(rop, x, 24, 8, mode);
 }
 
 int mpfr_round_to_quad(mpfr_t rop, mpfr_t x) {

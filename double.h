@@ -66,6 +66,7 @@ int round_to_format_or_expansion_format(mpfr_t rop, mpfr_t op, int expansion_for
 int round_constant_expr_to_format_or_expansion_format(int *ternary, int *ternaryOkay, mpfr_t rop, node *op, int expansion_format_round, int format, mp_prec_t prec, mp_rnd_t mode);
 int mpfr_round_to_double(mpfr_t rop, mpfr_t op);
 int mpfr_round_to_single(mpfr_t rop, mpfr_t op);
+int mpfr_round_to_single_mode(mpfr_t rop, mpfr_t op, mp_rnd_t mode);
 int mpfr_round_to_quad(mpfr_t rop, mpfr_t x);
 int mpfr_round_to_halfprecision(mpfr_t rop, mpfr_t x);
 int mpfr_round_to_quad_mode(mpfr_t rop, mpfr_t x, mp_rnd_t mode);
