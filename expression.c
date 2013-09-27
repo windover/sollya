@@ -9178,23 +9178,19 @@ int isPolynomial(node *tree) {
   case POW:
     {
       res = 0;
-      if (isConstant(tree)) {
-	res = 1; 
-      } else {
-	if (isPolynomial(tree->child1)) {
-	  if (accessThruMemRef(tree->child2)->nodeType == CONSTANT)
-	    temp = tree->child2;
-	  else
-	    temp = simplifyTreeErrorfree(tree->child2);
-	  if (accessThruMemRef(temp)->nodeType == CONSTANT) {
-	    if (mpfr_integer_p(*(accessThruMemRef(temp)->value))) {
-	      if (mpfr_sgn(*(accessThruMemRef(temp)->value)) >= 0) {
-		res = 1;
-	      }
+      if (isPolynomial(tree->child1)) {
+	if (accessThruMemRef(tree->child2)->nodeType == CONSTANT)
+	  temp = tree->child2;
+	else
+	  temp = simplifyTreeErrorfree(tree->child2);
+	if (accessThruMemRef(temp)->nodeType == CONSTANT) {
+	  if (mpfr_integer_p(*(accessThruMemRef(temp)->value))) {
+	    if (mpfr_sgn(*(accessThruMemRef(temp)->value)) >= 0) {
+	      res = 1;
 	    }
 	  }
-	  if (accessThruMemRef(tree->child2)->nodeType != CONSTANT) free_memory(temp);
 	}
+	if (accessThruMemRef(tree->child2)->nodeType != CONSTANT) free_memory(temp);
       }
     }
     break;
