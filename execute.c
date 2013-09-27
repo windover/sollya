@@ -22811,7 +22811,7 @@ node *evaluateThingInnerst(node *tree) {
     }
     break;
   case EVALUATE:
-    copy->child1 = evaluateThingInner(tree->child1);
+    copy->child1 = evaluateThingInner(tree->child1); 
     copy->child2 = evaluateThingInner(tree->child2);
     if (isPureTree(copy->child1)) {
       if (isPureTree(copy->child2)) {
