@@ -11,8 +11,7 @@
 $COMMAND(<function>) expands all polynomial subexpressions in function
 <function> as far as possible. Factors of sums are multiplied out,
 power operators with constant positive integer exponents are replaced
-by multiplications and divisions are multiplied out, i.e. denomiators
-are brought at the most interior point of expressions.
+by multiplications.
 
 #EXAMPLE
 print(expand(x^3));

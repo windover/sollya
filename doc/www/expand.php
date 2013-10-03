@@ -24,8 +24,7 @@
 <li><?php linkTo("command","expand","expand");?>(<span class="arg">function</span>) expands all polynomial subexpressions in function 
 <span class="arg">function</span> as far as possible. Factors of sums are multiplied out, 
 power operators with constant positive integer exponents are replaced 
-by multiplications and divisions are multiplied out, i.e. denomiators 
-are brought at the most interior point of expressions. 
+by multiplications. 
 </ul> 
 </div> 
 <div class="divExamples"> 
