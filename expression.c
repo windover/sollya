@@ -3405,6 +3405,7 @@ int isBoundedByReal(node *tree) {
   case ERFC:
   case EXP_M1:
   case NEG:
+  case ABS:
     return isBoundedByReal(accessThruMemRef(tree)->child1);
     break;
   default:
@@ -3542,6 +3543,7 @@ int isNotUniformlyZero(node *tree) {
   case ERFC:
   case EXP_M1:
   case NEG:
+  case ABS:
     return (isNotUniformlyZero(accessThruMemRef(tree)->child1) &&
 	    isBoundedByReal(accessThruMemRef(tree)->child1));
     break;
@@ -3666,7 +3668,8 @@ int canDoSimplificationSubtraction(node *tree) {
   sollya_mpfi_clear(x);
   if (res) return 1;
 
-  /* Expressions log(h) - log(h) can be simplified if h/h can be simplified to 1 
+  /* Expressions log(h) - log(h) can be simplified if h/h can be
+     simplified to 1, h is not uniformly zero and is positive in a test point.
 
      The case when log(h) is infinity can happen only when h is infinity or zero. 
      In both cases, h/h cannot be simplified to 1.
@@ -3676,8 +3679,23 @@ int canDoSimplificationSubtraction(node *tree) {
   case LOG:
   case LOG_2:
   case LOG_10:
-  case LOG_1P:
-    return canDoSimplificationDivision(accessThruMemRef(tree)->child1);
+    if (!canDoSimplificationDivision(accessThruMemRef(tree)->child1)) return 0;
+    if (!isNotUniformlyZero(accessThruMemRef(tree)->child1)) return 0;
+    sollya_mpfi_init2(x, 64);
+    sollya_mpfi_set_si(x, 1);
+    sollya_mpfi_init2(y, 64);
+    evaluateInterval(y, accessThruMemRef(tree)->child1, NULL, x);
+    if (sollya_mpfi_has_infinity(y) || 
+	sollya_mpfi_has_nan(y) ||
+	sollya_mpfi_has_zero(y) ||
+	sollya_mpfi_has_negative_numbers(y)) {
+      res = 0;
+    } else {
+      res = 1;
+    }
+    sollya_mpfi_clear(y);
+    sollya_mpfi_clear(x);
+    return res;    
     break;
   default:
     break;
@@ -3700,6 +3718,7 @@ int canDoSimplificationSubtraction(node *tree) {
   case ERFC:
   case EXP_M1:
   case NEG:
+  case ABS:
     return canDoSimplificationSubtraction(accessThruMemRef(tree)->child1);
     break;
   default:
@@ -3895,6 +3914,7 @@ int canDoSimplificationDivision(node *tree) {
   case ERFC:
   case EXP_M1:
   case NEG:
+  case ABS:
     if (!isNotUniformlyZero(accessThruMemRef(tree)->child1)) return 0;
     return canDoSimplificationSubtraction(accessThruMemRef(tree)->child1);
     break;
