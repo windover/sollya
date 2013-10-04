@@ -3184,6 +3184,14 @@ node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
   return addMemRef(res);
 }
 
+/*
+  Let f the function represented by the expression tree.
+  If hasNoZero returns true, f is defined over all real numbers except maybe
+  on a discrete set of points (in particular, f is not identically equal to NaN)
+  and f never takes the value 0 where it is defined. Moreover, it cannot be
+  continuously extended to 0 (in either direction) at points where f is not
+  defined.
+ */
 int hasNoZero(node *tree) {
   int res;
   sollya_mpfi_t x, y;
@@ -3327,6 +3335,12 @@ int hasNoZero(node *tree) {
   return 0;
 }
 
+/*
+  Let f the function represented by the expression tree.
+  If isBoundedByReal returns true, f is defined over all real numbers except
+  maybe on a discrete set of points (in particular, f is not identically equal
+  to NaN) and on any bounded interval I, f remains bounded.
+ */
 int isBoundedByReal(node *tree) {
   sollya_mpfi_t y, x;
   int res;
@@ -3464,6 +3478,12 @@ int isBoundedByReal(node *tree) {
   return 0;
 }
 
+/*
+  Let f the function represented by the expression tree.
+  If isNotUniformlyZero returns true, f is defined over all real numbers except
+  maybe on a discrete set of points (in particular, f is not identically equal
+  to NaN) and the set of its zeros is discrete.
+ */
 int isNotUniformlyZero(node *tree) {
   sollya_mpfi_t y, x;
   int res;
@@ -3607,7 +3627,13 @@ int isNotUniformlyZero(node *tree) {
 
 int canDoSimplificationDivision(node *tree);
 
-/* Decide if tree - tree can safely be simplified to 0 */
+/*
+  Let f the function represented by the expression tree.
+  If canDoSimplificationSubtraction returns true, f-f is defined over all real
+  numbers except maybe on a discrete set of points (in particular, f is not
+  identically equal to NaN) and has value zero on all points where it is
+  defined.
+ */
 int canDoSimplificationSubtraction(node *tree) {
   sollya_mpfi_t y, x;
   int res;
@@ -3817,7 +3843,12 @@ int canDoSimplificationSubtraction(node *tree) {
   return 0;
 }
 
-/* Decide if tree/tree can safely be simplified to 1 */
+/*
+  Let f the function represented by the expression tree.
+  If canDoSimplificationDivision returns true, f/f is defined over all real
+  numbers except maybe on a discrete set of points (in particular, f is not
+  identically equal to NaN) and has value one on all points where it is defined.
+ */
 int canDoSimplificationDivision(node *tree) {
   sollya_mpfi_t y, x;
   int res;
