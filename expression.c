@@ -3197,14 +3197,13 @@ int hasNoZero(node *tree) {
   sollya_mpfi_t x, y;
   mpfr_t yPt;
 
-  /* If f is a constant that evaluates to a non-zero real
-     (non-infinity, non-NaN) has no zero. 
+  /* If f is a constant that evaluates to a non-zero extended real
+     (non-NaN) has no zero. 
   */
   if (isConstant(tree)) {
     sollya_mpfi_init2(y, 64);
     evaluateConstantExpressionToInterval(y, tree);
-    if (sollya_mpfi_has_infinity(y) || 
-	sollya_mpfi_has_nan(y) ||
+    if (sollya_mpfi_has_nan(y) ||
 	sollya_mpfi_has_zero(y)) {
       res = 0;
     } else {
@@ -3214,15 +3213,14 @@ int hasNoZero(node *tree) {
     return res;
   }
 
-  /* If f evaluates over the reals to a non-infinity, non-NaN interval
+  /* If f evaluates over the reals to an extended real non-NaN interval
      not containing zero, it has no zero. 
   */
   sollya_mpfi_init2(x, 64);
   sollya_mpfi_set_full_range(x);
   sollya_mpfi_init2(y, 64);
   evaluateInterval(y, tree, NULL, x);
-  if (sollya_mpfi_has_infinity(y) || 
-      sollya_mpfi_has_nan(y) ||
+  if (sollya_mpfi_has_nan(y) ||
       sollya_mpfi_has_zero(y)) {
     res = 0;
   } else {
@@ -3293,10 +3291,10 @@ int hasNoZero(node *tree) {
     sollya_mpfi_set_full_range(x);
     sollya_mpfi_init2(y, 64);
     evaluateInterval(y, accessThruMemRef(tree)->child1, NULL, x);
-    if (sollya_mpfi_has_infinity(y) || 
-	sollya_mpfi_has_nan(y) ||
+    if (sollya_mpfi_has_nan(y) ||
 	sollya_mpfi_has_zero(y) ||
-	sollya_mpfi_has_negative_numbers(y)) {
+	sollya_mpfi_has_negative_numbers(y) ||
+	sollya_mpfi_is_negative_infinity(y)) {
       res = 0;
     } else {
       res = 1;
@@ -3399,7 +3397,7 @@ int isBoundedByReal(node *tree) {
   if (accessThruMemRef(tree)->nodeType == DIV) {
     return (isBoundedByReal(accessThruMemRef(tree)->child1) && 
 	    isBoundedByReal(accessThruMemRef(tree)->child2) &&
-	    hasNoZero(accessThruMemRef(tree)->child2));
+	    hasNoZero(accessThruMemRef(tree)->child2));             /* use of hasNoZero perhaps too pessimistic */
   }
   
   /* f is of the form f = g(h), g is defined on the whole real line
@@ -3500,8 +3498,7 @@ int isNotUniformlyZero(node *tree) {
     sollya_mpfi_set_d(x, 17.25);
     sollya_mpfi_init2(y, 64);
     evaluateInterval(y, tree, NULL, x);
-    if (sollya_mpfi_has_infinity(y) || 
-	sollya_mpfi_has_nan(y) ||
+    if (sollya_mpfi_has_nan(y) ||
 	sollya_mpfi_has_zero(y)) {
       res = 0;
     } else {
@@ -3519,8 +3516,7 @@ int isNotUniformlyZero(node *tree) {
   sollya_mpfi_set_full_range(x);
   sollya_mpfi_init2(y, 64);
   evaluateInterval(y, tree, NULL, x);
-  if (sollya_mpfi_has_infinity(y) || 
-      sollya_mpfi_has_nan(y) ||
+  if (sollya_mpfi_has_nan(y) ||
       sollya_mpfi_has_zero(y)) {
     res = 0;
   } else {
