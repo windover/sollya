@@ -3253,7 +3253,7 @@ int hasNoZero(node *tree) {
   */
   switch (accessThruMemRef(tree)->nodeType) {
   case EXP:
-  case COSH:
+  case COSH: /* this case is pessimistic: the only thing that matters is tree->child1 well defined on R\discrete (S.C.) */
   case ERFC:
     return isBoundedByReal(accessThruMemRef(tree)->child1);
     break;
@@ -3273,8 +3273,8 @@ int hasNoZero(node *tree) {
   case ASINH:
   case ERF:
   case EXP_M1:
-  case NEG:
-    return (isBoundedByReal(accessThruMemRef(tree)->child1) && 
+  case NEG: /* And abs ? (S.C.) */
+    return (isBoundedByReal(accessThruMemRef(tree)->child1) && /* IMHO useless (S.C.) */
 	    hasNoZero(accessThruMemRef(tree)->child1));
     break;
   default:
@@ -3290,11 +3290,11 @@ int hasNoZero(node *tree) {
     sollya_mpfi_init2(x, 64);
     sollya_mpfi_set_full_range(x);
     sollya_mpfi_init2(y, 64);
-    evaluateInterval(y, accessThruMemRef(tree)->child1, NULL, x);
+    evaluateInterval(y, accessThruMemRef(tree)->child1, NULL, x); /* g could be constant to +Inf on a non trivial interval (S.C.) */
     if (sollya_mpfi_has_nan(y) ||
 	sollya_mpfi_has_zero(y) ||
 	sollya_mpfi_has_negative_numbers(y) ||
-	sollya_mpfi_is_negative_infinity(y)) {
+	sollya_mpfi_is_negative_infinity(y)) { /* --> should be changed to isBoundedByReal(child1) IMHO (S.C.) */
       res = 0;
     } else {
       res = 1;
@@ -3398,7 +3398,7 @@ int isBoundedByReal(node *tree) {
     return (isBoundedByReal(accessThruMemRef(tree)->child1) && 
 	    isBoundedByReal(accessThruMemRef(tree)->child2) &&
 	    hasNoZero(accessThruMemRef(tree)->child2));             /* use of hasNoZero perhaps too pessimistic */
-  }
+  }  /* hasNoZero mandatory, but isBoundedByReal(child2) useless IMHO (S.C.) */
   
   /* f is of the form f = g(h), g is defined on the whole real line
      and h stays bounded by a real, f is bounded by a real.
@@ -3499,7 +3499,7 @@ int isNotUniformlyZero(node *tree) {
     sollya_mpfi_init2(y, 64);
     evaluateInterval(y, tree, NULL, x);
     if (sollya_mpfi_has_nan(y) ||
-	sollya_mpfi_has_zero(y)) {
+	sollya_mpfi_has_zero(y)) { /* IMHO should test also for infinity in order to avoid, e.g., Inf*x+Inf */
       res = 0;
     } else {
       res = 1;
@@ -3539,7 +3539,7 @@ int isNotUniformlyZero(node *tree) {
   */
   if (accessThruMemRef(tree)->nodeType == DIV) {
     return (isNotUniformlyZero(accessThruMemRef(tree)->child1) && 
-	    isBoundedByReal(accessThruMemRef(tree)->child2));
+	    isBoundedByReal(accessThruMemRef(tree)->child2));  /* IMHO should test hasNoZero(child2) (S.C.) */
   }
   
   /* f is of the form f = g(h), g is defined on the whole real line
@@ -3561,7 +3561,7 @@ int isNotUniformlyZero(node *tree) {
   case NEG:
   case ABS:
     return (isNotUniformlyZero(accessThruMemRef(tree)->child1) &&
-	    isBoundedByReal(accessThruMemRef(tree)->child1));
+	    isBoundedByReal(accessThruMemRef(tree)->child1)); /* IMHO useless (S.C.) */
     break;
   default:
     break;
@@ -3662,7 +3662,7 @@ int canDoSimplificationSubtraction(node *tree) {
     sollya_mpfi_init2(y, 64);
     evaluateInterval(y, tree, NULL, x);
     if (sollya_mpfi_has_infinity(y) || 
-	sollya_mpfi_has_nan(y)) {
+	sollya_mpfi_has_nan(y)) {  /* What about 3/(Inf+x*Inf) ? (S.C.) */
       res = 0;
     } else {
       res = 1;
@@ -3697,7 +3697,7 @@ int canDoSimplificationSubtraction(node *tree) {
      In both cases, h/h cannot be simplified to 1.
 
   */
-  switch (accessThruMemRef(tree)->nodeType) {
+  switch (accessThruMemRef(tree)->nodeType) { /* and if h takes negative values? (S.C.) */
   case LOG:
   case LOG_2:
   case LOG_10:
