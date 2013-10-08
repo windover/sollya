@@ -3273,9 +3273,9 @@ int hasNoZero(node *tree) {
   case ASINH:
   case ERF:
   case EXP_M1:
-  case NEG: /* And abs ? (S.C.) */
-    return (isBoundedByReal(accessThruMemRef(tree)->child1) && /* IMHO useless (S.C.) */
-	    hasNoZero(accessThruMemRef(tree)->child1));
+  case NEG: 
+  case ABS:
+    return hasNoZero(accessThruMemRef(tree)->child1);
     break;
   default:
     break;
@@ -3290,11 +3290,11 @@ int hasNoZero(node *tree) {
     sollya_mpfi_init2(x, 64);
     sollya_mpfi_set_full_range(x);
     sollya_mpfi_init2(y, 64);
-    evaluateInterval(y, accessThruMemRef(tree)->child1, NULL, x); /* g could be constant to +Inf on a non trivial interval (S.C.) */
+    evaluateInterval(y, accessThruMemRef(tree)->child1, NULL, x); 
     if (sollya_mpfi_has_nan(y) ||
 	sollya_mpfi_has_zero(y) ||
 	sollya_mpfi_has_negative_numbers(y) ||
-	sollya_mpfi_is_negative_infinity(y)) { /* --> should be changed to isBoundedByReal(child1) IMHO (S.C.) */
+	sollya_mpfi_is_negative_infinity(y)) { 
       res = 0;
     } else {
       res = 1;
@@ -3396,9 +3396,8 @@ int isBoundedByReal(node *tree) {
   */
   if (accessThruMemRef(tree)->nodeType == DIV) {
     return (isBoundedByReal(accessThruMemRef(tree)->child1) && 
-	    isBoundedByReal(accessThruMemRef(tree)->child2) &&
-	    hasNoZero(accessThruMemRef(tree)->child2));             /* use of hasNoZero perhaps too pessimistic */
-  }  /* hasNoZero mandatory, but isBoundedByReal(child2) useless IMHO (S.C.) */
+	    hasNoZero(accessThruMemRef(tree)->child2));
+  }
   
   /* f is of the form f = g(h), g is defined on the whole real line
      and h stays bounded by a real, f is bounded by a real.
