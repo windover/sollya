@@ -7305,9 +7305,9 @@ node* simplifyTreeInner(node *tree) {
 node* simplifyTreeInnerst(node *tree) {
   node *simplChild1, *simplChild2, *simplified;
   mpfr_t *value;
-  mpfr_t temp;
+  mpfr_t temp, x, y;
   sollya_mpfi_t tempI;
-  int numberChilds;
+  int numberChilds, res;
 
   if (tree->nodeType == MEMREF) {
     return addMemRef(simplifyTreeInner(tree->child1));
@@ -7336,6 +7336,20 @@ node* simplifyTreeInnerst(node *tree) {
       sollyaFprintf(stderr,"Error: simplifyTreeInner: unknown arity of tree node symbol.\n");
       exit(1);
     }
+  }
+
+  if (isConstant(tree) && (tree->nodeType != CONSTANT)) {
+    mpfr_init2(x, tools_precision);
+    mpfr_init2(y, tools_precision);
+    mpfr_set_si(x, 1, GMP_RNDN); /* exact */
+    if (evaluateFaithful(y, tree, x, tools_precision)) {
+      simplified = makeConstant(y);
+      mpfr_clear(y);
+      mpfr_clear(x);
+      return simplified;
+    } 
+    mpfr_clear(y);
+    mpfr_clear(x);
   }
 
   switch (tree->nodeType) {
