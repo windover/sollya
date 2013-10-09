@@ -59,3 +59,13 @@ verbosity = 2;
 a=1 + 2^100000 * sin((log(13)/log(17) - log2(13)/log2(17)) * 2^1000);
 a;
 a*x;
+
+/*********************************************************************************/
+/* Non-regression tests for #10317 */
+/* The warning displayed could mention that the inclusion property is satisfied and that a rounding has happened, but not that the safety is compromised. */
+restart;
+print("=============== Test number 4 ================");
+verbosity = 2;
+roundingwarnings=on;
+f=x;
+b=f([0.1]);

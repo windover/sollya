@@ -86,3 +86,11 @@ The tool has been restarted.
 The verbosity level has been set to 2.
 1
 x
+The tool has been restarted.
+=============== Test number 4 ================
+The verbosity level has been set to 2.
+Rounding warning mode has been activated.
+Warning: Rounding occurred when converting the constant "0.1" to floating-point with 165 bits.
+The inclusion property is nevertheless satisfied.
+Warning: Rounding occurred when converting the constant "0.1" to floating-point with 165 bits.
+The inclusion property is nevertheless satisfied.
