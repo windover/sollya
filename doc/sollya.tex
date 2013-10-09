@@ -1170,7 +1170,9 @@ never write more characters than indicated by their size argument (including the
 \sollya objects conceptually fall into one of five categories: numerical constants (e.g. $1$ or $1.5$), functional expressions (they might contain numerical constants, e.g., $\sin(\cos(x+1.5))$), other simple objects (intervals, strings, built-in constants such as \texttt{dyadic}, etc.), lists of objects (e.g., \texttt{[|1, "Hello"|]}) and structures (e.g., \verb|{.a = 1; .b = "Hello"}|).
 
 \subsubsection{Numerical constants}
-Table~\ref{creating_numerical_constant} lists the different functions available to construct numerical constants. A \sollya constant is always created without rounding (whatever the value of global variable \texttt{prec} is at the moment of the function call): a sufficient precision is always allocated so that the constant is stored exactly. The objects returned by these functions are newly allocated and copies of the argument. For instance, after the instruction \texttt{a = sollya\_lib\_constant(b)}, the user will eventually have to clear \texttt{a} (with \texttt{sollya\_lib\_clear(a)}) and \texttt{b} (with \texttt{mpfr\_clear(b)}).
+Table~\ref{creating_numerical_constant} lists the different functions available to construct numerical constants. A \sollya constant is always created without rounding (whatever the value of global variable \texttt{prec} is at the moment of the function call): a sufficient precision is always allocated so that the constant is stored exactly. All these functions return a constant floating-point number except \texttt{sollya\_lib\_constant\_from\_mpq} that may return a constant \emph{expression} if the value of the rational number given as argument is not exactly representable as a floating-point number at some precision. The returned expression is of the form $p/q$ in this case.
+
+The objects returned by these functions are newly allocated and copies of the argument. For instance, after the instruction \texttt{a = sollya\_lib\_constant(b)}, the user will eventually have to clear \texttt{a} (with \texttt{sollya\_lib\_clear(a)}) and \texttt{b} (with \texttt{mpfr\_clear(b)}).
 
 The function \texttt{sollya\_lib\_constant\_from\_double} (or more conveniently its shortcut \texttt{SOLLYA\_CONST}) is probably the preferred way for constructing numerical constants. As the name indicates it, its argument is a \texttt{double}; however, due to implicit casting in~C, it is perfectly possible to give an \texttt{int} as argument: it will be converted into a \texttt{double} (without rounding if the integer fits on $53$~bits) before being passed to \texttt{SOLLYA\_CONST}. On the contrary, the user should be aware of the fact that if decimal non-integer constants are given, C rules of rounding (to double) are applied, regardless of the setting of the \sollya precision variable \texttt{prec}.
 
@@ -1185,6 +1187,8 @@ The function \texttt{sollya\_lib\_constant\_from\_double} (or more conveniently 
 \verb|uint64_t| & \verb|sollya_lib_constant_from_uint64(x)| & \verb|SOLLYA_CONST_UI64(x)| \\
 \verb|int64_t| & \verb|sollya_lib_constant_from_int64(x)| &  \verb|SOLLYA_CONST_SI64(x)| \\
 \verb|int| & \verb|sollya_lib_constant_from_int(x)| & N/A \\
+\verb|mpq_t| & \verb|sollya_lib_constant_from_mpq(x)| & N/A \\
+\verb|mpz_t| & \verb|sollya_lib_constant_from_mpz(x)| & N/A \\
 \verb|mpfr_t| & \verb|sollya_lib_constant(x)| & N/A \\
 \hline
   \end{tabular}
@@ -1521,7 +1525,7 @@ Function  \verb|int sollya_lib_get_prec_of_range(mp_prec_t *prec, sollya_obj_t a
 \end{minipage}\end{center}
 
 \subsection{Recovering the value of a numerical constant or a constant expression}
-From a conceptual point of view, a numerical constant is nothing but a very simple constant functional expression. Hence there is no difference in \sollya between the way constants and constant expressions are handled. The functions presented in this Section allow one to recover the value of such constants or constant expressions into usual C data types.
+From a conceptual point of view, a numerical constant is nothing but a very simple constant functional expression. Hence there is no difference in \sollya between the way constants and constant expressions are handled. The functions presented in this section allow one to recover the value of such constants or constant expressions into usual C data types.
 
 A constant expression being given, three cases are possible:
 \begin{itemize}
@@ -1530,14 +1534,16 @@ A constant expression being given, three cases are possible:
 \item Finally, a third possibility is that the value of the expression is not exactly representable at any precision on a binary floating-point number. Possible examples are $\pi$ or $1/10$.
 \end{itemize}
 
-From now on, we suppose that \verb|arg| is a \verb|sollya_obj_t| that contains a constant expression (or, as a particular case, a numerical constant). The general scheme followed by the conversion functions is the following: \sollya chooses an initial working precision greater than the target precision. If the value of \verb|arg| is easily proved to be exactly representable at that precision, \sollya first computes this exact value and then rounds it to the nearest number of the target format (ties-to-even). Otherwise, \sollya tries to adapt the working precision automatically in order to ensure that the result of the conversion is one of both floating-point numbers in the target format that are closest the exact value (a faithful rounding). A warning message indicates that the conversion is not exact and that a faithful rounding has been performed. In some cases really hard to evaluate, the algorithm can even fail to find a faithful rounding. In that case, too, a warning message is emitted indicating that the result of the conversion should not be trusted. Let us remark that these messages can be caught instead of being displayed and adapted handling can be provided by the user of the library at each emission of a warning (see Section~\ref{callbacks}).
+From now on, we suppose that \verb|arg| is a \verb|sollya_obj_t| that contains a constant expression (or, as a particular case, a numerical constant). The general scheme followed by the conversion functions is the following: \sollya chooses an initial working precision greater than the target precision. If the value of \verb|arg| is easily proved to be exactly representable at that precision, \sollya first computes this exact value and then rounds it to the nearest number of the target format (ties-to-even). Otherwise, \sollya tries to adapt the working precision automatically in order to ensure that the result of the conversion is one of both numbers in the target format that are closest to the exact value (a faithful rounding). A warning message indicates that the conversion is not exact and that a faithful rounding has been performed. In some cases really hard to evaluate, the algorithm can even fail to find a faithful rounding. In that case, too, a warning message is emitted indicating that the result of the conversion should not be trusted. Let us remark that these messages can be caught instead of being displayed and adapted handling can be provided by the user of the library at each emission of a warning (see Section~\ref{callbacks}).
 
 The conversion functions are the following. They return a boolean integer: false means failure (i.e., \verb|arg| is not a constant expression) and true means success.
 \begin{itemize}
 \item \verb|int sollya_lib_get_constant_as_double(double *res, sollya_obj_t arg)|
-\item \verb|int sollya_lib_get_constant_as_int(int *res, sollya_obj_t arg)|
-\item \verb|int sollya_lib_get_constant_as_int64(int64_t *res, sollya_obj_t arg)|
-\item \verb|int sollya_lib_get_constant_as_uint64(uint64_t *res, sollya_obj_t arg)|
+\item \verb|int sollya_lib_get_constant_as_int(int *res, sollya_obj_t arg)|: any value too big to be represented (this includes $\pm$\verb|Inf|) is converted to \verb|INT_MIN| or \verb|INT_MAX| and a warning is emitted. \verb|NaN| is converted to $0$ with a specific warning.
+\item \verb|int sollya_lib_get_constant_as_int64(int64_t *res, sollya_obj_t arg)|: any value too big to be represented (this includes $\pm$\verb|Inf|) is converted to \verb|INT64_MIN| or \verb|INT64_MAX| and a warning is emitted. \verb|NaN| is converted to $0$ with a specific warning.
+\item \verb|int sollya_lib_get_constant_as_uint64(uint64_t *res, sollya_obj_t arg)|: negative values are converted to $0$ with a warning. Any value too big to be represented (this includes \verb|Inf|) is converted to \verb|UINT64_MAX| and a warning is emitted. \verb|NaN| is converted to $0$ with a specific warning.
+\item \verb|int sollya_lib_get_constant_as_mpz(mpz_t res, sollya_obj_t arg)|: the result of the conversion is stored in \verb|res|. Please note that \verb|res| must be initialized beforehand. Infinities and \verb|NaN| are converted to $0$ with specific warnings.
+\item \verb|int sollya_lib_get_constant_as_mpq(mpq_t res, sollya_obj_t arg)|: the result of the conversion is stored in \verb|res|. Please note that \verb|res| must be initialized beforehand. If \verb|arg| cannot be proved to be exactly a floating-point number or the ratio of two floating-point numbers at some precision, the function returns false and \verb|res| is left unchanged.
 \item \verb|int sollya_lib_get_constant(mpfr_t res, sollya_obj_t arg)|: the result of the conversion is stored in \verb|res|. Please note that \verb|res| must be initialized beforehand and that its internal precision is not modified by the algorithm.
 \end{itemize}
 
