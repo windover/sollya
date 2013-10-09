@@ -3422,6 +3422,19 @@ int isBoundedByReal(node *tree) {
   sollya_mpfi_clear(x);
   if (res) return 1;
 
+  /* If f is of the form f = g +/- h and both g and h are bounded by a
+     real, f is bounded by a real.
+  */
+  switch (accessThruMemRef(tree)->nodeType) {
+  case ADD:
+  case SUB:
+    return (isBoundedByReal(accessThruMemRef(tree)->child1) &&
+	    isBoundedByReal(accessThruMemRef(tree)->child2));
+    break;
+  default:
+    break;
+  }
+  
   /* If f is of the form f = g * h and both g and h are bounded by a
      real, f is bounded by a real.
   */
@@ -3698,45 +3711,6 @@ int canDoSimplificationSubtraction(node *tree) {
     sollya_mpfi_clear(y);
     sollya_mpfi_clear(x);
     return res;
-  }
-  
-  /* Expressions (g +/- h) - (g +/- h) can be simplified if g - g and h -
-     h can be simplified.
-
-     In particular, if g - g and h - h can be simplified, neither g
-     nor h can be infinity. In consequence (g +/- h) can be infinity.
-  */
-  switch (accessThruMemRef(tree)->nodeType) {
-  case ADD:
-  case SUB:
-    return (canDoSimplificationSubtraction(accessThruMemRef(tree)->child1) &&
-	    canDoSimplificationSubtraction(accessThruMemRef(tree)->child2));
-    break;
-  default:
-    break;
-  }
-  
-  /* Expressions (g * h) - (g * h) can be simplified if g - g and h -
-     h can be simplified.
-
-     In particular, if g - g and h - h can be simplified, neither g
-     nor h can be infinity. So there can be no case when g * h or g *
-     h - g * h is undefined, even if g or h is uniformly zero over an
-     interval subset of the reals.
-  */
-  if (accessThruMemRef(tree)->nodeType == MUL) {
-    return (canDoSimplificationSubtraction(accessThruMemRef(tree)->child1) &&
-	    canDoSimplificationSubtraction(accessThruMemRef(tree)->child2));
-  }
-
-  /* Expressions (g / h) - (g / h) can be simplified if g - g can be
-     simplified and h can be shown not to be uniformly zero.
-     
-     In particular, if g - g can be simplified, g cannot be infinity.
-  */
-  if (accessThruMemRef(tree)->nodeType == DIV) {
-    if (!canDoSimplificationSubtraction(accessThruMemRef(tree)->child1)) return 0;
-    return isNotUniformlyZero(accessThruMemRef(tree)->child2);
   }
 
   /* All other functions can be simplified if they are well-defined
