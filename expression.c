@@ -3388,9 +3388,10 @@ int isBoundedByReal(node *tree) {
 
      This case catches also the case when f is a constant expression.
   */
-  if (isPolynomial(tree)) {
+  if (isPolynomial(tree) &&
+      containsOnlyRealNumbers(tree)) {
     sollya_mpfi_init2(x, 64);
-    sollya_mpfi_set_d(x, 17.25);
+    sollya_mpfi_set_d(x, 0.7403649888628021);
     sollya_mpfi_init2(y, 64);
     evaluateInterval(y, tree, NULL, x);
     if (sollya_mpfi_has_infinity(y) || 
@@ -3530,9 +3531,10 @@ int isNotUniformlyZero(node *tree) {
 
      This case catches also the case when f is a constant expression.
   */
-  if (isPolynomial(tree)) {
+  if (isPolynomial(tree) && 
+      containsOnlyRealNumbers(tree)) {
     sollya_mpfi_init2(x, 64);
-    sollya_mpfi_set_d(x, 17.25);
+    sollya_mpfi_set_d(x, 0.7403649888628021);
     sollya_mpfi_init2(y, 64);
     evaluateInterval(y, tree, NULL, x);
     if (sollya_mpfi_has_nan(y) ||
@@ -3683,7 +3685,7 @@ int canDoSimplificationSubtraction(node *tree) {
   if (isRationalFunction(tree) && 
       containsOnlyRealNumbers(tree)) {
     sollya_mpfi_init2(x, 64);
-    sollya_mpfi_set_si(x, 1);
+    sollya_mpfi_set_d(x, 0.7403649888628021);
     sollya_mpfi_init2(y, 64);
     evaluateInterval(y, tree, NULL, x);
     if (sollya_mpfi_has_infinity(y) || 
@@ -3698,7 +3700,9 @@ int canDoSimplificationSubtraction(node *tree) {
     return res;
   }
   
-  /* All other functions can be */
+  /* All other functions can be simplified if they are well-defined
+     almost everywhere and bounded by a real number. 
+  */
   return isBoundedByReal(tree); 
 }
 
@@ -3713,187 +3717,33 @@ int canDoSimplificationDivision(node *tree) {
   int res;
   mpfr_t yPt;
 
-  /* Constant expressions c can be simplified in c/c if they evaluate
-     to a real non-zero number (not an Inf, not NaN, not zero)
+  /* Rational functions r can be simplified in r - r if they contain
+     only real constants in their definition and evaluated at a test
+     point, it yields a real non-zero number.
   */
-  if (isConstant(tree)) {
-    sollya_mpfi_init2(y, 64);
-    evaluateConstantExpressionToInterval(y, tree);
-    if (sollya_mpfi_has_infinity(y) || 
-	sollya_mpfi_has_nan(y) || 
-	sollya_mpfi_has_zero(y)) {
-      res = 0;
-    } else {
-      res = 1;
-    }
-    sollya_mpfi_clear(y);
-    return res;
-  }
-
-  /* Rational functions r can be simplified in r/r if they contain no
-     monomials in their p/q from that evaluate to infinity or to NaNs and that are not
-     uniformly zero. To test if they contain monomials that are NaN or
-     Inf or not, it suffices to evaluate them at one point (say x =
-     17.25).
-
-     Testing if a rational function is uniformly zero is hard.
-
-     So, for the time being, we just check if at the test evaluation
-     point the rational function is non-zero, which implies that it is
-     not uniformly zero (as it is a rational function).
-
-  */
-  if (isRationalFunction(tree)) {
+  if (isRationalFunction(tree) && 
+      containsOnlyRealNumbers(tree)) {
     sollya_mpfi_init2(x, 64);
-    sollya_mpfi_set_d(x, 17.25);
+    sollya_mpfi_set_d(x, 0.7403649888628021);
     sollya_mpfi_init2(y, 64);
     evaluateInterval(y, tree, NULL, x);
     if (sollya_mpfi_has_infinity(y) || 
-	sollya_mpfi_has_nan(y) || 
-	sollya_mpfi_has_zero(y)) {
-      res = 0;
-    } else {
-      res = 1;
-    }
-    sollya_mpfi_clear(y);
-    sollya_mpfi_clear(x);
-    return res;
-  }
-  
-  /* Expressions f can be simplified in f/f if they evaluate to a
-     closed subset of the reals that does not contain zero when
-     evaluated over the whole real line.
-  */
-  sollya_mpfi_init2(x, 64);
-  sollya_mpfi_set_full_range(x);
-  sollya_mpfi_init2(y, 64);
-  evaluateInterval(y, tree, NULL, x);
-  if (sollya_mpfi_has_infinity(y) || 
-      sollya_mpfi_has_nan(y) ||
-      sollya_mpfi_has_zero(y)) {
-    res = 0;
-  } else {
-    res = 1;
-  }
-  sollya_mpfi_clear(y);
-  sollya_mpfi_clear(x);
-  if (res) return 1;
-  
-  /* Expressions g(h)/g(h) can be simplified if g is defined on the whole
-     real line and has no zero at all and h - h can be simplified to
-     0. In particular, if h - h can be simplified, h cannot be infinity.
-
-     Expressions g(h)/g(h) can also be simplified if g is defined on
-     the whole real line, h can be shown not to be uniformly zero and
-     and h - h can be simplified to 0. In this case, too, if h - h can
-     be simplified, h cannot be infinity.
-
-  */
-  switch (accessThruMemRef(tree)->nodeType) {
-  case EXP:
-  case COSH:
-    return canDoSimplificationSubtraction(accessThruMemRef(tree)->child1);
-    break;
-  case SIN:
-  case COS:
-  case ATAN:
-  case SINH:
-  case TANH:
-  case ASINH:
-  case ERF:
-  case ERFC:
-  case EXP_M1:
-  case NEG:
-  case ABS:
-    if (!isNotUniformlyZero(accessThruMemRef(tree)->child1)) return 0;
-    return canDoSimplificationSubtraction(accessThruMemRef(tree)->child1);
-    break;
-  default:
-    break;
-  }
-  
-  /* Expressions (g/h)/(g/h) can be simplified if (g/g) and (h/h) can
-     be simplified.
-
-     In particular, if g/g and h/h can be simplified, this means that
-     neither g nor h is uniformly zero on an interval nor
-     infinity. This implies that g * h is neither uniformly zero on an
-     interval nor infinity. Therefore (g * h)/(g * h) can be
-     simplified, which implies that (g/h)/(g/h) can be simplified.
-
-  */
-  if (accessThruMemRef(tree)->nodeType == DIV) {
-    return (canDoSimplificationDivision(accessThruMemRef(tree)->child1) && 
-	    canDoSimplificationDivision(accessThruMemRef(tree)->child2));    
-  }
-
-  /* Expressions (g * h)/(g * h) can be simplified if (g/g) and (h/h)
-     can be simplified.
-
-     In particular, if g/g and h/h can be simplified, this means that
-     neither g nor h is uniformly zero on an interval nor
-     infinity. This implies that g * h is neither uniformly zero on an
-     interval nor infinity. Therefore (g * h)/(g * h) can be
-     simplified.
-
-  */
-  if (accessThruMemRef(tree)->nodeType == MUL) {
-    return (canDoSimplificationDivision(accessThruMemRef(tree)->child1) && 
-	    canDoSimplificationDivision(accessThruMemRef(tree)->child2));
-  }
-
-  /* Expressions (g^h)/(g^h) can be simplified if h - h can be simplified and g
-     can be shown to be (strictly) positive. 
-
-     In particular, if h - h can be simplified, h cannot be infinity.
-  */
-  if (accessThruMemRef(tree)->nodeType == POW) {
-    if (!canDoSimplificationSubtraction(accessThruMemRef(tree)->child2)) return 0;
-    sollya_mpfi_init2(x, 64);
-    sollya_mpfi_set_full_range(x);
-    sollya_mpfi_init2(y, 64);
-    evaluateInterval(y, accessThruMemRef(tree)->child1, NULL, x);
-    if (sollya_mpfi_has_infinity(y) || 
 	sollya_mpfi_has_nan(y) ||
-	sollya_mpfi_has_zero(y) ||
-	sollya_mpfi_has_negative_numbers(y)) {
+	sollya_mpfi_has_zero(y)) {  
       res = 0;
     } else {
       res = 1;
     }
     sollya_mpfi_clear(y);
     sollya_mpfi_clear(x);
-    if (res) return res;
-  }
-
-  /* Expressions (g^k)/(g^k) can be simplified if g/g can be
-     simplified and k is constant and integer.
-
-     In particular, if g/g can be simplified, g can neither be
-     uniformly zero over an interval nor be infinity.
-  */
-  if (accessThruMemRef(tree)->nodeType == POW) {
-    if (!canDoSimplificationDivision(accessThruMemRef(tree)->child1)) return 0;
-    if (accessThruMemRef(accessThruMemRef(tree)->child2)->nodeType == CONSTANT) 
-      return (mpfr_integer_p(*(accessThruMemRef(accessThruMemRef(tree)->child2)->value)) && 
-	      (mpfr_sgn(*(accessThruMemRef(accessThruMemRef(tree)->child2)->value)) >= 0));
-    if (!isConstant(accessThruMemRef(tree)->child2)) return 0;
-    sollya_mpfi_init2(y, 64);
-    evaluateConstantExpressionToInterval(y, accessThruMemRef(tree)->child2);
-    if (sollya_mpfi_is_point_and_real(y)) {
-      mpfr_init2(yPt, sollya_mpfi_get_prec(y));
-      sollya_mpfi_get_left(yPt, y); /* exact */
-      res = (mpfr_integer_p(yPt) && (mpfr_sgn(yPt) >= 0));
-      mpfr_clear(yPt);
-    } else {
-      res = 0;
-    }
-    sollya_mpfi_clear(y);
     return res;
   }
-
-  /* All other expressions are not safe to be simplified */
-  return 0;
+  
+  /* All other functions can be simplified if they are well-defined
+     almost everywhere and bounded by a real number and not uniformly
+     zero over an interval.
+  */
+  return (isBoundedByReal(tree) && isNotUniformlyZero(tree));
 }
 
 node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
