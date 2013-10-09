@@ -3700,6 +3700,45 @@ int canDoSimplificationSubtraction(node *tree) {
     return res;
   }
   
+  /* Expressions (g +/- h) - (g +/- h) can be simplified if g - g and h -
+     h can be simplified.
+
+     In particular, if g - g and h - h can be simplified, neither g
+     nor h can be infinity. In consequence (g +/- h) can be infinity.
+  */
+  switch (accessThruMemRef(tree)->nodeType) {
+  case ADD:
+  case SUB:
+    return (canDoSimplificationSubtraction(accessThruMemRef(tree)->child1) &&
+	    canDoSimplificationSubtraction(accessThruMemRef(tree)->child2));
+    break;
+  default:
+    break;
+  }
+  
+  /* Expressions (g * h) - (g * h) can be simplified if g - g and h -
+     h can be simplified.
+
+     In particular, if g - g and h - h can be simplified, neither g
+     nor h can be infinity. So there can be no case when g * h or g *
+     h - g * h is undefined, even if g or h is uniformly zero over an
+     interval subset of the reals.
+  */
+  if (accessThruMemRef(tree)->nodeType == MUL) {
+    return (canDoSimplificationSubtraction(accessThruMemRef(tree)->child1) &&
+	    canDoSimplificationSubtraction(accessThruMemRef(tree)->child2));
+  }
+
+  /* Expressions (g / h) - (g / h) can be simplified if g - g can be
+     simplified and h can be shown not to be uniformly zero.
+     
+     In particular, if g - g can be simplified, g cannot be infinity.
+  */
+  if (accessThruMemRef(tree)->nodeType == DIV) {
+    if (!canDoSimplificationSubtraction(accessThruMemRef(tree)->child1)) return 0;
+    return isNotUniformlyZero(accessThruMemRef(tree)->child2);
+  }
+
   /* All other functions can be simplified if they are well-defined
      almost everywhere and bounded by a real number. 
   */
@@ -3737,6 +3776,36 @@ int canDoSimplificationDivision(node *tree) {
     sollya_mpfi_clear(y);
     sollya_mpfi_clear(x);
     return res;
+  }
+
+  /* Expressions (g/h)/(g/h) can be simplified if (g/g) and (h/h) can
+     be simplified.
+
+     In particular, if g/g and h/h can be simplified, this means that
+     neither g nor h is uniformly zero on an interval nor
+     infinity. This implies that g * h is neither uniformly zero on an
+     interval nor infinity. Therefore (g * h)/(g * h) can be
+     simplified, which implies that (g/h)/(g/h) can be simplified.
+
+  */
+  if (accessThruMemRef(tree)->nodeType == DIV) {
+    return (canDoSimplificationDivision(accessThruMemRef(tree)->child1) && 
+	    canDoSimplificationDivision(accessThruMemRef(tree)->child2));    
+  }
+
+  /* Expressions (g * h)/(g * h) can be simplified if (g/g) and (h/h)
+     can be simplified.
+
+     In particular, if g/g and h/h can be simplified, this means that
+     neither g nor h is uniformly zero on an interval nor
+     infinity. This implies that g * h is neither uniformly zero on an
+     interval nor infinity. Therefore (g * h)/(g * h) can be
+     simplified.
+
+  */
+  if (accessThruMemRef(tree)->nodeType == MUL) {
+    return (canDoSimplificationDivision(accessThruMemRef(tree)->child1) && 
+	    canDoSimplificationDivision(accessThruMemRef(tree)->child2));
   }
   
   /* All other functions can be simplified if they are well-defined
