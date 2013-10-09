@@ -48,3 +48,14 @@ printsingle(round( -(1)*2^(-149),SG,RU));
 printsingle(round( -(1/2)*2^(-149),SG,RD));
 printsingle(round( -(1/2)*2^(-149),SG,RN));
 printsingle(round( -(1/2)*2^(-149),SG,RU));
+
+/*********************************************************************************/
+/* Non-regression tests for #15239
+   Variable a is supposed to be evaluated the same way in both situations, i.e. with a faithful evaluation.
+*/
+restart;
+print("=============== Test number 3 ================");
+verbosity = 2;
+a=1 + 2^100000 * sin((log(13)/log(17) - log2(13)/log2(17)) * 2^1000);
+a;
+a*x;
