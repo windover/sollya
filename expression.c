@@ -3167,6 +3167,44 @@ int containsNotANumbers(node * tree) {
   return 1;
 }
 
+int containsOnlyRealNumbers(node * tree) {
+  int numberChilds;
+
+  if (tree->nodeType == MEMREF) {
+    return containsOnlyRealNumbers(tree->child1);
+  }
+
+  if (tree->nodeType == CONSTANT) {
+    if (mpfr_number_p(*(tree->value)))
+      return 1;
+    else
+      return 0;
+  }
+
+  if (tree->nodeType == VARIABLE) {
+    return 0;
+  }
+
+  numberChilds = arity(tree);
+  switch (numberChilds) {
+  case 0:
+    return 0;
+    break;
+  case 1:
+    return containsOnlyRealNumbers(tree->child1);
+    break;
+  case 2:
+    return (containsOnlyRealNumbers(tree->child1) ||
+	    containsOnlyRealNumbers(tree->child2));
+    break;
+  default:
+    sollyaFprintf(stderr,"Error: containsOnlyRealNumbers: unknown arity of tree node symbol.\n");
+    exit(1);
+  }
+
+  return 1;
+}
+ 
 node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational);
 
 node* simplifyTreeErrorfreeInner(node *tree, int rec, int doRational) {
@@ -3294,7 +3332,7 @@ int hasNoZero(node *tree) {
     if (sollya_mpfi_has_nan(y) ||
 	sollya_mpfi_has_zero(y) ||
 	sollya_mpfi_has_negative_numbers(y) ||
-	sollya_mpfi_is_negative_infinity(y)) { 
+	sollya_mpfi_has_infinity(y)) { 
       res = 0;
     } else {
       res = 1;
@@ -3498,7 +3536,8 @@ int isNotUniformlyZero(node *tree) {
     sollya_mpfi_init2(y, 64);
     evaluateInterval(y, tree, NULL, x);
     if (sollya_mpfi_has_nan(y) ||
-	sollya_mpfi_has_zero(y)) { /* IMHO should test also for infinity in order to avoid, e.g., Inf*x+Inf */
+	sollya_mpfi_has_zero(y) ||
+	sollya_mpfi_has_infinity(y)) { 
       res = 0;
     } else {
       res = 1;
@@ -3534,11 +3573,13 @@ int isNotUniformlyZero(node *tree) {
   }
 
   /* If f is of the form f = g / h, g is not uniformly zero and h
-     stays bounded by a real number, then f is not uniformly zero.
+     stays bounded by a real number and is not uniformly zero, then f
+     is not uniformly zero.
   */
   if (accessThruMemRef(tree)->nodeType == DIV) {
     return (isNotUniformlyZero(accessThruMemRef(tree)->child1) && 
-	    isBoundedByReal(accessThruMemRef(tree)->child2));  /* IMHO should test hasNoZero(child2) (S.C.) */
+	    isNotUniformlyZero(accessThruMemRef(tree)->child2) && 
+	    isBoundedByReal(accessThruMemRef(tree)->child2));  
   }
   
   /* f is of the form f = g(h), g is defined on the whole real line
@@ -3549,18 +3590,19 @@ int isNotUniformlyZero(node *tree) {
   */
   switch (accessThruMemRef(tree)->nodeType) {
   case EXP:
+  case ERFC:
+    return isBoundedByReal(accessThruMemRef(tree)->child1);
+    break;
   case ATAN:
   case SINH:
   case COSH:
   case TANH:
   case ASINH:
   case ERF:
-  case ERFC:
   case EXP_M1:
   case NEG:
   case ABS:
-    return (isNotUniformlyZero(accessThruMemRef(tree)->child1) &&
-	    isBoundedByReal(accessThruMemRef(tree)->child1)); /* IMHO useless (S.C.) */
+    return isNotUniformlyZero(accessThruMemRef(tree)->child1);    
     break;
   default:
     break;
@@ -3634,34 +3676,19 @@ int canDoSimplificationSubtraction(node *tree) {
   int res;
   mpfr_t yPt;
 
-  /* Constant expressions c can be simplified in c - c if they
-     evaluate to a real number (not an Inf, not NaN)
-  */
-  if (isConstant(tree)) {
-    sollya_mpfi_init2(y, 64);
-    evaluateConstantExpressionToInterval(y, tree);
-    if (sollya_mpfi_has_infinity(y) || 
-	sollya_mpfi_has_nan(y)) {
-      res = 0;
-    } else {
-      res = 1;
-    }
-    sollya_mpfi_clear(y);
-    return res;
-  }
-
   /* Rational functions r can be simplified in r - r if they contain
-     no monomials in their p/q form that evaluate to infinity or to
-     NaNs. To test if they contain such monomials or not, it suffices
-     to evaluate them at one point (say x = 1).
+     only real constants in their definition and evaluated at a test
+     point, it yields a real non-zero number.
   */
-  if (isRationalFunction(tree)) {
+  if (isRationalFunction(tree) && 
+      containsOnlyRealNumbers(tree)) {
     sollya_mpfi_init2(x, 64);
     sollya_mpfi_set_si(x, 1);
     sollya_mpfi_init2(y, 64);
     evaluateInterval(y, tree, NULL, x);
     if (sollya_mpfi_has_infinity(y) || 
-	sollya_mpfi_has_nan(y)) {  /* What about 3/(Inf+x*Inf) ? (S.C.) */
+	sollya_mpfi_has_nan(y) ||
+	sollya_mpfi_has_zero(y)) {  
       res = 0;
     } else {
       res = 1;
@@ -3671,171 +3698,8 @@ int canDoSimplificationSubtraction(node *tree) {
     return res;
   }
   
-  /* Expressions f can be simplified f - f if they evaluate to a
-     closed subset of the reals when evaluated over the whole real
-     line
-  */
-  sollya_mpfi_init2(x, 64);
-  sollya_mpfi_set_full_range(x);
-  sollya_mpfi_init2(y, 64);
-  evaluateInterval(y, tree, NULL, x);
-  if (sollya_mpfi_has_infinity(y) || 
-      sollya_mpfi_has_nan(y)) {
-    res = 0;
-  } else {
-    res = 1;
-  }
-  sollya_mpfi_clear(y);
-  sollya_mpfi_clear(x);
-  if (res) return 1;
-
-  /* Expressions log(h) - log(h) can be simplified if h/h can be
-     simplified to 1, h is not uniformly zero and is positive in a test point.
-
-     The case when log(h) is infinity can happen only when h is infinity or zero. 
-     In both cases, h/h cannot be simplified to 1.
-
-  */
-  switch (accessThruMemRef(tree)->nodeType) { /* and if h takes negative values? (S.C.) */
-  case LOG:
-  case LOG_2:
-  case LOG_10:
-    if (!canDoSimplificationDivision(accessThruMemRef(tree)->child1)) return 0;
-    if (!isNotUniformlyZero(accessThruMemRef(tree)->child1)) return 0;
-    sollya_mpfi_init2(x, 64);
-    sollya_mpfi_set_si(x, 1);
-    sollya_mpfi_init2(y, 64);
-    evaluateInterval(y, accessThruMemRef(tree)->child1, NULL, x);
-    if (sollya_mpfi_has_infinity(y) || 
-	sollya_mpfi_has_nan(y) ||
-	sollya_mpfi_has_zero(y) ||
-	sollya_mpfi_has_negative_numbers(y)) {
-      res = 0;
-    } else {
-      res = 1;
-    }
-    sollya_mpfi_clear(y);
-    sollya_mpfi_clear(x);
-    return res;    
-    break;
-  default:
-    break;
-  }
-
-  /* Expressions g(h) - g(h) can be simplified if g is defined on the
-     whole real line, h - h can be simplified to 0 and g(h) being infinity 
-     implies h being infinity.
-  */
-  switch (accessThruMemRef(tree)->nodeType) {
-  case EXP:
-  case SIN:
-  case COS:
-  case ATAN:
-  case SINH:
-  case COSH:
-  case TANH:
-  case ASINH:
-  case ERF:
-  case ERFC:
-  case EXP_M1:
-  case NEG:
-  case ABS:
-    return canDoSimplificationSubtraction(accessThruMemRef(tree)->child1);
-    break;
-  default:
-    break;
-  }
-  
-  /* Expressions (g +/- h) - (g +/- h) can be simplified if g - g and h -
-     h can be simplified.
-
-     In particular, if g - g and h - h can be simplified, neither g
-     nor h can be infinity. In consequence (g +/- h) can be infinity.
-  */
-  switch (accessThruMemRef(tree)->nodeType) {
-  case ADD:
-  case SUB:
-    return (canDoSimplificationSubtraction(accessThruMemRef(tree)->child1) &&
-	    canDoSimplificationSubtraction(accessThruMemRef(tree)->child2));
-    break;
-  default:
-    break;
-  }
-  
-  /* Expressions (g * h) - (g * h) can be simplified if g - g and h -
-     h can be simplified.
-
-     In particular, if g - g and h - h can be simplified, neither g
-     nor h can be infinity. So there can be no case when g * h or g *
-     h - g * h is undefined, even if g or h is uniformly zero over an
-     interval subset of the reals.
-  */
-  if (accessThruMemRef(tree)->nodeType == MUL) {
-    return (canDoSimplificationSubtraction(accessThruMemRef(tree)->child1) &&
-	    canDoSimplificationSubtraction(accessThruMemRef(tree)->child2));
-  }
-
-  /* Expressions (g / h) - (g / h) can be simplified if g - g can be
-     simplified and h can be shown not to be uniformly zero.
-     
-     In particular, if g - g can be simplified, g cannot be infinity.
-  */
-  if (accessThruMemRef(tree)->nodeType == DIV) {
-    if (!canDoSimplificationSubtraction(accessThruMemRef(tree)->child1)) return 0;
-    return isNotUniformlyZero(accessThruMemRef(tree)->child2);
-  }
-  
-  /* Expressions (g^h) - (g^h) can be simplified if h - h can be simplified and g
-     can be shown to be (strictly) positive but real.
-
-     In particular, if h - h can be simplified h cannot be infinity.
-  */
-  if (accessThruMemRef(tree)->nodeType == POW) {
-    if (!canDoSimplificationSubtraction(accessThruMemRef(tree)->child2)) return 0;
-    sollya_mpfi_init2(x, 64);
-    sollya_mpfi_set_full_range(x);
-    sollya_mpfi_init2(y, 64);
-    evaluateInterval(y, accessThruMemRef(tree)->child1, NULL, x);
-    if (sollya_mpfi_has_infinity(y) || 
-	sollya_mpfi_has_nan(y) ||
-	sollya_mpfi_has_zero(y) ||
-	sollya_mpfi_has_negative_numbers(y)) {
-      res = 0;
-    } else {
-      res = 1;
-    }
-    sollya_mpfi_clear(y);
-    sollya_mpfi_clear(x);
-    if (res) return res;
-  }
-
-  /* Expressions (g^k) - (g^k) can be simplified if g - g can be
-     simplified and k is constant, integer and non-negative.
-
-     In particular, if g - g can be simplified, g cannot be infinity.
-  */
-  if (accessThruMemRef(tree)->nodeType == POW) {
-    if (!canDoSimplificationSubtraction(accessThruMemRef(tree)->child1)) return 0;
-    if (accessThruMemRef(accessThruMemRef(tree)->child2)->nodeType == CONSTANT) 
-      return (mpfr_integer_p(*(accessThruMemRef(accessThruMemRef(tree)->child2)->value)) && 
-	      (mpfr_sgn(*(accessThruMemRef(accessThruMemRef(tree)->child2)->value)) >= 0));
-    if (!isConstant(accessThruMemRef(tree)->child2)) return 0;
-    sollya_mpfi_init2(y, 64);
-    evaluateConstantExpressionToInterval(y, accessThruMemRef(tree)->child2);
-    if (sollya_mpfi_is_point_and_real(y)) {
-      mpfr_init2(yPt, sollya_mpfi_get_prec(y));
-      sollya_mpfi_get_left(yPt, y); /* exact */
-      res = (mpfr_integer_p(yPt) && (mpfr_sgn(yPt) >= 0));
-      mpfr_clear(yPt);
-    } else {
-      res = 0;
-    }
-    sollya_mpfi_clear(y);
-    return res;
-  }
-  
-  /* All other expressions are not safe to be simplified */
-  return 0;
+  /* All other functions can be */
+  return isBoundedByReal(tree); 
 }
 
 /*
