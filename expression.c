@@ -3182,19 +3182,19 @@ int containsOnlyRealNumbers(node * tree) {
   }
 
   if (tree->nodeType == VARIABLE) {
-    return 0;
+    return 1;
   }
 
   numberChilds = arity(tree);
   switch (numberChilds) {
   case 0:
-    return 0;
+    return 1;
     break;
   case 1:
     return containsOnlyRealNumbers(tree->child1);
     break;
   case 2:
-    return (containsOnlyRealNumbers(tree->child1) ||
+    return (containsOnlyRealNumbers(tree->child1) &&
 	    containsOnlyRealNumbers(tree->child2));
     break;
   default:
