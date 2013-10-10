@@ -3923,8 +3923,9 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
 	free_memory(simplChild2);
       }
     } else {
-      if (((accessThruMemRef(simplChild1)->nodeType == CONSTANT) && (mpfr_zero_p(*(accessThruMemRef(simplChild1)->value)))) ||
-	  ((accessThruMemRef(simplChild2)->nodeType == CONSTANT) && (mpfr_zero_p(*(accessThruMemRef(simplChild2)->value))))) {
+      if ((((accessThruMemRef(simplChild1)->nodeType == CONSTANT) && (mpfr_zero_p(*(accessThruMemRef(simplChild1)->value)))) ||
+	   ((accessThruMemRef(simplChild2)->nodeType == CONSTANT) && (mpfr_zero_p(*(accessThruMemRef(simplChild2)->value))))) && 
+	  (isNotUniformlyInfinite(simplChild1) && isNotUniformlyInfinite(simplChild2))) { 
 	free_memory(simplChild1);
 	free_memory(simplChild2);
 	simplified->nodeType = CONSTANT;
@@ -4110,8 +4111,8 @@ node* simplifyTreeErrorfreeInnerst(node *tree, int rec, int doRational) {
 	free_memory(simplChild2);
       }
     } else {
-      if ((accessThruMemRef(simplChild1)->nodeType == CONSTANT) && (mpfr_zero_p(*(accessThruMemRef(simplChild1)->value)))) {
-	if (!isConstant(simplChild2)) {
+      if ((accessThruMemRef(simplChild1)->nodeType == CONSTANT) && (mpfr_zero_p(*(accessThruMemRef(simplChild1)->value)))) { 
+	if ((!isConstant(simplChild2)) && (isNotUniformlyZero(simplChild2))) {
 	  free_memory(simplChild1);
 	  free_memory(simplChild2);
 	  simplified->nodeType = CONSTANT;
