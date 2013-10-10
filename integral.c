@@ -68,12 +68,6 @@
 #include "integral.h"
 #include "general.h"
 
-
-#define DEBUG 0
-#define DEBUGMPFI 0
-
-
-
 rangetype integral(node *func, rangetype interval, mp_prec_t prec, mpfr_t diam) {
   node *deriv;
   rangetype x,y;

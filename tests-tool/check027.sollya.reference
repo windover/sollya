@@ -94,3 +94,43 @@ Warning: Rounding occurred when converting the constant "0.1" to floating-point 
 The inclusion property is nevertheless satisfied.
 Warning: Rounding occurred when converting the constant "0.1" to floating-point with 165 bits.
 The inclusion property is nevertheless satisfied.
+The tool has been restarted.
+=============== Test number 5 ================
+[-@Inf@;@Inf@]
+[@NaN@;@NaN@]
+[@NaN@;@NaN@]
+Warning: the given expression is undefined or numerically unstable.
+@NaN@
+0
+1
+log2(x) - log(x) / 0.69314718055994530941723212145817656807550013436024
+(log2(x) - log(x) / 0.69314718055994530941723212145817656807550013436024) / (log2(x) - log(x) / 0.69314718055994530941723212145817656807550013436024)
+cos(x)^2 + sin(x)^2 + 2
+1
+1
+@NaN@
+0
+log(cos(x)^2 + sin(x)^2 - 1) - log(cos(x)^2 + sin(x)^2 - 1)
+cos(x) / cos(x)
+cos(x * 2) / cos(x * 2)
+cos(2 + x) / cos(2 + x)
+cos(1.57079632679489661923132169163975144209858469968754 + x) / cos(1.57079632679489661923132169163975144209858469968754 + x)
+cos(1.57079632679489661923132169163975144209858469968754 + cos(x)^2 + sin(x)^2 - 1) / cos(1.57079632679489661923132169163975144209858469968754 + cos(x)^2 + sin(x)^2 - 1)
+cos((3.14159265358979323846264338327950288419716939937508 * abs(x)) / (x * 2)) / cos((3.14159265358979323846264338327950288419716939937508 * abs(x)) / (x * 2))
+log(x) - log(x)
+log(x) / log(x)
+0
+0
+0
+Warning: the given expression is undefined or numerically unstable.
+@NaN@
+0 / (-log(0))^(-1)
+(-log(x))^(-1) / (-log(x))^(-1)
+0
+@Inf@ / x - @Inf@ / x
+0
+1
+(abs(x) / x + 1) / (abs(x) / x + 1)
+0
+0
+1

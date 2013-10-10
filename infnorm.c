@@ -75,8 +75,6 @@
 #include <stdlib.h> /* exit, free, mktemp */
 #include <errno.h>
 
-#define DEBUG 0
-#define DEBUGMPFI 0
 #define DIFFSIZE 5000000
 
 
@@ -1638,40 +1636,16 @@ chain* evaluateI(sollya_mpfi_t result, node *tree, sollya_mpfi_t x, mp_prec_t pr
   case SIN:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
     sollya_mpfi_sin(stack3, stack1);
-    if (sollya_mpfi_inf_p(stack1)) {
-      sollya_mpfi_set_nan(stack3);
-    }
     if (internalTheo != NULL) {
       sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
     }
-
-#if DEBUGMPFI
-    sollyaPrintf("sollya_mpfi_sin(");
-    printInterval(stack1);
-    sollyaPrintf(") = ");
-    printInterval(stack3);
-    sollyaPrintf("\n");
-#endif
-
     break;
   case COS:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
     sollya_mpfi_cos(stack3, stack1);
-    if (sollya_mpfi_inf_p(stack1)) {
-      sollya_mpfi_set_nan(stack3);
-    }
     if (internalTheo != NULL) {
       sollya_mpfi_set(*(internalTheo->boundLeft),stack1);
     }
-
-#if DEBUGMPFI
-    sollyaPrintf("sollya_mpfi_cos(");
-    printInterval(stack1);
-    sollyaPrintf(") = ");
-    printInterval(stack3);
-    sollyaPrintf("\n");
-#endif
-
     break;
   case TAN:
     excludes = evaluateI(stack1, tree->child1, x, prec, simplifiesA, simplifiesB, NULL, leftTheo,noExcludes);
