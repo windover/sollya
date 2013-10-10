@@ -3234,6 +3234,23 @@ int isNotUniformlyInfinite(node *tree) {
   int res;
   mpfr_t yPt;
 
+  /* If f evaluates over the whole real to a closed subset of the
+     reals, we know that it is bounded.
+  */
+  sollya_mpfi_init2(x, 64);
+  sollya_mpfi_set_full_range(x);
+  sollya_mpfi_init2(y, 64);
+  evaluateInterval(y, tree, NULL, x);
+  if (sollya_mpfi_has_infinity(y) ||
+      sollya_mpfi_has_nan(y)) {
+    res = 0;
+  } else {
+    res = 1;
+  }
+  sollya_mpfi_clear(y);
+  sollya_mpfi_clear(x);
+  if (res) return 1;
+
   /* Consider the set R of rational expressions formed only from x and finite
      constants.
      An easy structural induction on R shows that if r \in R evaluates to a
@@ -3257,23 +3274,6 @@ int isNotUniformlyInfinite(node *tree) {
     sollya_mpfi_clear(x);
     return res;
   }
-
-  /* If f evaluates over the whole real to a closed subset of the
-     reals, we know that it is bounded.
-  */
-  sollya_mpfi_init2(x, 64);
-  sollya_mpfi_set_full_range(x);
-  sollya_mpfi_init2(y, 64);
-  evaluateInterval(y, tree, NULL, x);
-  if (sollya_mpfi_has_infinity(y) ||
-      sollya_mpfi_has_nan(y)) {
-    res = 0;
-  } else {
-    res = 1;
-  }
-  sollya_mpfi_clear(y);
-  sollya_mpfi_clear(x);
-  if (res) return 1;
 
   /* If f is of the form f = g +/- h and both g and h are bounded by a
      real, f is bounded by a real.
@@ -3384,6 +3384,23 @@ int isNotUniformlyZero(node *tree) {
   int res;
   mpfr_t yPt;
 
+  /* If f evaluates over the whole real to a closed subset of the real
+     not containing zero, we know that it is not uniformly zero.
+  */
+  sollya_mpfi_init2(x, 64);
+  sollya_mpfi_set_full_range(x);
+  sollya_mpfi_init2(y, 64);
+  evaluateInterval(y, tree, NULL, x);
+  if (sollya_mpfi_has_nan(y) ||
+      sollya_mpfi_has_zero(y)) {
+    res = 0;
+  } else {
+    res = 1;
+  }
+  sollya_mpfi_clear(y);
+  sollya_mpfi_clear(x);
+  if (res) return 1;
+
   /* Consider the set R of rational expressions formed only from x and finite
      constants.
      An easy structural induction on R shows that if r \in R evaluates to a
@@ -3407,23 +3424,6 @@ int isNotUniformlyZero(node *tree) {
     sollya_mpfi_clear(x);
     return res;
   }
-
-  /* If f evaluates over the whole real to a closed subset of the real
-     not containing zero, we know that it is not uniformly zero.
-  */
-  sollya_mpfi_init2(x, 64);
-  sollya_mpfi_set_full_range(x);
-  sollya_mpfi_init2(y, 64);
-  evaluateInterval(y, tree, NULL, x);
-  if (sollya_mpfi_has_nan(y) ||
-      sollya_mpfi_has_zero(y)) {
-    res = 0;
-  } else {
-    res = 1;
-  }
-  sollya_mpfi_clear(y);
-  sollya_mpfi_clear(x);
-  if (res) return 1;
 
   /* If f is of the form f = g * h and both g and h are not uniformly
      zero, f is not uniformly zero.
