@@ -5613,7 +5613,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case MUL:
-	if (accessThruMemRef(tree->child1)->nodeType == CONSTANT) {
+	if (isConstant(tree->child1)) {
 	  f_diff = differentiateUnsimplified(tree->child2);
 	  g_copy = copyTree(tree->child1);
 	  temp_node = (node*) safeMalloc(sizeof(node));
@@ -5622,7 +5622,7 @@ node* differentiateUnsimplified(node *tree) {
 	  temp_node->child2 = f_diff;
 	  derivative = temp_node;
 	} else {
-	  if (accessThruMemRef(tree->child2)->nodeType == CONSTANT) {
+	  if (isConstant(tree->child2)) {
 	    f_diff = differentiateUnsimplified(tree->child1);
 	    g_copy = copyTree(tree->child2);
 	    temp_node = (node*) safeMalloc(sizeof(node));
@@ -6135,7 +6135,7 @@ node* differentiateUnsimplified(node *tree) {
 	derivative = temp_node;
 	break;
       case POW:
-	if (accessThruMemRef(tree->child2)->nodeType == CONSTANT) {
+	if (isConstant(tree->child2)) {
 	  g_copy = copyTree(tree->child2);
 	  g_copy2 = copyTree(tree->child2);
 	  f_diff = differentiateUnsimplified(tree->child1);
