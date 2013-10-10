@@ -633,7 +633,7 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
       r = evaluateFaithfulWithCutOffFast(xNew, iterator, NULL, x, zero_mpfr, prec);
       if(r==0) mpfr_set_d(xNew,0,GMP_RNDN);
 
-      if( (mpfr_cmp(u,xNew)>0) || (mpfr_cmp(xNew,v)>0) || ((!mpfr_number_p(xNew)) && ((r==1) || (r==4) || (r==5) || (r==6) || (r==7))) ) {
+      if( (mpfr_cmp(u,xNew)>0) || (mpfr_cmp(xNew,v)>0) || (!mpfr_number_p(xNew)) ) {
 	printMessage(5, SOLLYA_MSG_NEWTON_PERFORMING_BISECTION_STEP, "Information (Newton's algorithm): performing a bisection step\n");
 	mpfr_add(xNew,u,v,GMP_RNDN);
 	mpfr_div_2ui(xNew, xNew, 1, GMP_RNDN);
