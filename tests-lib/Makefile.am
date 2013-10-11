@@ -75,6 +75,8 @@ tconstant.c \
 tconstant_from_double.c \
 tconstant_from_int64.c \
 tconstant_from_int.c \
+tconstant_from_mpq.c \
+tconstant_from_mpz.c \
 tconstant_from_uint64.c \
 tconstant_list_ops.c \
 tcopy_obj.c \
@@ -123,6 +125,8 @@ tget_canonical.c \
 tget_constant_as_double.c \
 tget_constant_as_int.c \
 tget_constant_as_int64.c \
+tget_constant_as_mpq.c \
+tget_constant_as_mpz.c \
 tget_constant_as_uint64.c \
 tget_diam.c \
 tget_dieonerrormode.c \
