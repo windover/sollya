@@ -1,3 +1,30 @@
+Changes from version 4.0 to 4.1:
+================================
+Critical bug fixes:
+  * Patched a bug on printing library functions.
+  * Fixed a buf in fpminimax that leading to possible segmentation fault (bug #16164).
+
+Major bug fixes:
+  * Fixed some problems with Sollya's configure, leading to an error related to FPLLL during the compilation of Sollya. This error was especially observed when compiling Sollya under certain versions of Ubuntu.
+  * Bug #8306 "Parsing of non-representable decimal constants in point-interval notation may give FP point intervals".
+  * Bug #16155 "A computation involving ceil leads to a result with wrong sign" nearestint now returns the even integer in case of a tie
+  * Bug #10322 "Directed rounding modes do not correctly handle the largest normal for single precision"
+  * Bug #15256 "round transforms NaN into Infinity without any rounding"
+
+Changes of syntax and output:
+  * Making Gappa proof generation work better with recent versions of Gappa.
+  * Changed simplify to dirtysimplify and aliased simplifysafe with simplify.
+  * Added copyright statement and disclaimer in output of implementpoly and implementconstant. Recompiled the documentation.
+  * New safe simplification procedures, solving bug #13046 and partially #16434.
+
+Minor new functionnalities:
+  * Added support for an optional destructor function in an external library.
+  * New functions sollya_lib_constant_from_mpz(), sollya_lib_constant_from_mpq(), sollya_lib_get_constant_as_mpz() and sollya_lib_get_constant_as_mpq() in the library. See documentation for details.
+
+And some bugs fixed.
+
+----------------------------------------------------------------------
+
 Changes from version 3.0 to 4.0:
 ================================
 Critical bug fixes:
