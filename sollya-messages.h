@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2012 by
+  Copyright 2012-2013 by
 
   Laboratoire d'Informatique de Paris 6, equipe PEQUAN,
   UPMC Universite Paris 06 - CNRS - UMR 7606 - LIP6, Paris, France,

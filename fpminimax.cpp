@@ -1,6 +1,6 @@
 /*
 
-Copyright 2008-2012 by
+Copyright 2008-2013 by
 
 Laboratoire de l'Informatique du Parallelisme,
 UMR CNRS - ENS Lyon - UCB Lyon 1 - INRIA 5668,
@@ -372,6 +372,12 @@ extern "C" int findCoeffInPseudoPolynomial(node **c, node *poly, node *g) {
 
   if ( (isConstant(poly)) && (isConstant(g)) ) {
     *c = makeDiv(copyTree(poly), copyTree(g)); return 1;
+  }
+
+  temp = makePow(makeVariable(), makeConstantDouble(0.0));
+  if ( isSyntacticallyEqual(poly, temp) && (isConstant(g)) ) {
+    *c = makeDiv(makeConstantDouble(1.0), copyTree(g));
+    free_memory(temp); return 1;
   }
 
   temp = makeConstantDouble(0.0);
