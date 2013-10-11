@@ -99,38 +99,34 @@ The tool has been restarted.
 [-@Inf@;@Inf@]
 [@NaN@;@NaN@]
 [@NaN@;@NaN@]
-Warning: the given expression is undefined or numerically unstable.
-@NaN@
+0 / 0
 0
 1
-log2(x) - log(x) / 0.69314718055994530941723212145817656807550013436024
-(log2(x) - log(x) / 0.69314718055994530941723212145817656807550013436024) / (log2(x) - log(x) / 0.69314718055994530941723212145817656807550013436024)
+log2(x) - log(x) / log(2)
+(log2(x) - log(x) / log(2)) / (log2(x) - log(x) / log(2))
 cos(x)^2 + sin(x)^2 + 2
 1
 1
-@NaN@
+((x + 1)^2 / (x^2 + 2 * x + 1) - 1) / ((x + 1)^2 / (x^2 + 2 * x + 1) - 1)
 0
 log(cos(x)^2 + sin(x)^2 - 1) - log(cos(x)^2 + sin(x)^2 - 1)
 cos(x) / cos(x)
-cos(x * 2) / cos(x * 2)
+cos(2 * x) / cos(2 * x)
 cos(2 + x) / cos(2 + x)
-cos(1.57079632679489661923132169163975144209858469968754 + x) / cos(1.57079632679489661923132169163975144209858469968754 + x)
-cos(1.57079632679489661923132169163975144209858469968754 + cos(x)^2 + sin(x)^2 - 1) / cos(1.57079632679489661923132169163975144209858469968754 + cos(x)^2 + sin(x)^2 - 1)
-cos((3.14159265358979323846264338327950288419716939937508 * abs(x)) / (x * 2)) / cos((3.14159265358979323846264338327950288419716939937508 * abs(x)) / (x * 2))
+cos((pi) / 2 + x) / cos((pi) / 2 + x)
+cos((pi) / 2 + cos(x)^2 + sin(x)^2 - 1) / cos((pi) / 2 + cos(x)^2 + sin(x)^2 - 1)
+cos(((pi) * abs(x)) / (2 * x)) / cos(((pi) * abs(x)) / (2 * x))
 log(x) - log(x)
 log(x) / log(x)
 0
+(x + 1)^2 / (x^2 + 2 * x + 1) - 1
 0
-0
-Warning: the given expression is undefined or numerically unstable.
-@NaN@
-0 / (-log(0))^(-1)
 (-log(x))^(-1) / (-log(x))^(-1)
 0
 @Inf@ / x - @Inf@ / x
 0
 1
 (abs(x) / x + 1) / (abs(x) / x + 1)
-0
+0 / (abs(x) / x + 1)
 0
 1

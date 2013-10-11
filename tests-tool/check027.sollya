@@ -78,39 +78,37 @@ print("=============== Test number 5 ================");
 evaluate(sin(5 * pi)/(sin(5 * pi)),17); /* expecting NaN */
 evaluate(exp(log(sin(5 * pi)) - log(sin(5 * pi))),17); /* expecting NaN */
 evaluate(log(sin(5 * pi)) - log(sin(5 * pi)),17); /* expecting NaN */
-((x/x)-1)/((x/x)-1); /* expecting NaN */
-((x/x)-1); /* expecting 0 */
-x/x; /* expecting 1 */
-log2(x)-log(x)/log(2); /* expecting log2(x)-log(x)/log(2) */
-(log2(x)-log(x)/log(2))/(log2(x)-log(x)/log(2)); /* expecting (log2(x)-log(x)/log(2))/(log2(x)-log(x)/log(2)) */
-(cos(x)^2+sin(x)^2)+2; /* expecting (cos(x)^2+sin(x)^2)+2 */
-((cos(x)^2+sin(x)^2)+2)/((cos(x)^2+sin(x)^2)+2); /* expecting 1 */
-(cos(x)+2)/(cos(x)+2); /* expecting 1 */
-((x+1)^2/(x^2+2*x+1)-1)/((x+1)^2/(x^2+2*x+1)-1); /* expecting ((x+1)^2/(x^2+2*x+1)-1)/((x+1)^2/(x^2+2*x+1)-1) */
-(cos(x)+2)-(cos(x)+2); /* expecting 0 */
-log((cos(x)^2+sin(x)^2)-1)-log((cos(x)^2+sin(x)^2)-1); /* expecting log((cos(x)^2+sin(x)^2)-1)-log((cos(x)^2+sin(x)^2)-1) */
-cos(x)/cos(x); /* expecting cos(x)/cos(x) (1 would be better, but requires some effort to prove it) */
-cos(2*x)/cos(2*x); /* expecting cos(2*x)/cos(2*x) (1 would be better, but requires some effort to prove it) */
-cos(2+x)/cos(2+x); /* expecting cos(2+x)/cos(2+x) (1 would be better, but requires some effort to prove it) */
-cos(pi/2+x)/cos(pi/2+x); /* expecting cos(pi/2+x)/cos(pi/2+x) (1 would be better, but requires some effort to prove it) */
-cos(pi/2+cos(x)^2+sin(x)^2-1)/cos(pi/2+cos(x)^2+sin(x)^2-1); /* expecting cos(pi/2+cos(x)^2+sin(x)^2-1)/cos(pi/2+cos(x)^2+sin(x)^2-1) */
-cos(pi*abs(x)/(2*x))/cos(pi*abs(x)/(2*x)); /* expecting cos(pi*abs(x)/(2*x))/cos(pi*abs(x)/(2*x)) */
-log(x)-log(x); /* expecting log(x)-log(x) */
-log(x)/log(x); /* expecting log(x)/log(x) */
-cos(x)-cos(x); /* expecting 0 */
-(x+1)^2/(x^2+2*x+1) - 1; /* expecting 0 */
-(-log(0))^(-1); /* expecting 0 */
-(-log(0))^(-1) / (-log(0))^(-1) ; /* expecting NaN */
-print(simplify( (-log(0))^(-1) / (-log(0))^(-1) ));  /* expecting NaN */
+print(simplify( ((x/x)-1)/((x/x)-1) )); /* expecting 0/0 or NaN */
+print(simplify( ((x/x)-1) )); /* expecting 0 */
+print(simplify( x/x )); /* expecting 1 */
+print(simplify( log2(x)-log(x)/log(2) )); /* expecting log2(x)-log(x)/log(2) */
+print(simplify( (log2(x)-log(x)/log(2))/(log2(x)-log(x)/log(2)) )); /* expecting (log2(x)-log(x)/log(2))/(log2(x)-log(x)/log(2)) */
+print(simplify( (cos(x)^2+sin(x)^2)+2 )); /* expecting (cos(x)^2+sin(x)^2)+2 */
+print(simplify( ((cos(x)^2+sin(x)^2)+2)/((cos(x)^2+sin(x)^2)+2) )); /* expecting 1 */
+print(simplify( (cos(x)+2)/(cos(x)+2) )); /* expecting 1 */
+print(simplify( ((x+1)^2/(x^2+2*x+1)-1)/((x+1)^2/(x^2+2*x+1)-1) )); /* expecting ((x+1)^2/(x^2+2*x+1)-1)/((x+1)^2/(x^2+2*x+1)-1) */
+print(simplify( (cos(x)+2)-(cos(x)+2) )); /* expecting 0 */
+print(simplify( log((cos(x)^2+sin(x)^2)-1)-log((cos(x)^2+sin(x)^2)-1) )); /* expecting log((cos(x)^2+sin(x)^2)-1)-log((cos(x)^2+sin(x)^2)-1) */
+print(simplify( cos(x)/cos(x) )); /* expecting cos(x)/cos(x) (1 would be better, but requires some effort to prove it) */
+print(simplify( cos(2*x)/cos(2*x) )); /* expecting cos(2*x)/cos(2*x) (1 would be better, but requires some effort to prove it) */
+print(simplify( cos(2+x)/cos(2+x) )); /* expecting cos(2+x)/cos(2+x) (1 would be better, but requires some effort to prove it) */
+print(simplify( cos(pi/2+x)/cos(pi/2+x) )); /* expecting cos(pi/2+x)/cos(pi/2+x) (1 would be better, but requires some effort to prove it) */
+print(simplify( cos(pi/2+cos(x)^2+sin(x)^2-1)/cos(pi/2+cos(x)^2+sin(x)^2-1) )); /* expecting cos(pi/2+cos(x)^2+sin(x)^2-1)/cos(pi/2+cos(x)^2+sin(x)^2-1) */
+print(simplify( cos(pi*abs(x)/(2*x))/cos(pi*abs(x)/(2*x)) )); /* expecting cos(pi*abs(x)/(2*x))/cos(pi*abs(x)/(2*x)) */
+print(simplify( log(x)-log(x) )); /* expecting log(x)-log(x) */
+print(simplify( log(x)/log(x) )); /* expecting log(x)/log(x) */
+print(simplify( cos(x)-cos(x) )); /* expecting 0 */
+print(simplify( (x+1)^2/(x^2+2*x+1) - 1 )); /* expecting (x+1)^2/(x^2+2*x+1) - 1 */
+print(simplify( (x^2+2*x+1)/(x^2+2*x+1) - 1 )); /* expecting 0 */
 print(simplify( (-log(x))^(-1) / (-log(x))^(-1) )); /* expecting (-log(x))^(-1) / (-log(x))^(-1) */
-2/x - 2/x; /* expecting 0 */
-@Inf@/x - @Inf@/x; /* expecting @Inf@/x - @Inf@/x */
+print(simplify( 2/x - 2/x )); /* expecting 0 */
+print(simplify( @Inf@/x - @Inf@/x )); /* expecting @Inf@/x - @Inf@/x */
 u = 1/2 * (abs(x)/x + 1);
-u-u; /* expecting 0 */
+print(simplify( u-u )); /* expecting 0 */
 d = abs(x)/x;
-d/d; /* expecting 1 */
+print(simplify( d/d )); /* expecting 1 */
 f= abs(x)/x+1;
-f/f; /* expecting (abs(x)/x+1)/(abs(x)/x+1) */
-0/f; /* expecting 0/(abs(x)/x+1) */
-log(3 + cos(x)) - log(3 + cos(x)); /* expecting 0 */
-log(3 + cos(x)) / log(3 + cos(x)); /* expecting 1 */
+print(simplify( f/f )); /* expecting (abs(x)/x+1)/(abs(x)/x+1) */
+print(simplify( 0/f )); /* expecting 0/(abs(x)/x+1) */
+print(simplify( log(3 + cos(x)) - log(3 + cos(x)) )); /* expecting 0 */
+print(simplify( log(3 + cos(x)) / log(3 + cos(x)) )); /* expecting 1 */
