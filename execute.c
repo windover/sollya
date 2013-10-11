@@ -18173,45 +18173,20 @@ node *evaluateThingInnerst(node *tree) {
     } else {
       if (isRangeNonEmpty(copy->child1) &&
 	  isPureTree(copy->child2) &&
-	  isConstant(copy->child2)) {
-	tempNode = makeAdd(makeVariable(),copyTree(copy->child2));
-	xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)));
-	mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value)));
-	mpfr_init2(*(yrange.a),tools_precision);
-	mpfr_init2(*(yrange.b),tools_precision);
-	mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),GMP_RNDD);
-	mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value),GMP_RNDU);
-	evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
-	freeThing(copy);
-	copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
-	freeThing(tempNode);
-	mpfr_clear(*(xrange.a));
-	mpfr_clear(*(xrange.b));
-	mpfr_clear(*(yrange.a));
-	mpfr_clear(*(yrange.b));
-	safeFree(xrange.a);
-	safeFree(xrange.b);
-	safeFree(yrange.a);
-	safeFree(yrange.b);
-      } else {
-	if (isRangeNonEmpty(copy->child2) &&
-	    isPureTree(copy->child1) &&
-	    isConstant(copy->child1)) {
-	  tempNode = makeAdd(copyTree(copy->child1),makeVariable());
+	  isConstant(copy->child2)) { 
+	if (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)) && 
+	    mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value))) {
+	  tempNode = makeAdd(makeVariable(),copyTree(copy->child2));
 	  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)));
-	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value)));
+	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)));
+	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value)));
 	  mpfr_init2(*(yrange.a),tools_precision);
 	  mpfr_init2(*(yrange.b),tools_precision);
-	  mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),GMP_RNDD);
-	  mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value),GMP_RNDU);
+	  mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),GMP_RNDD);
+	  mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value),GMP_RNDU);
 	  evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
 	  freeThing(copy);
 	  copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
@@ -18224,6 +18199,79 @@ node *evaluateThingInnerst(node *tree) {
 	  safeFree(xrange.b);
 	  safeFree(yrange.a);
 	  safeFree(yrange.b);
+	} else {
+	  pTemp = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value));
+	  pTemp2 = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value));
+	  if (pTemp2 > pTemp) pTemp = pTemp2;
+	  sollya_mpfi_init2(tempIA,pTemp);
+	  sollya_mpfi_init2(tempIB,tools_precision);
+	  sollya_mpfi_init2(tempIC,tools_precision);
+	  sollya_mpfi_interv_fr(tempIA,*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value));
+	  evaluateConstantExpressionToSharpInterval(tempIB, copy->child2);
+	  sollya_mpfi_add(tempIC, tempIA, tempIB);
+	  freeThing(copy);
+	  mpfr_init2(a,tools_precision);
+	  mpfr_init2(b,tools_precision);
+	  sollya_mpfi_get_left(a,tempIC);
+	  sollya_mpfi_get_right(b,tempIC);
+	  copy = makeRange(makeConstant(a),makeConstant(b));
+	  mpfr_clear(a);
+	  mpfr_clear(b);
+	  sollya_mpfi_clear(tempIC);
+	  sollya_mpfi_clear(tempIB);
+	  sollya_mpfi_clear(tempIA);
+	}
+      } else {
+	if (isRangeNonEmpty(copy->child2) &&
+	    isPureTree(copy->child1) &&
+	    isConstant(copy->child1)) { 
+	  if (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)) && 
+	      mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value))) {
+	    tempNode = makeAdd(copyTree(copy->child1),makeVariable());
+	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)));
+	    mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value)));
+	    mpfr_init2(*(yrange.a),tools_precision);
+	    mpfr_init2(*(yrange.b),tools_precision);
+	    mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),GMP_RNDD);
+	    mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value),GMP_RNDU);
+	    evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	    freeThing(copy);
+	    copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	    freeThing(tempNode);
+	    mpfr_clear(*(xrange.a));
+	    mpfr_clear(*(xrange.b));
+	    mpfr_clear(*(yrange.a));
+	    mpfr_clear(*(yrange.b));
+	    safeFree(xrange.a);
+	    safeFree(xrange.b);
+	    safeFree(yrange.a);
+	    safeFree(yrange.b);
+	  } else {
+	    pTemp = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value));
+	    pTemp2 = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value));
+	    if (pTemp2 > pTemp) pTemp = pTemp2;
+	    sollya_mpfi_init2(tempIA,pTemp);
+	    sollya_mpfi_init2(tempIB,tools_precision);
+	    sollya_mpfi_init2(tempIC,tools_precision);
+	    sollya_mpfi_interv_fr(tempIA,*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value));
+	    evaluateConstantExpressionToSharpInterval(tempIB, copy->child1);
+	    sollya_mpfi_add(tempIC, tempIB, tempIA);
+	    freeThing(copy);
+	    mpfr_init2(a,tools_precision);
+	    mpfr_init2(b,tools_precision);
+	    sollya_mpfi_get_left(a,tempIC);
+	    sollya_mpfi_get_right(b,tempIC);
+	    copy = makeRange(makeConstant(a),makeConstant(b));
+	    mpfr_clear(a);
+	    mpfr_clear(b);
+	    sollya_mpfi_clear(tempIC);
+	    sollya_mpfi_clear(tempIB);
+	    sollya_mpfi_clear(tempIA);
+	  }
 	}
       }
     }
@@ -18258,45 +18306,20 @@ node *evaluateThingInnerst(node *tree) {
     } else {
       if (isRangeNonEmpty(copy->child1) &&
 	  isPureTree(copy->child2) &&
-	  isConstant(copy->child2)) {
-	tempNode = makeSub(makeVariable(),copyTree(copy->child2));
-	xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)));
-	mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value)));
-	mpfr_init2(*(yrange.a),tools_precision);
-	mpfr_init2(*(yrange.b),tools_precision);
-	mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),GMP_RNDD);
-	mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value),GMP_RNDU);
-	evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
-	freeThing(copy);
-	copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
-	freeThing(tempNode);
-	mpfr_clear(*(xrange.a));
-	mpfr_clear(*(xrange.b));
-	mpfr_clear(*(yrange.a));
-	mpfr_clear(*(yrange.b));
-	safeFree(xrange.a);
-	safeFree(xrange.b);
-	safeFree(yrange.a);
-	safeFree(yrange.b);
-      } else {
-	if (isRangeNonEmpty(copy->child2) &&
-	    isPureTree(copy->child1) &&
-	    isConstant(copy->child1)) {
-	  tempNode = makeSub(copyTree(copy->child1),makeVariable());
+	  isConstant(copy->child2)) { 
+	if (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)) && 
+	    mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value))) {
+	  tempNode = makeSub(makeVariable(),copyTree(copy->child2));
 	  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)));
-	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value)));
+	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)));
+	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value)));
 	  mpfr_init2(*(yrange.a),tools_precision);
 	  mpfr_init2(*(yrange.b),tools_precision);
-	  mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),GMP_RNDD);
-	  mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value),GMP_RNDU);
+	  mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),GMP_RNDD);
+	  mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value),GMP_RNDU);
 	  evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
 	  freeThing(copy);
 	  copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
@@ -18309,6 +18332,79 @@ node *evaluateThingInnerst(node *tree) {
 	  safeFree(xrange.b);
 	  safeFree(yrange.a);
 	  safeFree(yrange.b);
+	} else {
+	  pTemp = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value));
+	  pTemp2 = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value));
+	  if (pTemp2 > pTemp) pTemp = pTemp2;
+	  sollya_mpfi_init2(tempIA,pTemp);
+	  sollya_mpfi_init2(tempIB,tools_precision);
+	  sollya_mpfi_init2(tempIC,tools_precision);
+	  sollya_mpfi_interv_fr(tempIA,*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value));
+	  evaluateConstantExpressionToSharpInterval(tempIB, copy->child2);
+	  sollya_mpfi_sub(tempIC, tempIA, tempIB);
+	  freeThing(copy);
+	  mpfr_init2(a,tools_precision);
+	  mpfr_init2(b,tools_precision);
+	  sollya_mpfi_get_left(a,tempIC);
+	  sollya_mpfi_get_right(b,tempIC);
+	  copy = makeRange(makeConstant(a),makeConstant(b));
+	  mpfr_clear(a);
+	  mpfr_clear(b);
+	  sollya_mpfi_clear(tempIC);
+	  sollya_mpfi_clear(tempIB);
+	  sollya_mpfi_clear(tempIA);
+	}
+      } else {
+	if (isRangeNonEmpty(copy->child2) &&
+	    isPureTree(copy->child1) &&
+	    isConstant(copy->child1)) { 
+	  if (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)) && 
+	      mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value))) {
+	    tempNode = makeSub(copyTree(copy->child1),makeVariable());
+	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)));
+	    mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value)));
+	    mpfr_init2(*(yrange.a),tools_precision);
+	    mpfr_init2(*(yrange.b),tools_precision);
+	    mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),GMP_RNDD);
+	    mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value),GMP_RNDU);
+	    evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	    freeThing(copy);
+	    copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	    freeThing(tempNode);
+	    mpfr_clear(*(xrange.a));
+	    mpfr_clear(*(xrange.b));
+	    mpfr_clear(*(yrange.a));
+	    mpfr_clear(*(yrange.b));
+	    safeFree(xrange.a);
+	    safeFree(xrange.b);
+	    safeFree(yrange.a);
+	    safeFree(yrange.b);
+	  } else {
+	    pTemp = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value));
+	    pTemp2 = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value));
+	    if (pTemp2 > pTemp) pTemp = pTemp2;
+	    sollya_mpfi_init2(tempIA,pTemp);
+	    sollya_mpfi_init2(tempIB,tools_precision);
+	    sollya_mpfi_init2(tempIC,tools_precision);
+	    sollya_mpfi_interv_fr(tempIA,*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value));
+	    evaluateConstantExpressionToSharpInterval(tempIB, copy->child1);
+	    sollya_mpfi_sub(tempIC, tempIB, tempIA);
+	    freeThing(copy);
+	    mpfr_init2(a,tools_precision);
+	    mpfr_init2(b,tools_precision);
+	    sollya_mpfi_get_left(a,tempIC);
+	    sollya_mpfi_get_right(b,tempIC);
+	    copy = makeRange(makeConstant(a),makeConstant(b));
+	    mpfr_clear(a);
+	    mpfr_clear(b);
+	    sollya_mpfi_clear(tempIC);
+	    sollya_mpfi_clear(tempIB);
+	    sollya_mpfi_clear(tempIA);
+	  }
 	}
       }
     }
@@ -18343,45 +18439,20 @@ node *evaluateThingInnerst(node *tree) {
     } else {
       if (isRangeNonEmpty(copy->child1) &&
 	  isPureTree(copy->child2) &&
-	  isConstant(copy->child2)) {
-	tempNode = makeMul(makeVariable(),copyTree(copy->child2));
-	xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)));
-	mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value)));
-	mpfr_init2(*(yrange.a),tools_precision);
-	mpfr_init2(*(yrange.b),tools_precision);
-	mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),GMP_RNDD);
-	mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value),GMP_RNDU);
-	evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
-	freeThing(copy);
-	copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
-	freeThing(tempNode);
-	mpfr_clear(*(xrange.a));
-	mpfr_clear(*(xrange.b));
-	mpfr_clear(*(yrange.a));
-	mpfr_clear(*(yrange.b));
-	safeFree(xrange.a);
-	safeFree(xrange.b);
-	safeFree(yrange.a);
-	safeFree(yrange.b);
-      } else {
-	if (isRangeNonEmpty(copy->child2) &&
-	    isPureTree(copy->child1) &&
-	    isConstant(copy->child1)) {
-	  tempNode = makeMul(copyTree(copy->child1),makeVariable());
+	  isConstant(copy->child2)) { 
+	if (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)) && 
+	    mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value))) {
+	  tempNode = makeMul(makeVariable(),copyTree(copy->child2));
 	  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)));
-	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value)));
+	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)));
+	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value)));
 	  mpfr_init2(*(yrange.a),tools_precision);
 	  mpfr_init2(*(yrange.b),tools_precision);
-	  mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),GMP_RNDD);
-	  mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value),GMP_RNDU);
+	  mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),GMP_RNDD);
+	  mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value),GMP_RNDU);
 	  evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
 	  freeThing(copy);
 	  copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
@@ -18394,6 +18465,79 @@ node *evaluateThingInnerst(node *tree) {
 	  safeFree(xrange.b);
 	  safeFree(yrange.a);
 	  safeFree(yrange.b);
+	} else {
+	  pTemp = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value));
+	  pTemp2 = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value));
+	  if (pTemp2 > pTemp) pTemp = pTemp2;
+	  sollya_mpfi_init2(tempIA,pTemp);
+	  sollya_mpfi_init2(tempIB,tools_precision);
+	  sollya_mpfi_init2(tempIC,tools_precision);
+	  sollya_mpfi_interv_fr(tempIA,*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value));
+	  evaluateConstantExpressionToSharpInterval(tempIB, copy->child2);
+	  sollya_mpfi_mul(tempIC, tempIA, tempIB);
+	  freeThing(copy);
+	  mpfr_init2(a,tools_precision);
+	  mpfr_init2(b,tools_precision);
+	  sollya_mpfi_get_left(a,tempIC);
+	  sollya_mpfi_get_right(b,tempIC);
+	  copy = makeRange(makeConstant(a),makeConstant(b));
+	  mpfr_clear(a);
+	  mpfr_clear(b);
+	  sollya_mpfi_clear(tempIC);
+	  sollya_mpfi_clear(tempIB);
+	  sollya_mpfi_clear(tempIA);
+	}
+      } else {
+	if (isRangeNonEmpty(copy->child2) &&
+	    isPureTree(copy->child1) &&
+	    isConstant(copy->child1)) { 
+	  if (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)) && 
+	      mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value))) {
+	    tempNode = makeMul(copyTree(copy->child1),makeVariable());
+	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)));
+	    mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value)));
+	    mpfr_init2(*(yrange.a),tools_precision);
+	    mpfr_init2(*(yrange.b),tools_precision);
+	    mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),GMP_RNDD);
+	    mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value),GMP_RNDU);
+	    evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	    freeThing(copy);
+	    copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	    freeThing(tempNode);
+	    mpfr_clear(*(xrange.a));
+	    mpfr_clear(*(xrange.b));
+	    mpfr_clear(*(yrange.a));
+	    mpfr_clear(*(yrange.b));
+	    safeFree(xrange.a);
+	    safeFree(xrange.b);
+	    safeFree(yrange.a);
+	    safeFree(yrange.b);
+	  } else {
+	    pTemp = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value));
+	    pTemp2 = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value));
+	    if (pTemp2 > pTemp) pTemp = pTemp2;
+	    sollya_mpfi_init2(tempIA,pTemp);
+	    sollya_mpfi_init2(tempIB,tools_precision);
+	    sollya_mpfi_init2(tempIC,tools_precision);
+	    sollya_mpfi_interv_fr(tempIA,*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value));
+	    evaluateConstantExpressionToSharpInterval(tempIB, copy->child1);
+	    sollya_mpfi_mul(tempIC, tempIB, tempIA);
+	    freeThing(copy);
+	    mpfr_init2(a,tools_precision);
+	    mpfr_init2(b,tools_precision);
+	    sollya_mpfi_get_left(a,tempIC);
+	    sollya_mpfi_get_right(b,tempIC);
+	    copy = makeRange(makeConstant(a),makeConstant(b));
+	    mpfr_clear(a);
+	    mpfr_clear(b);
+	    sollya_mpfi_clear(tempIC);
+	    sollya_mpfi_clear(tempIB);
+	    sollya_mpfi_clear(tempIA);
+	  }
 	}
       }
     }
@@ -18428,45 +18572,20 @@ node *evaluateThingInnerst(node *tree) {
     } else {
       if (isRangeNonEmpty(copy->child1) &&
 	  isPureTree(copy->child2) &&
-	  isConstant(copy->child2)) {
-	tempNode = makeDiv(makeVariable(),copyTree(copy->child2));
-	xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)));
-	mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value)));
-	mpfr_init2(*(yrange.a),tools_precision);
-	mpfr_init2(*(yrange.b),tools_precision);
-	mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),GMP_RNDD);
-	mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value),GMP_RNDU);
-	evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
-	freeThing(copy);
-	copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
-	freeThing(tempNode);
-	mpfr_clear(*(xrange.a));
-	mpfr_clear(*(xrange.b));
-	mpfr_clear(*(yrange.a));
-	mpfr_clear(*(yrange.b));
-	safeFree(xrange.a);
-	safeFree(xrange.b);
-	safeFree(yrange.a);
-	safeFree(yrange.b);
-      } else {
-	if (isRangeNonEmpty(copy->child2) &&
-	    isPureTree(copy->child1) &&
-	    isConstant(copy->child1)) {
-	  tempNode = makeDiv(copyTree(copy->child1),makeVariable());
+	  isConstant(copy->child2)) { 
+	if (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)) && 
+	    mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value))) {
+	  tempNode = makeDiv(makeVariable(),copyTree(copy->child2));
 	  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)));
-	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value)));
+	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)));
+	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value)));
 	  mpfr_init2(*(yrange.a),tools_precision);
 	  mpfr_init2(*(yrange.b),tools_precision);
-	  mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),GMP_RNDD);
-	  mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value),GMP_RNDU);
+	  mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),GMP_RNDD);
+	  mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value),GMP_RNDU);
 	  evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
 	  freeThing(copy);
 	  copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
@@ -18479,6 +18598,79 @@ node *evaluateThingInnerst(node *tree) {
 	  safeFree(xrange.b);
 	  safeFree(yrange.a);
 	  safeFree(yrange.b);
+	} else {
+	  pTemp = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value));
+	  pTemp2 = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value));
+	  if (pTemp2 > pTemp) pTemp = pTemp2;
+	  sollya_mpfi_init2(tempIA,pTemp);
+	  sollya_mpfi_init2(tempIB,tools_precision);
+	  sollya_mpfi_init2(tempIC,tools_precision);
+	  sollya_mpfi_interv_fr(tempIA,*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value));
+	  evaluateConstantExpressionToSharpInterval(tempIB, copy->child2);
+	  sollya_mpfi_div(tempIC, tempIA, tempIB);
+	  freeThing(copy);
+	  mpfr_init2(a,tools_precision);
+	  mpfr_init2(b,tools_precision);
+	  sollya_mpfi_get_left(a,tempIC);
+	  sollya_mpfi_get_right(b,tempIC);
+	  copy = makeRange(makeConstant(a),makeConstant(b));
+	  mpfr_clear(a);
+	  mpfr_clear(b);
+	  sollya_mpfi_clear(tempIC);
+	  sollya_mpfi_clear(tempIB);
+	  sollya_mpfi_clear(tempIA);
+	}
+      } else {
+	if (isRangeNonEmpty(copy->child2) &&
+	    isPureTree(copy->child1) &&
+	    isConstant(copy->child1)) { 
+	  if (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)) && 
+	      mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value))) {
+	    tempNode = makeDiv(copyTree(copy->child1),makeVariable());
+	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)));
+	    mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value)));
+	    mpfr_init2(*(yrange.a),tools_precision);
+	    mpfr_init2(*(yrange.b),tools_precision);
+	    mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),GMP_RNDD);
+	    mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value),GMP_RNDU);
+	    evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	    freeThing(copy);
+	    copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	    freeThing(tempNode);
+	    mpfr_clear(*(xrange.a));
+	    mpfr_clear(*(xrange.b));
+	    mpfr_clear(*(yrange.a));
+	    mpfr_clear(*(yrange.b));
+	    safeFree(xrange.a);
+	    safeFree(xrange.b);
+	    safeFree(yrange.a);
+	    safeFree(yrange.b);
+	  } else {
+	    pTemp = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value));
+	    pTemp2 = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value));
+	    if (pTemp2 > pTemp) pTemp = pTemp2;
+	    sollya_mpfi_init2(tempIA,pTemp);
+	    sollya_mpfi_init2(tempIB,tools_precision);
+	    sollya_mpfi_init2(tempIC,tools_precision);
+	    sollya_mpfi_interv_fr(tempIA,*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value));
+	    evaluateConstantExpressionToSharpInterval(tempIB, copy->child1);
+	    sollya_mpfi_div(tempIC, tempIB, tempIA);
+	    freeThing(copy);
+	    mpfr_init2(a,tools_precision);
+	    mpfr_init2(b,tools_precision);
+	    sollya_mpfi_get_left(a,tempIC);
+	    sollya_mpfi_get_right(b,tempIC);
+	    copy = makeRange(makeConstant(a),makeConstant(b));
+	    mpfr_clear(a);
+	    mpfr_clear(b);
+	    sollya_mpfi_clear(tempIC);
+	    sollya_mpfi_clear(tempIB);
+	    sollya_mpfi_clear(tempIA);
+	  }
 	}
       }
     }
@@ -18887,45 +19079,20 @@ node *evaluateThingInnerst(node *tree) {
     } else {
       if (isRangeNonEmpty(copy->child1) &&
 	  isPureTree(copy->child2) &&
-	  isConstant(copy->child2)) {
-	tempNode = makePow(makeVariable(),copyTree(copy->child2));
-	xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)));
-	mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value)));
-	mpfr_init2(*(yrange.a),tools_precision);
-	mpfr_init2(*(yrange.b),tools_precision);
-	mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),GMP_RNDD);
-	mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value),GMP_RNDU);
-	evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
-	freeThing(copy);
-	copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
-	freeThing(tempNode);
-	mpfr_clear(*(xrange.a));
-	mpfr_clear(*(xrange.b));
-	mpfr_clear(*(yrange.a));
-	mpfr_clear(*(yrange.b));
-	safeFree(xrange.a);
-	safeFree(xrange.b);
-	safeFree(yrange.a);
-	safeFree(yrange.b);
-      } else {
-	if (isRangeNonEmpty(copy->child2) &&
-	    isPureTree(copy->child1) &&
-	    isConstant(copy->child1)) {
-	  tempNode = makePow(copyTree(copy->child1),makeVariable());
+	  isConstant(copy->child2)) { 
+	if (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)) && 
+	    mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value))) {
+	  tempNode = makePow(makeVariable(),copyTree(copy->child2));
 	  xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
 	  yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
-	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)));
-	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value)));
+	  mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value)));
+	  mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value)));
 	  mpfr_init2(*(yrange.a),tools_precision);
 	  mpfr_init2(*(yrange.b),tools_precision);
-	  mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),GMP_RNDD);
-	  mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value),GMP_RNDU);
+	  mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),GMP_RNDD);
+	  mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value),GMP_RNDU);
 	  evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
 	  freeThing(copy);
 	  copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
@@ -18938,6 +19105,79 @@ node *evaluateThingInnerst(node *tree) {
 	  safeFree(xrange.b);
 	  safeFree(yrange.a);
 	  safeFree(yrange.b);
+	} else {
+	  pTemp = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value));
+	  pTemp2 = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value));
+	  if (pTemp2 > pTemp) pTemp = pTemp2;
+	  sollya_mpfi_init2(tempIA,pTemp);
+	  sollya_mpfi_init2(tempIB,tools_precision);
+	  sollya_mpfi_init2(tempIC,tools_precision);
+	  sollya_mpfi_interv_fr(tempIA,*(accessThruMemRef(accessThruMemRef(copy->child1)->child1)->value),*(accessThruMemRef(accessThruMemRef(copy->child1)->child2)->value));
+	  evaluateConstantExpressionToSharpInterval(tempIB, copy->child2);
+	  sollya_mpfi_pow(tempIC, tempIA, tempIB);
+	  freeThing(copy);
+	  mpfr_init2(a,tools_precision);
+	  mpfr_init2(b,tools_precision);
+	  sollya_mpfi_get_left(a,tempIC);
+	  sollya_mpfi_get_right(b,tempIC);
+	  copy = makeRange(makeConstant(a),makeConstant(b));
+	  mpfr_clear(a);
+	  mpfr_clear(b);
+	  sollya_mpfi_clear(tempIC);
+	  sollya_mpfi_clear(tempIB);
+	  sollya_mpfi_clear(tempIA);
+	}
+      } else {
+	if (isRangeNonEmpty(copy->child2) &&
+	    isPureTree(copy->child1) &&
+	    isConstant(copy->child1)) { 
+	  if (mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)) && 
+	      mpfr_number_p(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value))) {
+	    tempNode = makePow(copyTree(copy->child1),makeVariable());
+	    xrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    xrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.a = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    yrange.b = (mpfr_t *) safeMalloc(sizeof(mpfr_t));
+	    mpfr_init2(*(xrange.a),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value)));
+	    mpfr_init2(*(xrange.b),mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value)));
+	    mpfr_init2(*(yrange.a),tools_precision);
+	    mpfr_init2(*(yrange.b),tools_precision);
+	    mpfr_set(*(xrange.a),*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),GMP_RNDD);
+	    mpfr_set(*(xrange.b),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value),GMP_RNDU);
+	    evaluateRangeFunction(yrange, tempNode, xrange, tools_precision);
+	    freeThing(copy);
+	    copy = makeRange(makeConstant(*(yrange.a)),makeConstant(*(yrange.b)));
+	    freeThing(tempNode);
+	    mpfr_clear(*(xrange.a));
+	    mpfr_clear(*(xrange.b));
+	    mpfr_clear(*(yrange.a));
+	    mpfr_clear(*(yrange.b));
+	    safeFree(xrange.a);
+	    safeFree(xrange.b);
+	    safeFree(yrange.a);
+	    safeFree(yrange.b);
+	  } else {
+	    pTemp = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value));
+	    pTemp2 = mpfr_get_prec(*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value));
+	    if (pTemp2 > pTemp) pTemp = pTemp2;
+	    sollya_mpfi_init2(tempIA,pTemp);
+	    sollya_mpfi_init2(tempIB,tools_precision);
+	    sollya_mpfi_init2(tempIC,tools_precision);
+	    sollya_mpfi_interv_fr(tempIA,*(accessThruMemRef(accessThruMemRef(copy->child2)->child1)->value),*(accessThruMemRef(accessThruMemRef(copy->child2)->child2)->value));
+	    evaluateConstantExpressionToSharpInterval(tempIB, copy->child1);
+	    sollya_mpfi_pow(tempIC, tempIB, tempIA);
+	    freeThing(copy);
+	    mpfr_init2(a,tools_precision);
+	    mpfr_init2(b,tools_precision);
+	    sollya_mpfi_get_left(a,tempIC);
+	    sollya_mpfi_get_right(b,tempIC);
+	    copy = makeRange(makeConstant(a),makeConstant(b));
+	    mpfr_clear(a);
+	    mpfr_clear(b);
+	    sollya_mpfi_clear(tempIC);
+	    sollya_mpfi_clear(tempIB);
+	    sollya_mpfi_clear(tempIA);
+	  }
 	}
       }
     }
