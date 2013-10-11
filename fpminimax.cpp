@@ -374,12 +374,6 @@ extern "C" int findCoeffInPseudoPolynomial(node **c, node *poly, node *g) {
     *c = makeDiv(copyTree(poly), copyTree(g)); return 1;
   }
 
-  temp = makePow(makeVariable(), makeConstantDouble(0.0));
-  if ( isSyntacticallyEqual(poly, temp) && (isConstant(g)) ) {
-    *c = makeDiv(makeConstantDouble(1.0), copyTree(g));
-    free_memory(temp); return 1;
-  }
-
   temp = makeConstantDouble(0.0);
   if (isSyntacticallyEqual(poly, temp)) { *c = temp; return 1; }
 
@@ -494,6 +488,8 @@ extern "C" node *FPminimax(node *f,
   mpfr_t zero, infinity, quality;
   mpfr_t *coefficients;
   int dim = lengthChain(monomials);
+
+  newFormats = NULL;
 
   if (absrel== ABSOLUTESYM) {
     tempTree = makeSub(copyTree(f),copyTree(consPart));
