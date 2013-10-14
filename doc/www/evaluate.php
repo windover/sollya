@@ -81,7 +81,7 @@ function <span class="arg">function</span> by function <span class="arg">functio
 <div class="divExample"> 
 <h2 class="category">Example 5: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; print(evaluate(sin(pi * 1/x), 0));<br> 
-&nbsp;&nbsp;&nbsp;[@NaN@;@NaN@]<br> 
+&nbsp;&nbsp;&nbsp;[-1;1]<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

@@ -43,9 +43,9 @@ true
 \noindent Example 3: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]
 > isevaluable(sin(pi * 1/x), 0);
-false
+true
 > print(evaluate(sin(pi * 1/x), 0));
-[@NaN@;@NaN@]
+[-1;1]
 \end{Verbatim}
 \end{minipage}\end{center}
 \noindent Example 4: 
@@ -61,7 +61,7 @@ true
 > isEvaluableEmulation(sin(pi * 1/x), 0.5);
 true
 > isEvaluableEmulation(sin(pi * 1/x), 0);
-false
+true
 \end{Verbatim}
 \end{minipage}\end{center}
 See also: \textbf{evaluate} (\ref{labevaluate})

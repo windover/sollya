@@ -51,6 +51,24 @@ implementation environment requires you to use a less convenient name.
 Once your constant is bound, it is considered by $SOLLYA as an infinitely
 accurate constant (i.e. a 0-ary function, exactly like $PI).
 
+#DESCRIPTION
+The dynamic object file whose name is given to $COMMAND for binding of an
+external library constant may also define a destructor function §§int sollya_external_lib_close(void)§\verb|int sollya_external_lib_close(void)|§§.
+If $SOLLYA finds such a destructor function in the dynamic object file, it will call 
+that function when closing the dynamic object file again. This happens when $SOLLYA
+is terminated or when the current $SOLLYA session is restarted using $RESTART.
+The purpose of the destructor function is to allow the dynamically bound code
+to free any memory that it might have allocated before $SOLLYA is terminated 
+or restarted. 
+
+The dynamic object file is not necessarily needed to define a destructor
+function. This ensure backward compatibility with older $SOLLYA external 
+library function object files.
+
+When defined, the destructor function is supposed to return an integer
+value indicating if an error has happened. Upon success, the destructor
+functions is to return a zero value, upon error a non-zero value.
+
 #EXAMPLE
 bashexecute("gcc -fPIC -Wall -c libraryconstantexample.c -I$HOME/.local/include");
 bashexecute("gcc -shared -o libraryconstantexample libraryconstantexample.o -lgmp -lmpfr");

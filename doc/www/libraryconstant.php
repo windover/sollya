@@ -49,6 +49,20 @@ This way, you may use convenient names inside Sollya even if your
 implementation environment requires you to use a less convenient name. 
 </li><li>Once your constant is bound, it is considered by Sollya as an infinitely 
 accurate constant (i.e. a 0-ary function, exactly like <?php linkTo("command","pi","pi");?>). 
+</li><li>The dynamic object file whose name is given to <?php linkTo("command","libraryconstant","libraryconstant");?> for binding of an 
+external library constant may also define a destructor function int sollya_external_lib_close(void). 
+If Sollya finds such a destructor function in the dynamic object file, it will call  
+that function when closing the dynamic object file again. This happens when Sollya 
+is terminated or when the current Sollya session is restarted using <?php linkTo("command","restart","restart");?>. 
+The purpose of the destructor function is to allow the dynamically bound code 
+to free any memory that it might have allocated before Sollya is terminated  
+or restarted.  
+The dynamic object file is not necessarily needed to define a destructor 
+function. This ensure backward compatibility with older Sollya external  
+library function object files. 
+When defined, the destructor function is supposed to return an integer 
+value indicating if an error has happened. Upon success, the destructor 
+functions is to return a zero value, upon error a non-zero value. 
 </ul> 
 </div> 
 <div class="divExamples"> 

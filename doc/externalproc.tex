@@ -117,6 +117,21 @@ Parameters:
    Similarly to internal procedures, externally bounded procedures can be
    considered to be objects inside \sollya that can be assigned to other
    variables, stored in list etc.
+
+\item The dynamic object file whose name is given to \textbf{externalproc} for binding of an
+   external procedure may also define a destructor function \verb|int sollya_external_lib_close(void)|.
+   If \sollya finds such a destructor function in the dynamic object file, it will call 
+   that function when closing the dynamic object file again. This happens when \sollya
+   is terminated or when the current \sollya session is restarted using \textbf{restart}.
+   The purpose of the destructor function is to allow the dynamically bound code
+   to free any memory that it might have allocated before \sollya is terminated 
+   or restarted. 
+   The dynamic object file is not necessarily needed to define a destructor
+   function. This ensure backward compatibility with older \sollya external 
+   library function object files.
+   When defined, the destructor function is supposed to return an integer
+   value indicating if an error has happened. Upon success, the destructor
+   functions is to return a zero value, upon error a non-zero value.
 \end{itemize}
 \noindent Example 1: 
 \begin{center}\begin{minipage}{15cm}\begin{Verbatim}[frame=single]

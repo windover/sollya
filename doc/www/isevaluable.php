@@ -46,9 +46,9 @@ as shown below in the last example.
 <div class="divExample"> 
 <h2 class="category">Example 3: </h2> 
 &nbsp;&nbsp;&nbsp;&gt; isevaluable(sin(pi * 1/x), 0);<br> 
-&nbsp;&nbsp;&nbsp;false<br> 
+&nbsp;&nbsp;&nbsp;true<br> 
 &nbsp;&nbsp;&nbsp;&gt; print(evaluate(sin(pi * 1/x), 0));<br> 
-&nbsp;&nbsp;&nbsp;[@NaN@;@NaN@]<br> 
+&nbsp;&nbsp;&nbsp;[-1;1]<br> 
 </div> 
 <div class="divExample"> 
 <h2 class="category">Example 4: </h2> 
@@ -63,7 +63,7 @@ as shown below in the last example.
 &nbsp;&nbsp;&nbsp;&gt; isEvaluableEmulation(sin(pi * 1/x), 0.5);<br> 
 &nbsp;&nbsp;&nbsp;true<br> 
 &nbsp;&nbsp;&nbsp;&gt; isEvaluableEmulation(sin(pi * 1/x), 0);<br> 
-&nbsp;&nbsp;&nbsp;false<br> 
+&nbsp;&nbsp;&nbsp;true<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 
