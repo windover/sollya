@@ -1,3 +1,36 @@
+2013-10-11 21:15  schevill
+
+	* tests-lib/Makefile.am, tests-lib/tconstant_from_mpq.c,
+	  tests-lib/tconstant_from_mpq.reference,
+	  tests-lib/tconstant_from_mpz.c,
+	  tests-lib/tconstant_from_mpz.reference,
+	  tests-lib/tget_constant_as_mpq.c,
+	  tests-lib/tget_constant_as_mpq.reference,
+	  tests-lib/tget_constant_as_mpz.c,
+	  tests-lib/tget_constant_as_mpz.reference: * Tests for the new
+	  get_constant_mp* and constant_from_mp* functions.
+
+2013-10-11 16:30  schevill
+
+	* fpminimax.cpp: * suppress some warning appearing in fpminimax.cpp
+	  with -std=c99 + revert a change committed by mistake at previous
+	  revision.
+
+2013-10-11 15:36  schevill
+
+	* double.c, double.h, execute.h, fpminimax.cpp, implement.c,
+	  implement.h, implementconst.c, internlexer.l, lexer.l, proof.c,
+	  proof.h, remez.c, sollya-messages.h, sollya-messaging.h: *
+	  Copyrights are now up to date.
+
+2013-10-11 14:56  schevill
+
+	* NEWS: * First draft for NEWS file.
+
+2013-10-11 14:03  clauter
+
+	* ChangeLog: A new changelog.
+
 2013-10-11 13:57  schevill
 
 	* tests-tool/check027.sollya, tests-tool/check027.sollya.reference:
