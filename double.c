@@ -83,7 +83,53 @@ typedef union {
   float f;
 } fl_number;
 
+int32_t convertHexadecimalStringToInt32(char *str) {
+  char *ptr;
+  int negate;
+  int32_t res;
+  uint32_t t, c;
 
+  negate = 0;
+  t = 0;
+
+  for (ptr=str;*ptr!='\0';ptr++) {
+    if ((*ptr!=' ') && (*ptr!='\t')) break;
+  }
+
+  if (*ptr=='+') ptr++;
+  if (*ptr=='-') {
+    negate = 1;
+    ptr++;
+  }
+
+  if ((*ptr=='0') && (*(ptr+1)=='x')) ptr += 2;
+
+  for (;*ptr!='\0';ptr++) {
+    if (((*ptr>='0') && (*ptr<='9')) ||
+	((*ptr>='A') && (*ptr<='F')) ||
+	((*ptr>='a') && (*ptr<='f'))) {
+      t <<= 4;
+      if ((*ptr>='0') && (*ptr<='9')) {
+	c = *ptr - '0';
+      } else {
+	if ((*ptr>='A') && (*ptr<='F')) {
+	  c = *ptr - 'A' + 0xa;
+	} else {
+	  c = *ptr - 'a' + 0xa;
+	}
+      }
+      t += c;
+    } else {
+      t = 0;
+      break;
+    }
+  }
+
+  res = *((int32_t *) &t);
+  if (negate) res = -res;
+
+  return res;
+}
 
 int round_to_format(mpfr_t rop, mpfr_t op, int prec, mp_rnd_t mode) {
   mpfr_t res;
@@ -581,8 +627,8 @@ int readHexaDouble(mpfr_t res, char *c) {
     c++;
   }
 
-  msb = strtoll(msbstr,NULL,16);
-  lsb = strtoll(lsbstr,NULL,16);
+  msb = convertHexadecimalStringToInt32(msbstr);
+  lsb = convertHexadecimalStringToInt32(lsbstr);
 
   endianessdb.d = 1.0;
   if ((endianessdb.i[1] == 0x3ff00000) && (endianessdb.i[0] == 0)) {
@@ -628,7 +674,7 @@ int readHexaSimple(mpfr_t res, char *c) {
   }
 
 
-  msb = strtoll(msbstr,NULL,16);
+  msb = convertHexadecimalStringToInt32(msbstr);
 
   xfl.i = msb;
 
