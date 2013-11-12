@@ -103,6 +103,7 @@ static inline int analyzePrecModifier(uint64_t *analyzedPrec, int *analyzedStar,
   case 'w':
   case 'b':
   case 'r':
+  case 'k':
     break;
   default:
     return 0;
@@ -174,13 +175,14 @@ static inline int analyzeWidthModifier(uint64_t *analyzedWidth, int *setAnalyzed
   */
   if (myEndBuf < myStartBuf) return 0;
 
-  /* Trim off a possible trailing '.', 'b', 'v', 'w' or 'r'. */
+  /* Trim off a possible trailing '.', 'b', 'v', 'w', 'r' or 'k'. */
   switch (*myEndBuf) {
   case '.':
   case 'b':
   case 'v':
   case 'w':
   case 'r':
+  case 'k':
     myEndBuf--;
     break;
   default:
@@ -331,6 +333,11 @@ static inline void initAndCopyMpq(mpq_t rop, mpq_srcptr op) {
   mpq_set(rop,op);
 }
 
+static inline void initAndCopyMpz(mpz_t rop, mpz_srcptr op) {
+  mpz_init(rop);
+  mpz_set(rop,op);
+}
+
 static inline int specialSnFprintf(FILE *fd, int useFd, char *str, size_t size, int offset, int useSize, const char *format, ...) {
   va_list varlist;
   size_t actualSize;
@@ -417,6 +424,7 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
   sollya_mpfi_t tempMpfiOrig;
   node *tempNode;
   mpq_t tempMpqOrig;
+  mpz_t tempMpzOrig;
   int correctPrecModifier, analyzedStar, correctWidthModifier, analyzedWidthStar;
   int setAnalyzedWidth;
   uint64_t analyzedPrec, analyzedWidth, analyzedFlags;
@@ -1733,7 +1741,8 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	case 'w':
 	case 'b':
 	case 'r':
-	  /* Still free, too: k, y */
+	case 'k':
+	  /* Still free, too: y */
 	  correctPrecModifier = 0;
 	  analyzedStar = 0;
 	  percentBuf = currBuf;
@@ -1831,6 +1840,11 @@ static inline int sollyaInternalBaseSnFprintf(FILE *fd, int useFd, char *str, si
 	    initAndCopyMpq(tempMpqOrig,va_arg(varlist,mpq_srcptr));
 	    tempString = sprintMpq(tempMpqOrig);
 	    mpq_clear(tempMpqOrig);
+	    break;
+	  case 'k':
+	    initAndCopyMpz(tempMpzOrig,va_arg(varlist,mpz_srcptr));
+	    tempString = sprintMpz(tempMpzOrig);
+	    mpz_clear(tempMpzOrig);
 	    break;
 	  case 'b':
 	    tempNode = va_arg(varlist,node *);

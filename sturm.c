@@ -122,6 +122,25 @@ void printMpq(mpq_t x) {
 
 }
 
+char *sprintMpz(mpz_t z) {
+  mpfr_t zMpfr;
+  mp_prec_t prec;
+  int p;
+  unsigned int dyadicValue;
+  char *res;
+
+  prec = mpz_sizeinbase(z, 2);
+  dyadicValue = mpz_scan1(z, 0);
+  p = prec - dyadicValue;
+  if (p < 12) prec = 12; else prec = p;
+  mpfr_init2(zMpfr,prec);
+  mpfr_set_z(zMpfr,z,GMP_RNDN);
+
+  res = sprintValue(&zMpfr);
+
+  return res;
+}
+
 char *sprintMpq(mpq_t x) {
   mpz_t num;
   mpz_t denom;
