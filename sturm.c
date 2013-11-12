@@ -129,14 +129,19 @@ char *sprintMpz(mpz_t z) {
   unsigned int dyadicValue;
   char *res;
 
-  prec = mpz_sizeinbase(z, 2);
-  dyadicValue = mpz_scan1(z, 0);
-  p = prec - dyadicValue;
-  if (p < 12) prec = 12; else prec = p;
-  mpfr_init2(zMpfr,prec);
-  mpfr_set_z(zMpfr,z,GMP_RNDN);
-
-  res = sprintValue(&zMpfr);
+  if ((dyadic == 0) && (mpz_sgn(z) != 0)) {
+    res = safeCalloc(mpz_sizeinbase(z, 10) + 2,sizeof(char));
+    mpz_get_str(res, 10, z);
+  } else {
+    prec = mpz_sizeinbase(z, 2);
+    dyadicValue = mpz_scan1(z, 0);
+    p = prec - dyadicValue;
+    if (p < 12) prec = 12; else prec = p;
+    mpfr_init2(zMpfr,prec);
+    mpfr_set_z(zMpfr,z,GMP_RNDN);
+    res = sprintValue(&zMpfr);
+    mpfr_clear(zMpfr);
+  }
 
   return res;
 }
@@ -144,11 +149,6 @@ char *sprintMpz(mpz_t z) {
 char *sprintMpq(mpq_t x) {
   mpz_t num;
   mpz_t denom;
-  mpfr_t numMpfr;
-  mpfr_t denomMpfr;
-  mp_prec_t prec;
-  int p;
-  unsigned int dyadicValue;
   char *numStr, *denomStr, *res;
 
   mpz_init(num);
@@ -157,29 +157,12 @@ char *sprintMpq(mpq_t x) {
   mpq_get_num(num,x);
   mpq_get_den(denom,x);
 
-  prec = mpz_sizeinbase(num, 2);
-  dyadicValue = mpz_scan1(num, 0);
-  p = prec - dyadicValue;
-  if (p < 12) prec = 12; else prec = p;
-  mpfr_init2(numMpfr,prec);
-  mpfr_set_z(numMpfr,num,GMP_RNDN);
-
-  prec = mpz_sizeinbase(denom, 2);
-  dyadicValue = mpz_scan1(denom, 0);
-  p = prec - dyadicValue;
-  if (p < 12) prec = 12; else prec = p;
-  mpfr_init2(denomMpfr,prec);
-  mpfr_set_z(denomMpfr,denom,GMP_RNDN);
-
-  numStr = sprintValue(&numMpfr);
-  denomStr = sprintValue(&denomMpfr);
+  numStr = sprintMpz(num);
+  denomStr = sprintMpz(denom);
   res = (char *) safeCalloc(strlen(numStr) + strlen(denomStr) + 3 + 1, sizeof(char));
   sprintf(res,"%s / %s",numStr,denomStr);
   safeFree(numStr);
   safeFree(denomStr);
-
-  mpfr_clear(numMpfr);
-  mpfr_clear(denomMpfr);
 
   mpz_clear(num);
   mpz_clear(denom);
