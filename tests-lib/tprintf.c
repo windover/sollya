@@ -557,13 +557,14 @@ int main(void) {
   snprntf[0] = snprintf; snprntf[1] = wrapper_sollya_snprintf;
   size_t snlength[5] = {0, 0, 1, 42, 42};
   int i, j;
-  void *a[5];
-  char sollya_modifier[5] = {'v', 'w', 'r', 'b', 'b'};
+  void *a[6];
+  char sollya_modifier[6] = {'v', 'w', 'r', 'b', 'b', 'k'};
   int positions[6] = {6, 7, 8, 34, 35, 36};
   mpfr_t tmp1;
   mpfi_t tmp2;
   mpq_t tmp3;
   sollya_obj_t tmp4, tmp5;
+  mpz_t tmp6;
   sollya_obj_t tmp_sollya_obj;
 
   /*  mpfi_t x[2]; */
@@ -616,16 +617,18 @@ int main(void) {
   mpfr_init2(tmp1, 53); mpfr_set_d(tmp1, 3.141592653589793, GMP_RNDN); a[0] = (void *)(&tmp1);
   mpfi_init2(tmp2, 53); mpfi_const_pi(tmp2); a[1] = (void *)(&tmp2);
   mpq_init(tmp3);
+  mpz_init(tmp6);
   mpq_set_ui(tmp3, 2, 3); a[2] = (void *)(&tmp3);
   tmp4 = sollya_lib_build_list(SOLLYA_COS(SOLLYA_ADD(SOLLYA_X_, SOLLYA_CONST(42))), NULL); a[3] = (void *)(&tmp4);
   tmp5 = SOLLYA_CONST(17); a[4] = (void *)(&tmp5);
+  mpz_set_si(tmp6, -17); a[5] = (void *)(&tmp6);
 
   tmp_sollya_obj = sollya_lib_on();
   sollya_lib_set_midpointmode(tmp_sollya_obj);
   sollya_lib_clear_obj(tmp_sollya_obj);
 
   prec[3] = 5;
-  for(v=0; v<5; v++) {
+  for(v=0; v<6; v++) {
     if(v==4) { tmp_sollya_obj = sollya_lib_hexadecimal(); sollya_lib_set_display(tmp_sollya_obj); sollya_lib_clear_obj(tmp_sollya_obj); }
     for(w=0;w<4;w++) {
       for(p=0;p<4;p++) {
@@ -636,6 +639,7 @@ int main(void) {
           case 2: DO_SOLLYA_TESTS(mpq_t) break;
           case 3: DO_SOLLYA_TESTS(sollya_obj_t) break;
           case 4: DO_SOLLYA_TESTS(sollya_obj_t) break;
+          case 5: DO_SOLLYA_TESTS(mpz_t) break;
           default: break;
           }
         }
@@ -650,7 +654,7 @@ int main(void) {
   mpfi_set_ui(tmp2, 17);
 
   w=17; a[4] = (void *)(&w); sollya_modifier[4] = 'd';
-  for(v=0; v<5; v++) {
+  for(v=0; v<6; v++) {
     for(i=0;i<6; i++) {
           switch(v) {
           case 0: DO_SPECIAL_TESTS(mpfr_t) break;
@@ -658,6 +662,7 @@ int main(void) {
           case 2: DO_SPECIAL_TESTS(mpq_t) break;
           case 3: DO_SPECIAL_TESTS(sollya_obj_t) break;
           case 4: DO_SPECIAL_TESTS(int) break;
+          case 5: DO_SPECIAL_TESTS(mpz_t) break;
           default: break;
           }
     }
@@ -688,6 +693,7 @@ int main(void) {
   mpq_clear(tmp3);
   sollya_lib_clear_obj(tmp4);
   sollya_lib_clear_obj(tmp5);
+  mpz_clear(tmp6);
 
   sollya_lib_close();
   return 0;
