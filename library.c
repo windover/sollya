@@ -414,8 +414,10 @@ libraryHandle *getLibraryHandle(char *libraryName, int type) {
   chain *curr;
   chain *openedLibraries;
   libraryHandle *currHandle;
-  void *dlfcnHandle;
-
+  void *dlfcnHandle, *otherDlfcnHandle;
+  int shallowCopy, foundElsewhere, i;
+  chain *otherLibraries[2];
+  
   openedLibraries = NULL;
 
   switch(type) {
@@ -432,16 +434,51 @@ libraryHandle *getLibraryHandle(char *libraryName, int type) {
     curr = curr->next;
   }
 
-  dlerror();
-  dlfcnHandle = dlopen(libraryName, RTLD_LOCAL | RTLD_NOW);
-  if (dlfcnHandle == NULL)
-    return NULL;
+  switch (type) {
+  case LIBRARYFUNCTION_CASE:
+    otherLibraries[0] = openedConstantLibraries;
+    otherLibraries[1] = openedProcLibraries;
+    break;
+  case LIBRARYCONSTANT_CASE:
+    otherLibraries[0] = openedFunctionLibraries;
+    otherLibraries[1] = openedProcLibraries;
+    break;
+  case LIBRARYPROC_CASE:
+    otherLibraries[0] = openedConstantLibraries;
+    otherLibraries[1] = openedFunctionLibraries;
+    break;
+  }
+  otherDlfcnHandle = NULL;
+  for (i=0,foundElsewhere=0;(i<2)&&(!foundElsewhere);i++) {
+    curr = otherLibraries[i];
+    while (curr != NULL) {
+      currHandle = (libraryHandle *) curr->value;
+      if (strcmp(currHandle->libraryName,libraryName) == 0) {
+	otherDlfcnHandle = currHandle->libraryDescriptor;
+	foundElsewhere = 1;
+	break;
+      }
+      curr = curr->next;
+    }
+  }
+
+  if (!foundElsewhere) {
+    dlerror();
+    dlfcnHandle = dlopen(libraryName, RTLD_LOCAL | RTLD_NOW);
+    if (dlfcnHandle == NULL)
+      return NULL;
+    shallowCopy = 0;
+  } else {
+    dlfcnHandle = otherDlfcnHandle;
+    shallowCopy = 1;
+  }
 
   currHandle = (libraryHandle *) safeMalloc(sizeof(libraryHandle));
   currHandle->libraryName = (char *) safeCalloc(strlen(libraryName)+1,sizeof(char));
   strcpy(currHandle->libraryName,libraryName);
   currHandle->libraryDescriptor = dlfcnHandle;
   currHandle->functionList = NULL;
+  currHandle->shallowCopy = shallowCopy;
 
   openedLibraries = addElement(openedLibraries,currHandle);
 
@@ -631,12 +668,14 @@ void freeFunctionLibraries() {
   currLibList = openedFunctionLibraries;
   while (currLibList != NULL) {
     currLibHandle = (libraryHandle *) currLibList->value;
-    dlerror();
-    myFunction = (int (*)(void)) dlsym(currLibHandle->libraryDescriptor, "sollya_external_lib_close");
-    if (dlerror() == NULL) {
-      res = myFunction();
-      if (res) {
-	printMessage(1,SOLLYA_MSG_LIBRARY_CLOSER_ERROR,"Warning: while closing libary \"%s\", the function \"sollya_external_lib_close\" was found and called but it signaled the error %d\n",currLibHandle->libraryName,res);
+    if (!(currLibHandle->shallowCopy)) {
+      dlerror();
+      myFunction = (int (*)(void)) dlsym(currLibHandle->libraryDescriptor, "sollya_external_lib_close");
+      if (dlerror() == NULL) {
+	res = myFunction();
+	if (res) {
+	  printMessage(1,SOLLYA_MSG_LIBRARY_CLOSER_ERROR,"Warning: while closing libary \"%s\", the function \"sollya_external_lib_close\" was found and called but it signaled the error %d\n",currLibHandle->libraryName,res);
+	}
       }
     }
     currFunList = currLibHandle->functionList;
@@ -648,9 +687,11 @@ void freeFunctionLibraries() {
       currFunList = currFunList->next;
       safeFree(prevFunList);
     }
-    dlerror();
-    if (dlclose(currLibHandle->libraryDescriptor) != 0)
-      printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
+    if (!(currLibHandle->shallowCopy)) {
+      dlerror();
+      if (dlclose(currLibHandle->libraryDescriptor) != 0)
+	printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
+    }
     safeFree(currLibHandle->libraryName);
     safeFree(currLibHandle);
     prevLibList = currLibList;
@@ -822,12 +863,14 @@ void freeConstantLibraries() {
   currLibList = openedConstantLibraries;
   while (currLibList != NULL) {
     currLibHandle = (libraryHandle *) currLibList->value;
-    dlerror();
-    myFunction = (int (*)(void)) dlsym(currLibHandle->libraryDescriptor, "sollya_external_lib_close");
-    if (dlerror() == NULL) {
-      res = myFunction();
-      if (res) {
-	printMessage(1,SOLLYA_MSG_LIBRARY_CLOSER_ERROR,"Warning: while closing libary \"%s\", the function \"sollya_external_lib_close\" was found and called but it signaled the error %d\n",currLibHandle->libraryName,res);
+    if (!(currLibHandle->shallowCopy)) {
+      dlerror();
+      myFunction = (int (*)(void)) dlsym(currLibHandle->libraryDescriptor, "sollya_external_lib_close");
+      if (dlerror() == NULL) {
+	res = myFunction();
+	if (res) {
+	  printMessage(1,SOLLYA_MSG_LIBRARY_CLOSER_ERROR,"Warning: while closing libary \"%s\", the function \"sollya_external_lib_close\" was found and called but it signaled the error %d\n",currLibHandle->libraryName,res);
+	}
       }
     }
     currFunList = currLibHandle->functionList;
@@ -839,9 +882,11 @@ void freeConstantLibraries() {
       currFunList = currFunList->next;
       safeFree(prevFunList);
     }
-    dlerror();
-    if (dlclose(currLibHandle->libraryDescriptor) != 0)
-      printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
+    if (!(currLibHandle->shallowCopy)) {
+      dlerror();
+      if (dlclose(currLibHandle->libraryDescriptor) != 0)
+	printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
+    }
     safeFree(currLibHandle->libraryName);
     safeFree(currLibHandle);
     prevLibList = currLibList;
@@ -922,12 +967,14 @@ void freeProcLibraries() {
   currLibList = openedProcLibraries;
   while (currLibList != NULL) {
     currLibHandle = (libraryHandle *) currLibList->value;
-    dlerror();
-    myFunction = (int (*)(void)) dlsym(currLibHandle->libraryDescriptor, "sollya_external_lib_close");
-    if (dlerror() == NULL) {
-      res = myFunction();
-      if (res) {
-	printMessage(1,SOLLYA_MSG_LIBRARY_CLOSER_ERROR,"Warning: while closing libary \"%s\", the function \"sollya_external_lib_close\" was found and called but it signaled the error %d\n",currLibHandle->libraryName,res);
+    if (!(currLibHandle->shallowCopy)) {
+      dlerror();
+      myFunction = (int (*)(void)) dlsym(currLibHandle->libraryDescriptor, "sollya_external_lib_close");
+      if (dlerror() == NULL) {
+	res = myFunction();
+	if (res) {
+	  printMessage(1,SOLLYA_MSG_LIBRARY_CLOSER_ERROR,"Warning: while closing libary \"%s\", the function \"sollya_external_lib_close\" was found and called but it signaled the error %d\n",currLibHandle->libraryName,res);
+	}
       }
     }
     currProcList = currLibHandle->functionList;
@@ -940,9 +987,11 @@ void freeProcLibraries() {
       currProcList = currProcList->next;
       safeFree(prevProcList);
     }
-    dlerror();
-    if (dlclose(currLibHandle->libraryDescriptor) != 0)
-      printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
+    if (!(currLibHandle->shallowCopy)) {
+      dlerror();
+      if (dlclose(currLibHandle->libraryDescriptor) != 0)
+	printMessage(1,SOLLYA_MSG_COULD_NOT_CLOSE_LIBRARY,"Warning: could not close libary \"%s\": %s\n",currLibHandle->libraryName,dlerror());
+    }
     safeFree(currLibHandle->libraryName);
     safeFree(currLibHandle);
     prevLibList = currLibList;

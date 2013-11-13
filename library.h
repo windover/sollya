@@ -69,6 +69,7 @@ struct libraryHandleStruct
   char *libraryName;
   void *libraryDescriptor;
   chain *functionList;
+  int shallowCopy;
 };
 
 typedef struct libraryFunctionStruct libraryFunction;
