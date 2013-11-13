@@ -380,11 +380,22 @@ fi
 AC_DEFINE_UNQUOTED([HAVE_FPLLL_VERSION_STRING],["$FPLLLVERSIONSTRING"],[Define a kind of a version string for FPLLL])
 AC_LANG_POP([C++])
 
-# We quit C++ mode for this test, because, in real life, it is the C compiler and not the C++ compile which is used by libtool when linking sollya.
+# Testing if -lstdc++ works both with the C compiler and the C++ compiler.
+# We add it only if it works with both.
+ADD_LSTDC="yes"
 OLD_LIBS="$LIBS"; LIBS="$LIBS -lstdc++"
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
                   [],
-                  [LIBS="$OLD_LIBS"])
+                  [ADD_LSTDC="no"])
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[]])],
+                  [],
+                  [ADD_LSTDC="no"])
+AC_LANG_POP([C++])
+if test "x${ADD_LSTDC}y" == "xnoy"
+then
+  LIBS="$OLD_LIBS"
+fi
 
 AC_LANG_PUSH([C++])
 # Checking that libfplll is found at runtime
