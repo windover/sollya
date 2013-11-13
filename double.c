@@ -64,6 +64,7 @@
 #include <stdio.h> /* fprintf, fopen, fclose, */
 #include <errno.h>
 #include <inttypes.h>
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include "expression.h"
@@ -83,6 +84,15 @@ typedef union {
   float f;
 } fl_number;
 
+/* Converts a string of the form [:space:]*(+)?(-)?(0x)?[0-9A-Fa-f]*
+   interpreted in hexadecimal into an int32.
+   If the string is not a valid hexadecimal string or if the number it
+   represents does not fit on an int32_t, the behavior of the function is not
+   determined.
+
+   Note: this function only exists because we cannot use strtoll as it is not
+   BSD compliant.
+*/
 int32_t convertHexadecimalStringToInt32(char *str) {
   char *ptr;
   int negate;
@@ -93,7 +103,7 @@ int32_t convertHexadecimalStringToInt32(char *str) {
   t = 0;
 
   for (ptr=str;*ptr!='\0';ptr++) {
-    if ((*ptr!=' ') && (*ptr!='\t')) break;
+    if (!isspace(*ptr)) break;
   }
 
   if (*ptr=='+') ptr++;
