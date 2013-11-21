@@ -44,6 +44,11 @@ Changes of syntax and output:
     partially #16434. Older versions of Sollya performed illegal
     simplifications of expressions f - f to 0 and f/f to 1 even if f
     could become infinity resp. 0 over a whole interval.
+  * Corrected a bug affecting the way rational numbers were displayed
+    with sollya_lib_printf using %r conversion modifier: the displayed
+    numerator and denominator were rounded values in some cases.
+  * New conversion specifier %k in sollya_lib_printf to display mpz_t
+    values.
 
 Minor new functionnalities:
   * Added support for an optional destructor function in an external
