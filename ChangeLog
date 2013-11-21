@@ -1,3 +1,141 @@
+2013-11-21 11:24  schevill
+
+	* NEWS: * Proposition for an updated NEWS for sollya 4.1 beta 2.
+
+2013-11-21 11:16  schevill
+
+	* tests-tool/Makefile.am, tests-tool/check029.sollya,
+	  tests-tool/check029.sollya.reference: * Non-regression test for
+	  bug #16632.
+
+2013-11-21 11:12  schevill
+
+	* remez.c: * Patched bug #16632 [Infinite loop in dirtyfindzeros]
+	  Also, there was a bug in the estimation of the precision of a
+	  root computed by Newton's algorithm.
+	  As a result, I think that the algorithm could have oscillate
+	  between some value and its successor in the
+	  given floating-point format, without an end.
+	  I hope that this revision also solves this issue, but I am not
+	  able to artificially produce such an example of oscillation, so I
+	  cannot check that my patch corrects this issue.
+
+2013-11-13 16:05  schevill
+
+	* configure.ac: * Second attempt.
+	  The problem that we try to fix here is that adding -lstdc++ in
+	  the compilation line does not work when gcc is used to link and
+	  when gcc version does not agreee with g++ version.
+	  Also, it might not work if the version of g++ does not agree with
+	  the version of lstdc++.
+	  
+	  We add -lstdc++ to the compilation line only if we are sure that
+	  it works. Not adding it does no harm in general, as it is only
+	  needed on Cygwin, with old versions of fplll.
+	  Hopefully (but it is hard to test it in order to be certain), if
+	  we are in the unlikely case when:
+	  1) we have an old version of fplll
+	  2) we are on Cygwin
+	  3) we cannot add -lstdc++ to the compilation line,
+	  configure will detect that sollya cannot be build on this
+	  specific machine. What makes me optimistic about it is the fact
+	  that there is a test after all this mess that tries to compile
+	  and run a small example program using fplll. I think that that
+	  test will fail on this particular architecture.
+
+2013-11-13 15:43  schevill
+
+	* configure.ac: * Attempt to patch configure.ac so as to test if
+	  -lstdc++ can be added or not to the compilation line.
+
+2013-11-13 15:39  schevill
+
+	* double.c: * Added a comment about corner cases for the new
+	  function convertHexadecimalStringToInt32.
+
+2013-11-13 11:12  schevill
+
+	* tests-lib/tconstant_from_mpq.reference,
+	  tests-lib/tget_constant_as_mpq.reference: * The bug corrected by
+	  Christoph @rev 2194 was indeed detected by the test suite.
+	  However, the reference files had not been correctly manually
+	  checked (my fault) so it was approving a wrong behavior.
+	  Should be ok right now.
+
+2013-11-13 10:53  schevill
+
+	* doc/sollya.tex, doc/www/sollya.php, tests-lib/tprintf.c,
+	  tests-lib/tprintf.reference: * Updated tests and documentation
+	  with the new %k modifier of sollya_lib_printf.
+	  HTML and TeX versions are checked to be synchronized.
+
+2013-11-13 10:50  clauter
+
+	* library.c, library.h: Preventing externalproc, library and
+	  libraryconstant from calling dlopen, dlclose and the
+	  deconstructor sollya_external_lib_close more than once per *.so,
+	  even if the *.so contains a library function and an external
+	  procedure at a time.
+
+2013-11-12 15:11  clauter
+
+	* sturm.c: Patched a display bug in sollya_lib_printf for r and k
+	  conversions when integers to be displayed become larger than
+	  2^128.
+
+2013-11-12 14:30  clauter
+
+	* printf.c, sturm.c, sturm.h: Added sollya_lib_*printf modifier k
+	  for printing mpz_t values.
+
+2013-10-23 10:04  clauter
+
+	* double.c: Avoided use of strtoll, which does not seem to be POSIX
+	  compliant.
+
+2013-10-15 08:25  clauter
+
+	* tests-tool/libraryexample.c: Patching a warning message.
+
+2013-10-14 12:28  schevill
+
+	* doc/sollya.pdf, doc/sollya.tex, doc/www/sollya.php: * Changed
+	  "4.1" to "Release 4.1", in order to unify with what we did for
+	  previous releases.
+	  --> Second release candidate.
+
+2013-10-14 12:23  schevill
+
+	* NEWS, doc/sollya.pdf: * First release candidate for 4.1
+
+2013-10-14 11:23  clauter
+
+	* ChangeLog: New Changelog.
+
+2013-10-14 11:22  clauter
+
+	* configure.ac, doc/sollya.pdf, doc/sollya.tex, doc/www/sollya.php:
+	  Changed name of Sollya version to 4.1.
+
+2013-10-14 11:19  clauter
+
+	* NEWS: Better NEWS file.
+
+2013-10-14 10:52  clauter
+
+	* doc/bashevaluate.tex, doc/bashexecute.tex, doc/evaluate.tex,
+	  doc/externalproc.shlp, doc/externalproc.tex, doc/isevaluable.tex,
+	  doc/library.shlp, doc/library.tex, doc/libraryconstant.shlp,
+	  doc/libraryconstant.tex, doc/remez.tex, doc/sollya.pdf,
+	  doc/time.tex, doc/timing.tex, doc/www/bashevaluate.php,
+	  doc/www/bashexecute.php, doc/www/evaluate.php,
+	  doc/www/externalproc.php, doc/www/isevaluable.php,
+	  doc/www/library.php, doc/www/libraryconstant.php,
+	  doc/www/remez.php, doc/www/time.php, doc/www/timing.php, help.h:
+	  Added documentation for destructor function in library functions,
+	  library constants and external procedures and recompiled the
+	  whole documentation.
+
 2013-10-11 21:15  schevill
 
 	* tests-lib/Makefile.am, tests-lib/tconstant_from_mpq.c,
