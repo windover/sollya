@@ -97,7 +97,7 @@ void emitLegalNoticeAndDisclaimer(FILE *fd) {
   fprintf(fd, "    \n"); 
   fprintf(fd, "    christoph.lauter@ens-lyon.org\n"); 
   fprintf(fd, "    sylvain.chevillard@ens-lyon.org\n"); 
-  fprintf(fd, "    joldes@lass.fr\n"); 
+  fprintf(fd, "    joldes@laas.fr\n"); 
   fprintf(fd, "    \n"); 
   fprintf(fd, "    The Sollya software is a computer program whose purpose is to provide\n"); 
   fprintf(fd, "    an environment for safe floating-point code development. It is\n"); 

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
-AC_INIT([sollya], [SVN trunk], [christoph.lauter@ens-lyon.org, sylvain.chevillard@ens-lyon.org, joldes@lass.fr])
+AC_INIT([sollya], [SVN trunk], [christoph.lauter@ens-lyon.org, sylvain.chevillard@ens-lyon.org, joldes@laas.fr])
 AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([1.6 no-define dist-zip dist-bzip2])
 

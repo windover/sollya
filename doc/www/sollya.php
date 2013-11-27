@@ -41,7 +41,7 @@ dd.omit:before { content: "\00a0\00a0\00a0\00a0"; }
 <h1 style="text-align:center">Users' manual for the <span class="sollya">Sollya</span> tool - SVN trunk</h1>
 <div style="text-align:center; line-height: 1.5em;">Sylvain Chevillard (<a href="sylvain.chevillard@ens-lyon.org">sylvain.chevillard@ens-lyon.org</a>),</div>
 <div style="text-align:center; line-height: 1.5em;">Christoph Lauter (<a href="christoph.lauter@ens-lyon.org; line-height: 1.5em;">christoph.lauter@ens-lyon.org</a>)</div>
-<div style="text-align:center">and Mioara Joldeș (<a href="joldes@lass.fr">joldes@lass.fr</a>).</div>
+<div style="text-align:center">and Mioara Joldeș (<a href="joldes@laas.fr">joldes@laas.fr</a>).</div>
 
 <h2 style="margin-top: 3em;">License</h2>
 <p style="font-size:small;">

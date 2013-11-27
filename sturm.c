@@ -15,7 +15,7 @@
 
   Contributors M. Joldes, Ch. Lauter, S. Chevillard
 
-  joldes@lass.fr
+  joldes@laas.fr
   christoph.lauter@ens-lyon.org
   sylvain.chevillard@ens-lyon.org
 

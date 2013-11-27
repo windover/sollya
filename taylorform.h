@@ -12,7 +12,7 @@
   Contributors S. Chevillard, M. Joldes
 
   sylvain.chevillard@ens-lyon.fr
-  joldes@lass.fr
+  joldes@laas.fr
 
   This software is a computer program whose purpose is to provide an
   environment for safe floating-point code development. It is
