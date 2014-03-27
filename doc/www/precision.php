@@ -24,7 +24,7 @@
 <li><?php linkTo("command","precision","precision");?>(x) is by definition |x| if x equals 0, NaN, or Inf. 
 </li><li>If <span class="arg">x</span> is not zero, it can be uniquely written as x = m*2^e where 
 m is an odd integer and e is an integer. <?php linkTo("command","precision","precision");?>(x) returns the number 
-of bits necessary to write m in binary (i.e. ceil(log2(m))). 
+of bits necessary to write m in binary (i.e. 1+floor(log2(m))). 
 </ul> 
 </div> 
 <div class="divExamples"> 
@@ -34,8 +34,26 @@ of bits necessary to write m in binary (i.e. ceil(log2(m))).
 &nbsp;&nbsp;&nbsp;&gt; precision(a);<br> 
 &nbsp;&nbsp;&nbsp;19<br> 
 &nbsp;&nbsp;&nbsp;&gt; m=mantissa(a);<br> 
-&nbsp;&nbsp;&nbsp;&gt; ceil(log2(m));<br> 
+&nbsp;&nbsp;&nbsp;&gt; 1+floor(log2(m));<br> 
 &nbsp;&nbsp;&nbsp;19<br> 
+</div> 
+<div class="divExample"> 
+<h2 class="category">Example 2: </h2> 
+&nbsp;&nbsp;&nbsp;&gt; a=255;<br> 
+&nbsp;&nbsp;&nbsp;&gt; precision(a);<br> 
+&nbsp;&nbsp;&nbsp;8<br> 
+&nbsp;&nbsp;&nbsp;&gt; m=mantissa(a);<br> 
+&nbsp;&nbsp;&nbsp;&gt; 1+floor(log2(m));<br> 
+&nbsp;&nbsp;&nbsp;8<br> 
+</div> 
+<div class="divExample"> 
+<h2 class="category">Example 3: </h2> 
+&nbsp;&nbsp;&nbsp;&gt; a=256;<br> 
+&nbsp;&nbsp;&nbsp;&gt; precision(a);<br> 
+&nbsp;&nbsp;&nbsp;1<br> 
+&nbsp;&nbsp;&nbsp;&gt; m=mantissa(a);<br> 
+&nbsp;&nbsp;&nbsp;&gt; 1+floor(log2(m));<br> 
+&nbsp;&nbsp;&nbsp;1<br> 
 </div> 
 </div> 
 <div class="divSeeAlso"> 

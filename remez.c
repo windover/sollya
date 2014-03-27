@@ -268,7 +268,7 @@ node *constructPolynomial(mpfr_t *coeff, chain *monomials, mp_prec_t prec) {
 
 
 /* This function finds an approximate zero of a function f
-   (which derivative if f_diff) in the interval [a;b]
+   (which derivative is f_diff) in the interval [a;b]
    using x0 as an initial guess of the zero
    If n=0 the algorithm stops when the computed zero is
    a precise estimation of the real zero.
@@ -304,22 +304,22 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
      (   *       *     sgnfa) -> we can set [u,v] = [epsb, b] (note that epsb>0 in this case)
 
      (   *     sgnfa  -sgnfa) -> f changes its sign in [0,epsb] but f(0) != 0.
-     The zero of f cannot be determined accurately.
-     We can return epsb for instance with an error message.
+                                 The zero of f cannot be determined accurately.
+                                 We can return epsb for instance with an error message.
      ( sgnfa  -sgnfa    *   ) -> idem with [epsa,0]
 
      ( sgnfa    NaN   -sgnfa) -> f changes its sign in [epsa, epsb].
-     It is likely that f(0)=0 but we cannot prove it.
-     We can return 0 with an error message.
+                                 It is likely that f(0)=0 but we cannot prove it.
+                                 We can return 0 with an error message.
 
      ( sgnfa    NaN     NaN ) -> This case is likely to be b=0 (hence epsb=0)
-     We cannot prove much but it is reasonnable to return 0
+                                 We cannot prove much but it is reasonnable to return 0
      (  NaN     NaN   -sgnfa) -> idem with a=0
      (  NaN     NaN     NaN ) -> idem with a=0=b
 
      (  *      sgnfa    NaN ) -> We are really in trouble here since f(0) is provably non zero
-     but we do not know if f vanishes in [0,epsb] or [epsb, b].
-     We should better stop with a huge ERROR
+                                 but we do not know if f vanishes in [0,epsb] or [epsb, b].
+                                 We should better stop with a huge ERROR
      (  NaN   -sgnfa     *  ) -> idem with [a, epsa] or [epsa, 0]
 
 
@@ -341,11 +341,11 @@ void findZero(mpfr_t res, node *f, node *f_diff, mpfr_t a, mpfr_t b, int sgnfa, 
 
      Otherwise: xNew gives a valid new value. We compute yNew=f(xNew).
      We have 4 cases depending on sgn(yNew):
-     sgnfa -> we can replace [u,v] by [xNew,v]
-     -sgnfa -> we can replace [u,v] by [u, xNew]
-     0   -> xNew is an exact zero of f. We can stop
-     NaN  -> we leave [u,v] as is. Most likely the iterator(xNew) will be NaN and the next
-     step will be a bisection step.
+        sgnfa -> we can replace [u,v] by [xNew,v]
+       -sgnfa -> we can replace [u,v] by [u, xNew]
+          0   -> xNew is an exact zero of f. We can stop
+         NaN  -> we leave [u,v] as is. Most likely the iterator(xNew) will be NaN and the next
+                 step will be a bisection step.
   */
 
   mpfr_t zero_mpfr;
