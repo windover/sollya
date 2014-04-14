@@ -2308,9 +2308,21 @@ rangetype guessDegree(node *func, node *weight, mpfr_t a, mpfr_t b, mpfr_t eps, 
   mpfr_t h;
   rangetype range;
   mpfr_t *tempMpfr;
+  sollya_mpfi_t tmp1, tmp2;
+  mp_prec_t prec_tmp;
 
   mpfr_init2(h, prec);
 
+  prec_tmp = (mpfr_get_prec(a)>mpfr_get_prec(b))?(mpfr_get_prec(a)):(mpfr_get_prec(b));
+  sollya_mpfi_init2(tmp1, prec_tmp);
+  sollya_mpfi_init2(tmp2, prec);
+  sollya_mpfi_interv_fr(tmp1, a, b);
+  evaluateInterval(tmp2, weight, NULL, tmp1);
+  if (sollya_mpfi_has_infinity(tmp2)) {
+      printMessage(1, SOLLYA_MSG_GUESSDEGREE_POSSIBLE_SINGULAR_WEIGHT, "Warning: guessdegree: the weight function might not be continuous over the given interval.\nThis is not allowed but it is the user's responsability to check it.\nNo other test will be performed, but be aware that the command is allowed to return anything in this case.\n");
+  }
+  sollya_mpfi_clear(tmp1);
+  sollya_mpfi_clear(tmp2);
 
   /* n reprensents the number of unknowns: n=1 corresponds to degree 0 */
   /* bound represents the maximal value allowed for n. If we do not find a
