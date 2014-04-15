@@ -96,11 +96,11 @@ void miniyyerror(void *myScanner, const char *message) {
 
 %defines
 
-%name-prefix="miniyy"
+%name-prefix "miniyy"
 
 %expect 2
 
-%pure_parser
+%pure-parser
 
 %union {
   doubleNode *dblnode;

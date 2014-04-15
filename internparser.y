@@ -102,11 +102,11 @@ extern FILE *internyyget_in(void *scanner);
 
 %defines
 
-%name-prefix="internyy"
+%name-prefix "internyy"
 
 %expect 2
 
-%pure_parser
+%pure-parser
 
 %union {
   doubleNode *dblnode;
