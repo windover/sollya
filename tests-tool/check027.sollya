@@ -112,3 +112,26 @@ print(simplify( f/f )); /* expecting (abs(x)/x+1)/(abs(x)/x+1) */
 print(simplify( 0/f )); /* expecting 0/(abs(x)/x+1) */
 print(simplify( log(3 + cos(x)) - log(3 + cos(x)) )); /* expecting 0 */
 print(simplify( log(3 + cos(x)) / log(3 + cos(x)) )); /* expecting 1 */
+
+
+/*********************************************************************************/
+restart;
+print("=============== Test number 6 ================");
+verbosity = 2;
+roundingwarnings=on;
+printsingle( 2^2000 );
+printsingle( (2^24-1)*2^104 );
+printsingle( (2^24-1/2)*2^104 );
+printsingle( (2^23)*2^(-149) );
+printsingle( (2^23-1)*2^(-149) );
+printsingle( (1)*2^(-149) );
+printsingle( (1/2)*2^(-149) );
+printsingle( -(2^24-1)*2^104 );
+printsingle( -(2^24-1/2)*2^104 );
+printsingle( -(2^23)*2^(-149) );
+printsingle( -(2^23-1)*2^(-149) );
+printsingle( -(1)*2^(-149) );
+printsingle( -(1/2)*2^(-149) );
+printsingle( +0 );
+printsingle( -0 );
+

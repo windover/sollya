@@ -130,3 +130,27 @@ log(x) / log(x)
 0 / (abs(x) / x + 1)
 0
 1
+The tool has been restarted.
+=============== Test number 6 ================
+The verbosity level has been set to 2.
+Rounding warning mode has been activated.
+Warning: rounding up occurred before printing a value as a single.
+0x7f800000
+0x7f7fffff
+Warning: rounding up occurred before printing a value as a single.
+0x7f800000
+0x00800000
+0x007fffff
+0x00000001
+Warning: rounding down occurred before printing a value as a single.
+0x00000000
+0xff7fffff
+Warning: rounding down occurred before printing a value as a single.
+0xff800000
+0x80800000
+0x807fffff
+0x80000001
+Warning: rounding up occurred before printing a value as a single.
+0x80000000
+0x00000000
+0x80000000
