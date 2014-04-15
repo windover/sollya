@@ -13322,10 +13322,11 @@ int tryGetIthCoefficientSparseUnsafe(node **res, node *poly, int i) {
 	if (getDegreeMpz(kMpz, poly->child2)) {
 	  k = mpz_get_si(kMpz);
 	  if (mpz_cmp_si(kMpz, k) == 0) {
-	    if ((t >= 0) && (t <= i) && 
+	    if ((t * k == i) &&
+                (t >= 0) && (t <= i) &&
 		(k >= 0) && (k <= i) &&
-		((((k == 0) || (t == 0)) && (i == 0)) || (t == i / k)) &&
-		(t * k == i)) {
+		((((k == 0) || (t == 0)) && (i == 0)) || (t == i / k))
+		) {
 	      if (tryGetIthCoefficientSparseUnsafe(&resLeft, poly->child1, t) &&
 		  tryGetIthCoefficientSparseUnsafe(&resRight, poly->child2, k)) {
 		*res = makeMulSimplified(resLeft, resRight);
